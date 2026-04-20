@@ -1,0 +1,223 @@
+{
+  "people": [
+    {
+      "id": "person_1b6de57e",
+      "name": "王大强",
+      "gender": "male",
+      "birth_date": "1950",
+      "death_date": null,
+      "birth_place": "王家村",
+      "current_residence": null,
+      "tags": [
+        "长辈",
+        "农民"
+      ],
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723411",
+      "updated_at": "2026-04-17T00:19:48.723411"
+    },
+    {
+      "id": "person_5ff6cc4c",
+      "name": "王建国",
+      "gender": "male",
+      "birth_date": "1980-12-08",
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": "县城",
+      "tags": [
+        "老二",
+        "手艺人",
+        "居住地:县城"
+      ],
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723421",
+      "updated_at": "2026-04-17T00:19:48.723421"
+    },
+    {
+      "id": "person_cb1f9218",
+      "name": "李梅",
+      "gender": "female",
+      "birth_date": "1982",
+      "death_date": null,
+      "birth_place": "李家村",
+      "current_residence": null,
+      "tags": [
+        "隔壁村",
+        "二婚"
+      ],
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723426",
+      "updated_at": "2026-04-17T00:19:48.723426"
+    },
+    {
+      "id": "person_0f567088",
+      "name": "赵大爷",
+      "gender": "male",
+      "birth_date": "1945",
+      "death_date": null,
+      "birth_place": "赵家村",
+      "current_residence": null,
+      "tags": [
+        "村长"
+      ],
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723430",
+      "updated_at": "2026-04-17T00:19:48.723430"
+    },
+    {
+      "id": "person_2d54f2dc",
+      "name": "小芳",
+      "gender": "female",
+      "birth_date": "1996",
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "女儿"
+      ],
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723433",
+      "updated_at": "2026-04-17T00:19:48.723433"
+    }
+  ],
+  "events": [
+    {
+      "id": "event_7a0632a1",
+      "type": "marriage",
+      "description": "王建国与李梅结婚（二婚）",
+      "date": "1995-09-15",
+      "date_accuracy": "exact",
+      "location": "县城",
+      "participants": [
+        {
+          "person_id": "person_5ff6cc4c",
+          "role": "新郎"
+        },
+        {
+          "person_id": "person_cb1f9218",
+          "role": "新娘"
+        }
+      ],
+      "source": "父亲口述",
+      "confidence": "high",
+      "created_at": "2026-04-17T00:19:48.723439"
+    },
+    {
+      "id": "event_4b6cee9f",
+      "type": "recognition",
+      "description": "王建国认赵大爷为干爹",
+      "date": "1996",
+      "date_accuracy": "year",
+      "location": "王家村",
+      "participants": [
+        {
+          "person_id": "person_5ff6cc4c",
+          "role": "干儿子"
+        },
+        {
+          "person_id": "person_0f567088",
+          "role": "干爹"
+        }
+      ],
+      "source": "父亲口述",
+      "confidence": "medium",
+      "created_at": "2026-04-17T00:19:48.723444"
+    },
+    {
+      "id": "event_90ae4ba2",
+      "type": "birth",
+      "description": "小芳出生",
+      "date": "1996",
+      "date_accuracy": "year",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_2d54f2dc",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_5ff6cc4c",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_cb1f9218",
+          "role": "母亲"
+        }
+      ],
+      "source": "父亲口述",
+      "confidence": "high",
+      "created_at": "2026-04-17T00:19:48.723448"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel_24046647",
+      "person1_id": "person_1b6de57e",
+      "person2_id": "person_5ff6cc4c",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {
+        "birth_order": "老二"
+      },
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723453"
+    },
+    {
+      "id": "rel_90a4dce4",
+      "person1_id": "person_5ff6cc4c",
+      "person2_id": "person_cb1f9218",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": "1995-09-15",
+      "end_date": null,
+      "attributes": {
+        "marriage_number": 2
+      },
+      "event_id": "event_7a0632a1",
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723457"
+    },
+    {
+      "id": "rel_462301fd",
+      "person1_id": "person_5ff6cc4c",
+      "person2_id": "person_0f567088",
+      "type": "godparent_godchild",
+      "subtype": "godfather_godson",
+      "start_date": "1996",
+      "end_date": null,
+      "attributes": {},
+      "event_id": "event_4b6cee9f",
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723461"
+    },
+    {
+      "id": "rel_a04986ab",
+      "person1_id": "person_5ff6cc4c",
+      "person2_id": "person_2d54f2dc",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": "event_90ae4ba2",
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723464"
+    },
+    {
+      "id": "rel_7c7f9245",
+      "person1_id": "person_cb1f9218",
+      "person2_id": "person_2d54f2dc",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": "event_90ae4ba2",
+      "notes": null,
+      "created_at": "2026-04-17T00:19:48.723467"
+    }
+  ]
+}
