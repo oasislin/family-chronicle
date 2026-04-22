@@ -45,6 +45,7 @@ export interface Relationship {
   attributes: Record<string, any>;
   event_id?: string;
   notes?: string;
+  is_inferred?: boolean;
   created_at: string;
 }
 

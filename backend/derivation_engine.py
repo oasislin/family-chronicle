@@ -154,7 +154,7 @@ def propagate_from_nodes(graph, seed_ids: set) -> list:
             continue
         try: rt = RelationshipType(rtype)
         except ValueError: rt = RelationshipType.OTHER
-        graph.add_relationship(Relationship(a,b,rt))
+        graph.add_relationship(Relationship(a,b,rt, is_inferred=True))
         p1,p2 = graph.get_person(a), graph.get_person(b)
         results.append({'person_a':p1.name if p1 else a,'person_b':p2.name if p2 else b,'type':rtype,'source':'propagation'})
     return results

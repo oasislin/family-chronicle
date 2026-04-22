@@ -24,6 +24,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from models import FamilyGraph, Person, Event, Relationship, Gender, EventType, DateAccuracy, Confidence, RelationshipType
 from prompt_engineering import FamilyParsingPrompt
+from pypinyin import pinyin, lazy_pinyin, Style
 from conflict_detector import ConflictDetector, check_conflicts
 
 # 关系推导引擎 v2 — BFS 扩散式推导
@@ -126,13 +127,23 @@ def load_family_graph(family_id: str) -> FamilyGraph:
     """加载家族图谱数据"""
     file_path = DATA_DIR / f"{family_id}.json"
     if file_path.exists():
-        return FamilyGraph.import_json(str(file_path))
+        try:
+            return FamilyGraph.import_json(str(file_path))
+        except Exception as e:
+            print(f"警告: 家族文件 {file_path} 损坏，已跳过 ({str(e)})")
+            return FamilyGraph()
     return FamilyGraph()
 
 def save_family_graph(family_id: str, graph: FamilyGraph):
     """保存家族图谱数据"""
     file_path = DATA_DIR / f"{family_id}.json"
     graph.export_json(str(file_path))
+
+def _get_rel_type_str(r) -> str:
+    """获取关系的类型字符串（兼容Enum和String）"""
+    if hasattr(r.type, 'value'):
+        return r.type.value
+    return str(r.type)
 
 def generate_family_id() -> str:
     """生成家族ID"""
@@ -1074,26 +1085,88 @@ class AutoImportRequest(BaseModel):
     parsed_data: Dict[str, Any] = Field(..., description="AI解析结果")
     answers: Optional[Dict[str, str]] = Field(None, description="用户对提问的回答 {question_id: answer_value}")
 
+def _get_pinyin_str(name: str) -> str:
+    """获取纯字母拼音字符串"""
+    if not name: return ""
+    return "".join(lazy_pinyin(name))
 
-def _fuzzy_match(name: str, people) -> list:
+def _split_chinese_name(name: str) -> tuple:
+    """尝试将中文名拆分为(姓, 名)"""
+    if not name or len(name) < 2:
+        return name, ""
+    
+    # 常见复姓
+    double_surnames = {"欧阳", "上官", "皇甫", "司马", "诸葛", "东方", "独孤", "南宫", "万俟", "夏侯"}
+    if len(name) >= 3 and name[:2] in double_surnames:
+        return name[:2], name[2:]
+    
+    # 默认单姓
+    return name[0], name[1:]
+
+def _fuzzy_match(name: str, people, gender: str = "unknown") -> list:
     """模糊匹配人物姓名，返回 [(person, score)] 列表"""
     results = []
     name_lower = name.lower().strip()
     name_is_kinship = _is_kinship_description(name)
+    name_pinyin = _get_pinyin_str(name_lower)
+    name_surname, name_given = _split_chinese_name(name_lower)
+    
     for p in people:
-        p_name_lower = p.name.lower().strip()
-        # 精确匹配
-        if p_name_lower == name_lower:
-            results.append((p, 1.0))
-        # 包含匹配 — 亲属描述不给高分，避免「王建国」匹配「王建国的大伯」
-        elif name_lower in p_name_lower or p_name_lower in name_lower:
-            if name_is_kinship:
-                results.append((p, 0.3))  # 极低分，不会自动关联
+        p_names = [p.name]
+        # 添加别名
+        p_names.extend(getattr(p, 'aliases', []) or [])
+        
+        best_p_score = 0
+        
+        # 性别校验
+        gender_mismatch = False
+        if gender != "unknown" and p.gender and p.gender != Gender.UNKNOWN:
+            p_gender_val = p.gender.value if hasattr(p.gender, 'value') else str(p.gender)
+            if p_gender_val != gender:
+                gender_mismatch = True
+
+        for current_name in p_names:
+            p_name_lower = current_name.lower().strip()
+            p_pinyin = _get_pinyin_str(p_name_lower)
+            p_surname, p_given = _split_chinese_name(p_name_lower)
+            
+            score = 0
+            
+            # 1. 精确匹配
+            if p_name_lower == name_lower:
+                score = 1.0
+            
+            # 2. 拼音完全相同（同音字）
+            elif p_pinyin == name_pinyin and len(name_pinyin) > 1:
+                score = 0.95
+                
+            # 3. 姓相同，名拼音相同
+            elif p_surname == name_surname and _get_pinyin_str(p_given) == _get_pinyin_str(name_given) and name_given:
+                score = 0.92
+            
+            # 4. 包含匹配
+            elif name_lower in p_name_lower or p_name_lower in name_lower:
+                if name_is_kinship:
+                    score = 0.3
+                else:
+                    score = 0.9
+            
+            # 5. 编辑距离
             else:
-                results.append((p, 0.9))
-        # 编辑距离 ≤ 1
-        elif _levenshtein(name_lower, p_name_lower) <= 1:
-            results.append((p, 0.80))  # 低于自动关联阈值0.85，不会自动改名
+                dist = _levenshtein(name_lower, p_name_lower)
+                if dist <= 1:
+                    score = 0.80
+                
+            # 性别不匹配惩罚
+            if gender_mismatch and score > 0.4:
+                score *= 0.5
+                
+            if score > best_p_score:
+                best_p_score = score
+        
+        if best_p_score > 0.1:
+            results.append((p, best_p_score))
+            
     return sorted(results, key=lambda x: -x[1])
 
 
@@ -1197,7 +1270,7 @@ def get_or_create_parent_placeholder(graph, child_id: str, lineage: str, parent_
     
     # 2. 检查是否已有真实的父母（同性别）
     for rel in graph.relationships.values():
-        if rel.type == RelationshipType.PARENT_CHILD:
+        if _get_rel_type_str(rel) == "parent_child":
             parent = graph.get_person(rel.person1_id)
             if parent and rel.person2_id == child_id and parent.gender == Gender(parent_gender):
                 if not parent.is_placeholder:
@@ -1214,8 +1287,7 @@ def get_or_create_parent_placeholder(graph, child_id: str, lineage: str, parent_
     graph.add_person(placeholder)
     
     # 创建 parent_child 边: placeholder → child
-    rel = Relationship(placeholder.id, child_id, RelationshipType.PARENT_CHILD)
-    graph.add_relationship(rel)
+    graph.add_relationship(Relationship(placeholder.id, child_id, RelationshipType.PARENT_CHILD, is_inferred=True))
     
     return placeholder, True
 
@@ -1342,13 +1414,12 @@ def _auto_create_grandparent_spouse(graph, gp_person, inter_child, lineage, acti
         # 已存在 → 只需建立与中间代的 parent_child 关系
         spouse = existing[0]
         existing_link = any(
-            r.type == RelationshipType.PARENT_CHILD
+            _get_rel_type_str(r) == "parent_child"
             and r.person1_id == spouse.id and r.person2_id == inter_child.id
             for r in graph.relationships.values()
         )
         if not existing_link:
-            rel = Relationship(spouse.id, inter_child.id, RelationshipType.PARENT_CHILD)
-            graph.add_relationship(rel)
+            graph.add_relationship(Relationship(spouse.id, inter_child.id, RelationshipType.PARENT_CHILD, is_inferred=True))
             actions.append(f"关联已有: {counterpart_name} → {inter_child.name}")
         return
     
@@ -1361,75 +1432,111 @@ def _auto_create_grandparent_spouse(graph, gp_person, inter_child, lineage, acti
     actions.append(f"自动创建配偶(占位): {counterpart_name}")
     
     # 建立配偶→中间代的 parent_child
-    rel = Relationship(spouse.id, inter_child.id, RelationshipType.PARENT_CHILD)
-    graph.add_relationship(rel)
+    graph.add_relationship(Relationship(spouse.id, inter_child.id, RelationshipType.PARENT_CHILD, is_inferred=True))
     actions.append(f"建立链路: {counterpart_name} → {inter_child.name}")
     
     # 建立与祖父母的配偶关系
-    spouse_rel = Relationship(gp_person.id, spouse.id, RelationshipType.SPOUSE)
-    graph.add_relationship(spouse_rel)
+    graph.add_relationship(Relationship(gp_person.id, spouse.id, RelationshipType.SPOUSE, is_inferred=True))
     actions.append(f"自动关联配偶: {gp_name} ↔ {counterpart_name}")
 
 
-def _find_creation_duplicates(name: str, graph, exclude_id: str = None) -> list:
+def _find_creation_duplicates(name: str, graph, gender: str = "unknown", exclude_id: str = None) -> list:
     """创建人物前的重复检测 — 检查是否存在相似的人物
     返回 [(person, score, reason)] 列表，按分数降序排列
-    比 _fuzzy_match 更全面：增加别名匹配、亲属角色语义匹配
     """
     results = []
     name_lower = name.lower().strip()
+    name_pinyin = _get_pinyin_str(name_lower)
+    name_surname, name_given = _split_chinese_name(name_lower)
     name_roles = _extract_kinship_roles(name)
+    
     for p in graph.people.values():
         if exclude_id and p.id == exclude_id:
             continue
-        p_name_lower = p.name.lower().strip()
-        # 1. 精确匹配
-        if p_name_lower == name_lower:
-            results.append((p, 1.0, "姓名完全相同"))
-            continue
-        # 2. 双向包含匹配
-        if name_lower in p_name_lower or p_name_lower in name_lower:
-            score = 0.9 if len(name_lower) >= 2 else 0.7
-            results.append((p, score, "姓名包含匹配"))
-            continue
-        # 3. 亲属角色语义匹配
-        #    当已有记录是描述性名称（如"林绿洲的曾祖母"），新名称共享角色（如"曾祖母A"）
-        #    → 很可能是同一人（占位→真实姓名）
-        if name_roles and _is_kinship_description(p.name):
-            p_roles = _extract_kinship_roles(p.name)
-            shared_roles = name_roles & p_roles
-            if shared_roles:
-                # 检查新名称是否有区分后缀（如 A/B/大/小）
-                # "曾祖母A" vs "曾祖母B" → 不同人
-                # "曾祖母A" vs "林绿洲的曾祖母" → 可能同一人
-                has_differentiator = bool(re.search(r'[A-Za-z0-9一二三四五大六七八九十]', name))
-                existing_has_differentiator = bool(re.search(r'[A-Za-z0-9一二三四五大六七八九十]', p.name.split("的")[-1] if "的" in p.name else p.name))
-                if has_differentiator and not existing_has_differentiator:
-                    # 新名称有区分符(如A)，已有描述没有 → 可能是给占位取名
-                    results.append((p, 0.85, f"亲属角色匹配({', '.join(shared_roles)})"))
-                elif not has_differentiator and not existing_has_differentiator:
-                    results.append((p, 0.8, f"亲属角色匹配({', '.join(shared_roles)})"))
-        # 4. 别名匹配
-        for alias in getattr(p, 'aliases', []) or []:
-            if alias.lower().strip() == name_lower:
-                results.append((p, 0.95, f"与别名「{alias}」相同"))
-                break
-            elif name_lower in alias.lower() or alias.lower() in name_lower:
-                results.append((p, 0.8, f"与别名「{alias}」包含匹配"))
-                break
-        # 5. 编辑距离
-        dist = _levenshtein(name_lower, p_name_lower)
-        max_len = max(len(name_lower), len(p_name_lower))
-        if max_len > 0 and dist <= max(1, int(max_len * 0.3)):
-            score = round(1 - dist / max_len, 2)
-            if score >= 0.6:
-                results.append((p, score, f"编辑距离={dist}"))
-    # 去重（同一个人可能因多种原因匹配），保留最高分
-    seen = {}
-    for p, score, reason in results:
-        if p.id not in seen or score > seen[p.id][1]:
-            seen[p.id] = (p, score, reason)
-    return sorted(seen.values(), key=lambda x: -x[1])
+        
+        p_names = [p.name]
+        p_names.extend(getattr(p, 'aliases', []) or [])
+        
+        # 性别校验
+        gender_mismatch = False
+        if gender != "unknown" and p.gender and p.gender != Gender.UNKNOWN:
+            p_gender_val = p.gender.value if hasattr(p.gender, 'value') else str(p.gender)
+            if p_gender_val != gender:
+                gender_mismatch = True
+
+        best_score_for_person = 0
+        best_reason = ""
+        
+        for current_name in p_names:
+            p_name_lower = current_name.lower().strip()
+            p_pinyin = _get_pinyin_str(p_name_lower)
+            p_surname, p_given = _split_chinese_name(p_name_lower)
+            
+            score = 0
+            reason = ""
+            
+            # 1. 精确匹配
+            if p_name_lower == name_lower:
+                score = 1.0
+                reason = "姓名完全相同"
+                
+            # 2. 拼音完全相同
+            elif p_pinyin == name_pinyin and len(name_pinyin) > 1:
+                score = 0.95
+                reason = f"拼音完全相同({p_pinyin})"
+            
+            # 3. 姓相同，名拼音相同
+            elif p_surname == name_surname and _get_pinyin_str(p_given) == _get_pinyin_str(name_given) and name_given:
+                score = 0.92
+                reason = "同姓且名字拼音相同"
+                
+            # 4. 包含匹配
+            elif name_lower in p_name_lower or p_name_lower in name_lower:
+                if gender_mismatch:
+                    score = 0.5
+                else:
+                    score = 0.9 if len(name_lower) >= 2 and len(p_name_lower) >= 2 else 0.7
+                reason = "姓名包含匹配"
+                
+            # 5. 亲属角色语义匹配 (仅对主姓名)
+            elif current_name == p.name and name_roles and _is_kinship_description(p.name):
+                p_roles = _extract_kinship_roles(p.name)
+                shared_roles = name_roles & p_roles
+                if shared_roles:
+                    if gender_mismatch:
+                        score = 0.4
+                    else:
+                        has_differentiator = bool(re.search(r'[A-Za-z0-9一二三四五大六七八九十]', name))
+                        existing_has_differentiator = bool(re.search(r'[A-Za-z0-9一二三四五大六七八九十]', p.name.split("的")[-1] if "的" in p.name else p.name))
+                        if has_differentiator and not existing_has_differentiator:
+                            score = 0.85
+                        elif not has_differentiator and not existing_has_differentiator:
+                            score = 0.8
+                        else:
+                            score = 0.6
+                    reason = f"亲属角色匹配({', '.join(shared_roles)})"
+            
+            # 6. 编辑距离
+            else:
+                dist = _levenshtein(name_lower, p_name_lower)
+                max_len = max(len(name_lower), len(p_name_lower))
+                if max_len > 0 and dist <= max(1, int(max_len * 0.3)):
+                    base_score = round(1 - dist / max_len, 2)
+                    score = base_score
+                    reason = f"编辑距离={dist}"
+
+            if gender_mismatch and score > 0.4:
+                score *= 0.5
+                reason += "(性别不匹配)"
+                
+            if score > best_score_for_person:
+                best_score_for_person = score
+                best_reason = reason
+        
+        if best_score_for_person > 0.1:
+            results.append((p, best_score_for_person, best_reason))
+            
+    return sorted(results, key=lambda x: -x[1])
 
 
 def _levenshtein(s1: str, s2: str) -> int:
@@ -1479,7 +1586,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
             if _is_kinship_description(name):
                 matches = []
             else:
-                matches = _fuzzy_match(name, existing_people)
+                matches = _fuzzy_match(name, existing_people, gender=entity.get("gender", "unknown"))
 
             # 有精确匹配（score=1.0）时直接关联，忽略其他低分候选
             exact_match = next((m for m in matches if m[1] >= 1.0), None)
@@ -1541,7 +1648,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                     answer = answers[q_id]
                     if answer == "__new__":
                         # 用户选择创建新人物 → 仍需检查是否与已有完全重名
-                        dupes = _find_creation_duplicates(entity.get("name", ""), graph)
+                        dupes = _find_creation_duplicates(entity.get("name", ""), graph, gender=entity.get("gender", "unknown"))
                         if dupes and dupes[0][1] >= 1.0:
                             # 完全重名 → 强制关联已有
                             id_mapping[temp_id] = dupes[0][0].id
@@ -1587,7 +1694,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                             # 用户提供了真实姓名 → 先检查重复
                             entity_copy = dict(entity)
                             entity_copy["name"] = real_name
-                            dupes = _find_creation_duplicates(real_name, graph)
+                            dupes = _find_creation_duplicates(real_name, graph, gender=entity_copy.get("gender", "unknown"))
                             if dupes and dupes[0][1] >= 0.8:
                                 # 发现疑似重复 → 询问用户是否合并
                                 dq_id = f"dup_check_{temp_id}"
@@ -1639,7 +1746,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                                             # 检查是否关联同一个后代
                                             # 占位格式: "{child_name}的{term}"
                                             for r in graph.relationships.values():
-                                                if r.type == RelationshipType.PARENT_CHILD and r.person1_id == p.id:
+                                                if _get_rel_type_str(r) == "parent_child" and r.person1_id == p.id:
                                                     child = graph.get_person(r.person2_id)
                                                     if child and child.name in name:
                                                         matched_placeholder = p
@@ -1716,7 +1823,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                                 entity_copy["birth_year"] = parts[2]
                             # 创建前检查重复
                             final_name = entity_copy["name"]
-                            dupes = _find_creation_duplicates(final_name, graph)
+                            dupes = _find_creation_duplicates(final_name, graph, gender=entity_copy.get("gender", "unknown"))
                             if dupes and dupes[0][1] >= 0.9:
                                 # 高度疑似重复 → 强制关联
                                 id_mapping[temp_id] = dupes[0][0].id
@@ -1730,7 +1837,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                         else:
                             # 简单确认（兼容旧格式）→ 仍检查重复
                             final_name = entity.get("name", "")
-                            dupes = _find_creation_duplicates(final_name, graph)
+                            dupes = _find_creation_duplicates(final_name, graph, gender=entity.get("gender", "unknown"))
                             if dupes and dupes[0][1] >= 0.9:
                                 id_mapping[temp_id] = dupes[0][0].id
                                 actions.append(f"关联已有(重复检测): {final_name} → {dupes[0][0].name}")
@@ -1777,6 +1884,9 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                 continue
 
             rel_type = rel.get("type", "other")
+            
+            p1_name = graph.get_person(p1_id).name if graph.get_person(p1_id) else "?"
+            p2_name = graph.get_person(p2_id).name if graph.get_person(p2_id) else "?"
 
             # ── 祖孙关系 → 通过占位链展开为 parent_child 原子边 ──
             if rel_type in ("grandparent_grandchild", "grandparent"):
@@ -1800,13 +1910,12 @@ async def auto_import(family_id: str, request: AutoImportRequest):
 
                     # 检查祖父母→中间代的 parent_child 是否已存在
                     existing_gp_inter = any(
-                        r.type == RelationshipType.PARENT_CHILD
+                        _get_rel_type_str(r) == "parent_child"
                         and r.person1_id == gp.id and r.person2_id == inter_parent.id
                         for r in graph.relationships.values()
                     )
                     if not existing_gp_inter:
-                        gp_rel = Relationship(gp.id, inter_parent.id, RelationshipType.PARENT_CHILD)
-                        graph.add_relationship(gp_rel)
+                        graph.add_relationship(Relationship(gp.id, inter_parent.id, RelationshipType.PARENT_CHILD, is_inferred=True))
                         actions.append(f"建立链路: {gp.name} → {inter_parent.name} → {gc.name}")
 
                     # 自动补全祖父母配偶（通过同一中间代）
@@ -1821,7 +1930,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                 p1_parents = set()
                 p2_parents = set()
                 for r in graph.relationships.values():
-                    if r.type == RelationshipType.PARENT_CHILD:
+                    if _get_rel_type_str(r) == "parent_child":
                         if r.person2_id == p1_id:
                             p1_parents.add(r.person1_id)
                         if r.person2_id == p2_id:
@@ -1832,23 +1941,23 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                     if p1_parents:
                         for parent_id in p1_parents:
                             existing_link = any(
-                                r.type == RelationshipType.PARENT_CHILD
+                                _get_rel_type_str(r) == "parent_child"
                                 and r.person1_id == parent_id and r.person2_id == p2_id
                                 for r in graph.relationships.values()
                             )
                             if not existing_link:
-                                graph.add_relationship(Relationship(parent_id, p2_id, RelationshipType.PARENT_CHILD))
+                                graph.add_relationship(Relationship(parent_id, p2_id, RelationshipType.PARENT_CHILD, is_inferred=True))
                                 pn = graph.get_person(parent_id)
                                 actions.append(f"关联父母: {pn.name if pn else '?'} → {p2_name} (sibling推导)")
                     elif p2_parents:
                         for parent_id in p2_parents:
                             existing_link = any(
-                                r.type == RelationshipType.PARENT_CHILD
+                                _get_rel_type_str(r) == "parent_child"
                                 and r.person1_id == parent_id and r.person2_id == p1_id
                                 for r in graph.relationships.values()
                             )
                             if not existing_link:
-                                graph.add_relationship(Relationship(parent_id, p1_id, RelationshipType.PARENT_CHILD))
+                                graph.add_relationship(Relationship(parent_id, p1_id, RelationshipType.PARENT_CHILD, is_inferred=True))
                                 pn = graph.get_person(parent_id)
                                 actions.append(f"关联父母: {pn.name if pn else '?'} → {p1_name} (sibling推导)")
                     else:
@@ -1860,15 +1969,17 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                         placeholder_parent.is_placeholder = True
                         placeholder_parent.placeholder_reason = f"sibling关系({p1_name}↔{p2_name})自动创建的共享父母"
                         graph.add_person(placeholder_parent)
-                        graph.add_relationship(Relationship(placeholder_parent.id, p1_id, RelationshipType.PARENT_CHILD))
-                        graph.add_relationship(Relationship(placeholder_parent.id, p2_id, RelationshipType.PARENT_CHILD))
+                        
+                        graph.add_relationship(Relationship(placeholder_parent.id, p1_id, RelationshipType.PARENT_CHILD, is_inferred=True))
+                        graph.add_relationship(Relationship(placeholder_parent.id, p2_id, RelationshipType.PARENT_CHILD, is_inferred=True))
+                        
                         actions.append(f"自动创建共享父母(占位): {placeholder_parent.name} → {p1_name}/{p2_name}")
 
             # ── 其他关系：直接存储 ──
             is_dup = any(
                 ((r.person1_id == p1_id and r.person2_id == p2_id) or
-                 (r.person1_id == p2_id and r.person2_id == p1_id))
-                and r.type == rel_type
+                 (r.person2_id == p1_id and r.person1_id == p2_id))
+                and _get_rel_type_str(r) == rel_type
                 for r in graph.relationships.values()
             )
             if is_dup:
@@ -1882,7 +1993,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                 if parent and child and not parent.is_placeholder:
                     # 查找子女的同性别占位父母
                     for existing_rel in list(graph.relationships.values()):
-                        if existing_rel.type != RelationshipType.PARENT_CHILD:
+                        if _get_rel_type_str(existing_rel) != "parent_child":
                             continue
                         if existing_rel.person2_id != child.id:
                             continue
@@ -1899,8 +2010,6 @@ async def auto_import(family_id: str, request: AutoImportRequest):
 
             relationship = _create_relationship_from_parsed(p1_id, p2_id, rel)
             graph.add_relationship(relationship)
-            p1_name = graph.get_person(p1_id).name if graph.get_person(p1_id) else "?"
-            p2_name = graph.get_person(p2_id).name if graph.get_person(p2_id) else "?"
             actions.append(f"新增关系: {p1_name} ↔ {p2_name} ({rel_type})")
 
         # === 2.5 一次性 BFS 扩散式关系推导 ===
@@ -2013,7 +2122,7 @@ def _create_relationship_from_parsed(p1_id: str, p2_id: str, rel: dict) -> Relat
         rel_type = RelationshipType(type_str)
     except ValueError:
         rel_type = RelationshipType.OTHER
-    relationship = Relationship(p1_id, p2_id, rel_type)
+    relationship = Relationship(p1_id, p2_id, rel_type, is_inferred=False)
     relationship.subtype = rel.get("subtype")
     return relationship
 

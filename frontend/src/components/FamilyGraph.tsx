@@ -198,6 +198,9 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
   selectedPersonId,
 }) => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [showInferred, setShowInferred] = useState<boolean>(false);
+  const [displayDepth, setDisplayDepth] = useState<number>(1); // 默认显示 1 层
+  const [isFocusMode, setIsFocusMode] = useState<boolean>(false); // 默认全量显示，开启后聚焦选中人
 
   // 持久化节点位置 — 不随数据更新而重置
   const positionsRef = useRef<Record<string, { x: number; y: number }>>({});
@@ -242,15 +245,55 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
     return ['all', ...Array.from(types)];
   }, [relationships]);
 
+  // 计算距离选中人的距离 (BFS)
+  const distances = useMemo(() => {
+    if (!selectedPersonId || !isFocusMode) return null;
+    const dists: Record<string, number> = { [selectedPersonId]: 0 };
+    const queue = [selectedPersonId];
+    
+    while (queue.length > 0) {
+      const currId = queue.shift()!;
+      const d = dists[currId];
+      if (d >= displayDepth) continue;
+
+      // 查找所有邻居（不分显式推导）
+      relationships.forEach(rel => {
+        let neighborId: string | null = null;
+        if (rel.person1_id === currId) neighborId = rel.person2_id;
+        else if (rel.person2_id === currId) neighborId = rel.person1_id;
+
+        if (neighborId && dists[neighborId] === undefined) {
+          dists[neighborId] = d + 1;
+          queue.push(neighborId);
+        }
+      });
+    }
+    return dists;
+  }, [selectedPersonId, relationships, displayDepth, isFocusMode]);
+
+  const filteredPeople = useMemo(() => {
+    if (!isFocusMode || !distances) return people;
+    return people.filter(p => distances[p.id] !== undefined);
+  }, [people, distances, isFocusMode]);
+
   const filteredRelationships = useMemo(() => {
-    if (activeFilter === 'all') return relationships;
-    return relationships.filter((r) => r.type === activeFilter);
-  }, [relationships, activeFilter]);
+    let result = relationships;
+    if (!showInferred) {
+      result = result.filter(r => !r.is_inferred);
+    }
+    if (activeFilter !== 'all') {
+      result = result.filter((r) => r.type === activeFilter);
+    }
+    if (isFocusMode && distances) {
+      result = result.filter(r => distances[r.person1_id] !== undefined && distances[r.person2_id] !== undefined);
+    }
+    return result;
+  }, [relationships, activeFilter, showInferred, isFocusMode, distances]);
 
   // 节点 — 使用持久化位置
   const buildNodes = useCallback((): Node[] => {
     const positions = positionsRef.current;
-    return people.map((person) => ({
+    return filteredPeople.map((person) => ({
       id: person.id,
       type: 'person',
       position: positions[person.id] || { x: 0, y: 0 },
@@ -258,7 +301,7 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
       sourcePosition: Position.Bottom,
       targetPosition: Position.Top,
     }));
-  }, [people, selectedPersonId]);
+  }, [filteredPeople, selectedPersonId]);
 
   // 边 — 根据选中人物高亮连接的关系
   const initialEdges: Edge[] = useMemo(() => {
@@ -278,8 +321,11 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
       const isConnected = connectedRelIds.has(rel.id);
 
       // 选中人物时：关联边高亮，其他边变暗
-      const strokeWidth = hasSelection ? (isConnected ? 3 : 1) : 1.5;
-      const opacity = hasSelection ? (isConnected ? 1 : 0.1) : 0.7;
+      // 未选中时：推导边（is_inferred）变暗
+      const strokeWidth = hasSelection ? (isConnected ? 3 : 1) : (rel.is_inferred ? 1 : 1.5);
+      const opacity = hasSelection 
+        ? (isConnected ? 1 : 0.05) 
+        : (rel.is_inferred ? 0.3 : 0.7);
       const animated: boolean = rel.type === 'spouse' || (!!hasSelection && isConnected);
 
       // 箭头标记 — 长辈→晚辈方向
@@ -311,7 +357,9 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
           fill: style.color,
           fontSize: 9,
           fontWeight: isConnected && hasSelection ? 700 : 400,
-          opacity: hasSelection ? (isConnected ? 1 : 0.15) : 1,
+          opacity: hasSelection 
+            ? (isConnected ? 1 : 0.15) 
+            : (rel.is_inferred ? 0.4 : 1),
         },
         labelBgStyle: { fill: '#fafafa', fillOpacity: hasSelection ? (isConnected ? 0.95 : 0.3) : 0.85 },
         labelBgPadding: [4, 2] as [number, number],
@@ -341,7 +389,7 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
     Object.keys(positionsRef.current).forEach(id => {
       if (!currentIds.has(id)) delete positionsRef.current[id];
     });
-  }, [people, initialEdges, setNodes, setEdges]);
+  }, [filteredPeople, initialEdges, setNodes, setEdges, people]);
 
   const resetLayout = useCallback(() => {
     setLayoutKey(k => k + 1);
@@ -358,7 +406,11 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
   const onNodeClick = useCallback(
     (_event: React.MouseEvent, node: Node) => {
       const person = people.find((p) => p.id === node.id);
-      if (person && onPersonClick) onPersonClick(person);
+      if (person && onPersonClick) {
+        onPersonClick(person);
+        // 如果开启了聚焦模式，点击新节点时可能需要更新视图
+        // 但这里我们主要依赖 App.tsx 传回来的 selectedPersonId
+      }
     },
     [people, onPersonClick]
   );
@@ -419,9 +471,40 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
               <option key={t} value={t}>{EDGE_STYLES[t]?.label || t}</option>
             ))}
           </select>
+          {/* 显示推导关系开关 */}
+          <label className="flex items-center gap-1 cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={showInferred} 
+              onChange={(e) => setShowInferred(e.target.checked)}
+              className="w-3 h-3 rounded"
+            />
+            <span className="text-[10px] text-gray-600">显示推导关系</span>
+          </label>
+          <span className="text-gray-300 text-[10px]">|</span>
+          {/* 聚焦模式 */}
+          <label className="flex items-center gap-1 cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={isFocusMode} 
+              onChange={(e) => setIsFocusMode(e.target.checked)}
+              className="w-3 h-3 rounded"
+            />
+            <span className="text-[10px] text-gray-600 font-medium">聚焦模式</span>
+          </label>
+          {isFocusMode && (
+            <div className="flex items-center gap-1.5 ml-1">
+              <span className="text-[10px] text-gray-400">层级:</span>
+              <button onClick={() => setDisplayDepth(Math.max(1, displayDepth - 1))}
+                className="w-4 h-4 flex items-center justify-center bg-white border border-gray-200 rounded text-[10px]">-</button>
+              <span className="text-[10px] font-bold min-w-[8px] text-center">{displayDepth}</span>
+              <button onClick={() => setDisplayDepth(Math.min(5, displayDepth + 1))}
+                className="w-4 h-4 flex items-center justify-center bg-white border border-gray-200 rounded text-[10px]">+</button>
+            </div>
+          )}
         </div>
         <span className="text-[10px] text-gray-400">
-          {people.length}人/{filteredRelationships.length}条
+          {filteredPeople.length}人/{filteredRelationships.length}条
         </span>
       </div>
 

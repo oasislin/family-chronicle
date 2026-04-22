@@ -172,7 +172,7 @@ class Relationship:
     """家族关系实体"""
     
     def __init__(self, person1_id: str, person2_id: str, 
-                 rel_type: RelationshipType, rel_id: str = None):
+                 rel_type: RelationshipType, rel_id: str = None, is_inferred: bool = False):
         self.id = rel_id or f"rel_{uuid.uuid4().hex[:8]}"
         self.person1_id = person1_id
         self.person2_id = person2_id
@@ -183,6 +183,7 @@ class Relationship:
         self.attributes: Dict[str, Any] = {}
         self.event_id: Optional[str] = None
         self.notes: Optional[str] = None
+        self.is_inferred: bool = is_inferred
         self.created_at = datetime.now().isoformat()
     
     def to_dict(self) -> Dict[str, Any]:
@@ -198,6 +199,7 @@ class Relationship:
             "attributes": self.attributes,
             "event_id": self.event_id,
             "notes": self.notes,
+            "is_inferred": self.is_inferred,
             "created_at": self.created_at
         }
     
@@ -216,6 +218,7 @@ class Relationship:
         rel.attributes = data.get("attributes", {})
         rel.event_id = data.get("event_id")
         rel.notes = data.get("notes")
+        rel.is_inferred = data.get("is_inferred", False)
         rel.created_at = data.get("created_at", datetime.now().isoformat())
         return rel
 
@@ -282,7 +285,7 @@ class FamilyGraph:
             visited.add(current_id)
 
             for rel in self.relationships.values():
-                if rel.type == RelationshipType.PARENT_CHILD.value:
+                if rel.type == RelationshipType.PARENT_CHILD:
                     # person1 是 person2 的父/母
                     if rel.person2_id == current_id and rel.person1_id not in visited:
                         parent = self.get_person(rel.person1_id)
@@ -305,7 +308,7 @@ class FamilyGraph:
             visited.add(current_id)
 
             for rel in self.relationships.values():
-                if rel.type == RelationshipType.PARENT_CHILD.value:
+                if rel.type == RelationshipType.PARENT_CHILD:
                     # person1 是 person2 的父/母
                     if rel.person1_id == current_id and rel.person2_id not in visited:
                         child = self.get_person(rel.person2_id)
@@ -361,7 +364,7 @@ class FamilyGraph:
 
             node = {"person": person.to_dict(), "children": []}
             for rel in self.relationships.values():
-                if rel.type == RelationshipType.PARENT_CHILD.value and rel.person1_id == pid:
+                if rel.type == RelationshipType.PARENT_CHILD and rel.person1_id == pid:
                     child_tree = build_tree(rel.person2_id, depth + 1, visited)
                     if child_tree:
                         node["children"].append(child_tree)
@@ -382,6 +385,9 @@ class FamilyGraph:
         """从字典创建FamilyGraph对象"""
         graph = cls()
         
+        if not isinstance(data, dict):
+            return graph
+            
         for person_data in data.get("people", []):
             person = Person.from_dict(person_data)
             graph.add_person(person)
