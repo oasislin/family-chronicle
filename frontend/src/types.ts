@@ -10,6 +10,8 @@ export interface Person {
   tags: string[];
   notes?: string;
   story?: string;
+  is_placeholder: boolean;
+  placeholder_reason: string;
   created_at: string;
   updated_at: string;
 }

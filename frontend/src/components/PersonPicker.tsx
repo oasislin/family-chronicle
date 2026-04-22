@@ -22,6 +22,7 @@ const PersonPicker: React.FC<PersonPickerProps> = ({
 
   const filtered = people.filter(
     (p) =>
+      !p.is_placeholder &&
       !excludeIds.includes(p.id) &&
       (query ? p.name.includes(query) || p.tags.some((t) => t.includes(query)) : true)
   );

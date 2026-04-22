@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uvicorn
 import json
+import re
 from datetime import datetime
 import os
 from pathlib import Path
@@ -25,8 +26,8 @@ from models import FamilyGraph, Person, Event, Relationship, Gender, EventType, 
 from prompt_engineering import FamilyParsingPrompt
 from conflict_detector import ConflictDetector, check_conflicts
 
-# 关系推导引擎
-from derivation_engine import derive_relationships
+# 关系推导引擎 v2 — BFS 扩散式推导
+from derivation_engine_v2 import derive_relationships_v2, get_sibling_type
 from biography_engine import generate_biography_from_graph
 from relationship_validator import validate_relationships, auto_fix_violations, validate_and_fix
 from history import record_action, get_person_history, get_recent_history
@@ -172,6 +173,21 @@ async def create_person(
     try:
         graph = load_family_graph(family_id)
         
+        # 创建前检查重复
+        dupes = _find_creation_duplicates(person_data.name, graph)
+        if dupes and dupes[0][1] >= 0.8:
+            return ApiResponse(
+                success=False,
+                message=f"发现疑似重复人物: {dupes[0][0].name} (相似度{dupes[0][1]})",
+                data={
+                    "duplicate_detected": True,
+                    "candidates": [
+                        {"id": m[0].id, "name": m[0].name, "score": m[1], "reason": m[2]}
+                        for m in dupes[:5]
+                    ],
+                }
+            )
+        
         # 创建Person对象 - 将字符串转换为Gender枚举
         gender = Gender(person_data.gender) if person_data.gender else Gender.UNKNOWN
         person = Person(
@@ -213,12 +229,17 @@ async def create_person(
 async def list_people(
     family_id: str,
     name: Optional[str] = Query(None, description="按姓名搜索"),
-    tag: Optional[str] = Query(None, description="按标签筛选")
+    tag: Optional[str] = Query(None, description="按标签筛选"),
+    show_placeholders: Optional[bool] = Query(False, description="是否显示占位节点")
 ):
     """获取人物列表"""
     try:
         graph = load_family_graph(family_id)
         people = list(graph.people.values())
+        
+        # 过滤占位节点（默认隐藏）
+        if not show_placeholders:
+            people = [p for p in people if not p.is_placeholder]
         
         # 应用筛选
         if name:
@@ -585,12 +606,21 @@ async def create_relationship(
         
         # 添加到图谱
         rel_id = graph.add_relationship(relationship)
+        
+        # BFS 扩散式关系推导
+        from derivation_engine import propagate_from_nodes
+        derived = propagate_from_nodes(graph, {rel_data.person1_id, rel_data.person2_id})
+        
         save_family_graph(family_id, graph)
         
         return ApiResponse(
             success=True,
             message="关系创建成功",
-            data={"relationship_id": rel_id, "relationship": relationship.to_dict()}
+            data={
+                "relationship_id": rel_id,
+                "relationship": relationship.to_dict(),
+                "derived_relationships": len(derived),
+            }
         )
     except HTTPException:
         raise
@@ -1091,15 +1121,315 @@ def _is_kinship_description(name: str) -> bool:
     # 包含「的」+ 亲属称谓 → 肯定是描述
     if '的' in name:
         return True
-    # 包含多个姓氏/名字拼接（如「王建国大伯」）
+    # 亲属称谓后面跟着字母、数字、或编号后缀（如「曾祖母B」「大哥甲」「爷爷1」）
+    # → 这是用户刻意的临时命名，不是纯描述，应视为名字
+    import re
     for term in _KINSHIP_TERMS:
         if term in name:
+            # 检查称谓后面是否跟了编号后缀
+            suffix = name[name.index(term) + len(term):]
+            if suffix and re.match(r'^[A-Za-z0-9\u4e00-\u4fff\u3400-\u4dbf]$', suffix):
+                # 单个字母/数字/生僻字后缀 → 用户命名，不算描述
+                return False
             return True
     return False
 
 def _is_nickname(name: str) -> bool:
     """判断是否为称呼/昵称（非正式全名）"""
     return any(name.endswith(s) for s in _NICKNAME_SUFFIXES) or len(name) <= 2
+
+
+_KINSHIP_KEYWORDS = [
+    "曾祖父", "曾祖母", "高祖父", "高祖母",
+    "祖父", "祖母", "爷爷", "奶奶", "外公", "外婆",
+    "父亲", "母亲", "爸爸", "妈妈", "爸", "妈",
+    "伯父", "伯母", "叔叔", "婶婶", "姑姑", "姑父",
+    "舅舅", "舅妈", "姨妈", "姨父",
+    "哥哥", "姐姐", "弟弟", "妹妹", "兄", "姐", "弟", "妹",
+    "丈夫", "妻子", "老婆", "老公", "配偶",
+    "儿子", "女儿", "儿媳", "女婿",
+    "孙子", "孙女", "外孙", "外孙女",
+    "侄子", "侄女", "外甥", "外甥女",
+    "大伯", "小叔", "堂兄", "表兄", "表姐", "堂姐",
+]
+
+
+def _extract_kinship_roles(name: str) -> set:
+    """从名称中提取亲属角色关键词"""
+    roles = set()
+    for kw in _KINSHIP_KEYWORDS:
+        if kw in name:
+            roles.add(kw)
+    return roles
+
+
+# ═══════════════════════════════════════════════════════════
+# 占位节点管理（遮罩层核心逻辑）
+# ═══════════════════════════════════════════════════════════
+
+def get_or_create_parent_placeholder(graph, child_id: str, lineage: str, parent_gender: str, reason: str = ""):
+    """
+    查找或创建父母占位节点
+    
+    graph: FamilyGraph
+    child_id: 子女ID
+    lineage: "paternal" (父系) 或 "maternal" (母系)
+    parent_gender: "male" 或 "female"
+    reason: 占位原因
+    
+    返回: (Person, is_new) 元组
+    """
+    child = graph.get_person(child_id)
+    if not child:
+        return None, False
+    
+    # 1. 检查是否已有占位（同一孩子+同性别父母 → 复用）
+    for p in graph.people.values():
+        if p.is_placeholder and p.gender == Gender(parent_gender):
+            # 占位名称格式: "{child_name}的爸爸/妈妈"
+            term = "妈妈" if parent_gender == "female" else "爸爸"
+            expected_name = f"{child.name}的{term}"
+            if p.name == expected_name:
+                return p, False
+            # 也检查包含关系
+            if child.name in p.name and term in p.name:
+                return p, False
+    
+    # 2. 检查是否已有真实的父母（同性别）
+    for rel in graph.relationships.values():
+        if rel.type == RelationshipType.PARENT_CHILD:
+            parent = graph.get_person(rel.person1_id)
+            if parent and rel.person2_id == child_id and parent.gender == Gender(parent_gender):
+                if not parent.is_placeholder:
+                    return parent, False
+    
+    # 3. 创建新占位
+    term = "妈妈" if parent_gender == "female" else "爸爸"
+    placeholder = Person(
+        name=f"{child.name}的{term}",
+        gender=Gender(parent_gender),
+    )
+    placeholder.is_placeholder = True
+    placeholder.placeholder_reason = reason or f"{child.name}的{lineage}系{term}占位"
+    graph.add_person(placeholder)
+    
+    # 创建 parent_child 边: placeholder → child
+    rel = Relationship(placeholder.id, child_id, RelationshipType.PARENT_CHILD)
+    graph.add_relationship(rel)
+    
+    return placeholder, True
+
+
+def get_or_create_grandparent_placeholder(graph, grandchild_id: str, lineage: str, gp_gender: str, reason: str = ""):
+    """
+    查找或创建祖父母占位节点（通过中间代占位链）
+    
+    返回: (grandparent_placeholder, is_new)
+    """
+    gc = graph.get_person(grandchild_id)
+    if not gc:
+        return None, False
+    
+    # 1. 先确保中间代占位存在
+    # 外公/外婆 → 母系 → 通过妈妈
+    # 爷爷/奶奶 → 父系 → 通过爸爸
+    inter_gender = "female" if lineage == "maternal" else "male"
+    inter_parent, inter_is_new = get_or_create_parent_placeholder(
+        graph, grandchild_id, lineage, inter_gender,
+        reason=f"中间代占位(为{reason})"
+    )
+    if not inter_parent:
+        return None, False
+    
+    # 2. 再为中间代创建其父母占位（即祖父母）
+    gp, gp_is_new = get_or_create_parent_placeholder(
+        graph, inter_parent.id, lineage, gp_gender,
+        reason=reason
+    )
+    return gp, inter_is_new or gp_is_new
+
+
+def replace_placeholder_with_real(graph, placeholder_id: str, real_person) -> bool:
+    """
+    用真实人物替换占位节点
+    
+    1. 收集占位的所有关系
+    2. 从图中删除占位和其关系
+    3. 用真实人物ID重新创建关系
+    """
+    placeholder = graph.get_person(placeholder_id)
+    if not placeholder or not placeholder.is_placeholder:
+        return False
+    
+    # 1. 收集需要转移的关系
+    rels_to_transfer = []
+    rels_to_remove = []
+    for rel in list(graph.relationships.values()):
+        if rel.person1_id == placeholder_id or rel.person2_id == placeholder_id:
+            rels_to_remove.append(rel.id)
+            # 确定另一端
+            other_id = rel.person2_id if rel.person1_id == placeholder_id else rel.person1_id
+            if other_id == real_person.id:
+                continue  # 自引用 → 跳过
+            # 确定新关系的方向
+            if rel.person1_id == placeholder_id:
+                new_p1, new_p2 = real_person.id, other_id
+            else:
+                new_p1, new_p2 = other_id, real_person.id
+            rels_to_transfer.append((new_p1, new_p2, rel.type))
+    
+    # 2. 删除旧关系和占位节点
+    for rid in rels_to_remove:
+        if rid in graph.relationships:
+            del graph.relationships[rid]
+    if placeholder_id in graph.people:
+        del graph.people[placeholder_id]
+    
+    # 3. 用真实人物ID重新创建关系
+    for new_p1, new_p2, rel_type in rels_to_transfer:
+        # 检查是否已有相同关系（去重）
+        existing = any(
+            (r.person1_id == new_p1 and r.person2_id == new_p2 and r.type == rel_type) or
+            (r.person1_id == new_p2 and r.person2_id == new_p1 and r.type == rel_type)
+            for r in graph.relationships.values()
+        )
+        if not existing:
+            new_rel = Relationship(new_p1, new_p2, rel_type)
+            graph.add_relationship(new_rel)
+    
+    # 4. 合并别名
+    if not hasattr(real_person, 'aliases'):
+        real_person.aliases = []
+    if placeholder.name not in real_person.aliases:
+        real_person.aliases.append(placeholder.name)
+    
+    return True
+
+
+def _auto_create_grandparent_spouse(graph, gp_person, inter_child, lineage, actions, newly_created_ids):
+    """
+    自动为祖父母创建配偶（通过同一个中间代节点）
+    
+    当创建「外婆」→ 妈妈(占位) 时，自动创建「外公」→ 妈妈(占位)
+    这样外婆和外公通过同一个妈妈节点自然成为配偶（Rule 5 推导）
+    """
+    GRANDPARENT_SPOUSE_MAP = {
+        "外婆": ("外公", "male"),
+        "外公": ("外婆", "female"),
+        "爷爷": ("奶奶", "female"),
+        "奶奶": ("爷爷", "male"),
+        "外祖母": ("外祖父", "male"),
+        "外祖父": ("外祖母", "female"),
+        "祖父": ("祖母", "female"),
+        "祖母": ("祖父", "male"),
+    }
+    
+    gp_name = gp_person.name
+    counterpart_name = None
+    counterpart_gender = None
+    for keyword, (counterpart_kw, gender) in GRANDPARENT_SPOUSE_MAP.items():
+        if keyword in gp_name:
+            counterpart_name = gp_name.replace(keyword, counterpart_kw)
+            counterpart_gender = gender
+            break
+    
+    if not counterpart_name:
+        return
+    
+    # 检查是否已有同名人物（真实或占位）
+    existing = [p for p in graph.people.values() if p.name == counterpart_name]
+    if existing:
+        # 已存在 → 只需建立与中间代的 parent_child 关系
+        spouse = existing[0]
+        existing_link = any(
+            r.type == RelationshipType.PARENT_CHILD
+            and r.person1_id == spouse.id and r.person2_id == inter_child.id
+            for r in graph.relationships.values()
+        )
+        if not existing_link:
+            rel = Relationship(spouse.id, inter_child.id, RelationshipType.PARENT_CHILD)
+            graph.add_relationship(rel)
+            actions.append(f"关联已有: {counterpart_name} → {inter_child.name}")
+        return
+    
+    # 创建配偶占位
+    spouse = Person(name=counterpart_name, gender=Gender(counterpart_gender))
+    spouse.is_placeholder = True
+    spouse.placeholder_reason = f"{gp_name}的配偶(自动创建)"
+    graph.add_person(spouse)
+    newly_created_ids.add(spouse.id)
+    actions.append(f"自动创建配偶(占位): {counterpart_name}")
+    
+    # 建立配偶→中间代的 parent_child
+    rel = Relationship(spouse.id, inter_child.id, RelationshipType.PARENT_CHILD)
+    graph.add_relationship(rel)
+    actions.append(f"建立链路: {counterpart_name} → {inter_child.name}")
+    
+    # 建立与祖父母的配偶关系
+    spouse_rel = Relationship(gp_person.id, spouse.id, RelationshipType.SPOUSE)
+    graph.add_relationship(spouse_rel)
+    actions.append(f"自动关联配偶: {gp_name} ↔ {counterpart_name}")
+
+
+def _find_creation_duplicates(name: str, graph, exclude_id: str = None) -> list:
+    """创建人物前的重复检测 — 检查是否存在相似的人物
+    返回 [(person, score, reason)] 列表，按分数降序排列
+    比 _fuzzy_match 更全面：增加别名匹配、亲属角色语义匹配
+    """
+    results = []
+    name_lower = name.lower().strip()
+    name_roles = _extract_kinship_roles(name)
+    for p in graph.people.values():
+        if exclude_id and p.id == exclude_id:
+            continue
+        p_name_lower = p.name.lower().strip()
+        # 1. 精确匹配
+        if p_name_lower == name_lower:
+            results.append((p, 1.0, "姓名完全相同"))
+            continue
+        # 2. 双向包含匹配
+        if name_lower in p_name_lower or p_name_lower in name_lower:
+            score = 0.9 if len(name_lower) >= 2 else 0.7
+            results.append((p, score, "姓名包含匹配"))
+            continue
+        # 3. 亲属角色语义匹配
+        #    当已有记录是描述性名称（如"林绿洲的曾祖母"），新名称共享角色（如"曾祖母A"）
+        #    → 很可能是同一人（占位→真实姓名）
+        if name_roles and _is_kinship_description(p.name):
+            p_roles = _extract_kinship_roles(p.name)
+            shared_roles = name_roles & p_roles
+            if shared_roles:
+                # 检查新名称是否有区分后缀（如 A/B/大/小）
+                # "曾祖母A" vs "曾祖母B" → 不同人
+                # "曾祖母A" vs "林绿洲的曾祖母" → 可能同一人
+                has_differentiator = bool(re.search(r'[A-Za-z0-9一二三四五大六七八九十]', name))
+                existing_has_differentiator = bool(re.search(r'[A-Za-z0-9一二三四五大六七八九十]', p.name.split("的")[-1] if "的" in p.name else p.name))
+                if has_differentiator and not existing_has_differentiator:
+                    # 新名称有区分符(如A)，已有描述没有 → 可能是给占位取名
+                    results.append((p, 0.85, f"亲属角色匹配({', '.join(shared_roles)})"))
+                elif not has_differentiator and not existing_has_differentiator:
+                    results.append((p, 0.8, f"亲属角色匹配({', '.join(shared_roles)})"))
+        # 4. 别名匹配
+        for alias in getattr(p, 'aliases', []) or []:
+            if alias.lower().strip() == name_lower:
+                results.append((p, 0.95, f"与别名「{alias}」相同"))
+                break
+            elif name_lower in alias.lower() or alias.lower() in name_lower:
+                results.append((p, 0.8, f"与别名「{alias}」包含匹配"))
+                break
+        # 5. 编辑距离
+        dist = _levenshtein(name_lower, p_name_lower)
+        max_len = max(len(name_lower), len(p_name_lower))
+        if max_len > 0 and dist <= max(1, int(max_len * 0.3)):
+            score = round(1 - dist / max_len, 2)
+            if score >= 0.6:
+                results.append((p, score, f"编辑距离={dist}"))
+    # 去重（同一个人可能因多种原因匹配），保留最高分
+    seen = {}
+    for p, score, reason in results:
+        if p.id not in seen or score > seen[p.id][1]:
+            seen[p.id] = (p, score, reason)
+    return sorted(seen.values(), key=lambda x: -x[1])
 
 
 def _levenshtein(s1: str, s2: str) -> int:
@@ -1144,7 +1474,12 @@ async def auto_import(family_id: str, request: AutoImportRequest):
 
             # 排除本批次新建的人物，避免「李梅」刚创建就被「李怀」匹配改名
             existing_people = [p for p in graph.people.values() if p.id not in newly_created_ids]
-            matches = _fuzzy_match(name, existing_people)
+
+            # 亲属描述名称不走模糊匹配——直接走用户回答路径
+            if _is_kinship_description(name):
+                matches = []
+            else:
+                matches = _fuzzy_match(name, existing_people)
 
             # 有精确匹配（score=1.0）时直接关联，忽略其他低分候选
             exact_match = next((m for m in matches if m[1] >= 1.0), None)
@@ -1205,11 +1540,17 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                 if q_id in answers:
                     answer = answers[q_id]
                     if answer == "__new__":
-                        # 用户选择创建新人物
-                        person = _create_person_from_entity(entity)
-                        graph.add_person(person)
-                        id_mapping[temp_id] = person.id
-                        actions.append(f"新增人物: {person.name}")
+                        # 用户选择创建新人物 → 仍需检查是否与已有完全重名
+                        dupes = _find_creation_duplicates(entity.get("name", ""), graph)
+                        if dupes and dupes[0][1] >= 1.0:
+                            # 完全重名 → 强制关联已有
+                            id_mapping[temp_id] = dupes[0][0].id
+                            actions.append(f"关联人物(重名): {name} → {dupes[0][0].name}")
+                        else:
+                            person = _create_person_from_entity(entity)
+                            graph.add_person(person)
+                            id_mapping[temp_id] = person.id
+                            actions.append(f"新增人物: {person.name}")
                     elif answer == "__cancel__":
                         # 用户取消 — 跳过此实体
                         actions.append(f"跳过: {name}")
@@ -1243,25 +1584,100 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                             # 用户取消 — 跳过此实体
                             actions.append(f"跳过: {name}")
                         elif real_name and real_name != "__skip__":
-                            # 用户提供了真实姓名
+                            # 用户提供了真实姓名 → 先检查重复
                             entity_copy = dict(entity)
                             entity_copy["name"] = real_name
-                            person = _create_person_from_entity(entity_copy)
-                            graph.add_person(person)
-                            newly_created_ids.add(person.id)
-                            id_mapping[temp_id] = person.id
-                            actions.append(f"新增人物: {person.name}")
+                            dupes = _find_creation_duplicates(real_name, graph)
+                            if dupes and dupes[0][1] >= 0.8:
+                                # 发现疑似重复 → 询问用户是否合并
+                                dq_id = f"dup_check_{temp_id}"
+                                if dq_id in answers:
+                                    dq_answer = answers[dq_id]
+                                    if dq_answer == "__new__":
+                                        person = _create_person_from_entity(entity_copy)
+                                        graph.add_person(person)
+                                        newly_created_ids.add(person.id)
+                                        id_mapping[temp_id] = person.id
+                                        actions.append(f"新增人物: {person.name}（用户确认非重复）")
+                                    elif dq_answer == "__cancel__":
+                                        actions.append(f"跳过: {real_name}")
+                                    elif dq_answer.startswith("__merge__:"):
+                                        merge_target_id = dq_answer.split(":", 1)[1]
+                                        id_mapping[temp_id] = merge_target_id
+                                        target = graph.get_person(merge_target_id)
+                                        actions.append(f"关联已有: {real_name} → {target.name}")
+                                    else:
+                                        actions.append(f"跳过: {real_name}")
+                                else:
+                                    questions.append({
+                                        "id": dq_id,
+                                        "type": "person_match",
+                                        "message": f"「{real_name}」与已有人员相似，是否为同一人？",
+                                        "entity": entity_copy,
+                                        "candidates": [
+                                            {"id": m[0].id, "name": m[0].name, "score": m[1], "reason": m[2]}
+                                            for m in dupes[:5]
+                                        ],
+                                        "allow_new": True,
+                                    })
+                                    continue  # 等待用户回答，不继续处理此实体
+                            else:
+                                # 无重复 → 检查是否有匹配的占位节点可替换
+                                # 检查是否有占位名称与当前实体名称匹配
+                                matched_placeholder = None
+                                for p in graph.people.values():
+                                    if not p.is_placeholder:
+                                        continue
+                                    # 精确匹配：占位名称就是实体名称（如「林绿洲的妈妈」=「林绿洲的妈妈」）
+                                    if p.name == name:
+                                        matched_placeholder = p
+                                        break
+                                    # 包含匹配：占位名称包含实体的亲属角色
+                                    if _is_kinship_description(name):
+                                        roles = _extract_kinship_roles(name)
+                                        if any(kw in p.name for kw in roles):
+                                            # 检查是否关联同一个后代
+                                            # 占位格式: "{child_name}的{term}"
+                                            for r in graph.relationships.values():
+                                                if r.type == RelationshipType.PARENT_CHILD and r.person1_id == p.id:
+                                                    child = graph.get_person(r.person2_id)
+                                                    if child and child.name in name:
+                                                        matched_placeholder = p
+                                                        break
+                                            if matched_placeholder:
+                                                break
+                                
+                                if matched_placeholder:
+                                    person = _create_person_from_entity(entity_copy)
+                                    graph.add_person(person)
+                                    replace_placeholder_with_real(graph, matched_placeholder.id, person)
+                                    newly_created_ids.add(person.id)
+                                    id_mapping[temp_id] = person.id
+                                    actions.append(f"替换占位: {matched_placeholder.name} → {person.name}")
+                                else:
+                                    person = _create_person_from_entity(entity_copy)
+                                    graph.add_person(person)
+                                    newly_created_ids.add(person.id)
+                                    id_mapping[temp_id] = person.id
+                                    actions.append(f"新增人物: {person.name}")
                         else:
                             # 用户跳过 → 创建占位人物，保留关系，用户后续可改名
                             placeholder_name = name if name else f"未知{temp_id}"
-                            entity_copy = dict(entity)
-                            entity_copy["name"] = placeholder_name
-                            person = _create_person_from_entity(entity_copy)
-                            person.tags = ["待确认"]
-                            graph.add_person(person)
-                            newly_created_ids.add(person.id)
-                            id_mapping[temp_id] = person.id
-                            actions.append(f"新增人物(占位): {placeholder_name} — 后续可点击改名")
+                            # 检查是否已有同名人物（占位或真实）→ 复用
+                            existing_same_name = [p for p in graph.people.values() if p.name == placeholder_name]
+                            if existing_same_name:
+                                person = existing_same_name[0]
+                                id_mapping[temp_id] = person.id
+                                actions.append(f"关联已有: {placeholder_name} → {person.name}")
+                            else:
+                                entity_copy = dict(entity)
+                                entity_copy["name"] = placeholder_name
+                                person = _create_person_from_entity(entity_copy)
+                                person.tags = ["待确认"]
+                                graph.add_person(person)
+                                newly_created_ids.add(person.id)
+                                id_mapping[temp_id] = person.id
+                                actions.append(f"新增人物(占位): {placeholder_name} — 后续可点击改名")
                     else:
                         questions.append({
                             "id": q_id,
@@ -1298,18 +1714,32 @@ async def auto_import(family_id: str, request: AutoImportRequest):
                                 entity_copy["gender"] = parts[1]
                             if len(parts) > 2 and parts[2]:
                                 entity_copy["birth_year"] = parts[2]
-                            person = _create_person_from_entity(entity_copy)
-                            graph.add_person(person)
-                            newly_created_ids.add(person.id)
-                            id_mapping[temp_id] = person.id
-                            actions.append(f"新增人物: {person.name}")
+                            # 创建前检查重复
+                            final_name = entity_copy["name"]
+                            dupes = _find_creation_duplicates(final_name, graph)
+                            if dupes and dupes[0][1] >= 0.9:
+                                # 高度疑似重复 → 强制关联
+                                id_mapping[temp_id] = dupes[0][0].id
+                                actions.append(f"关联已有(重复检测): {final_name} → {dupes[0][0].name}")
+                            else:
+                                person = _create_person_from_entity(entity_copy)
+                                graph.add_person(person)
+                                newly_created_ids.add(person.id)
+                                id_mapping[temp_id] = person.id
+                                actions.append(f"新增人物: {person.name}")
                         else:
-                            # 简单确认（兼容旧格式）
-                            person = _create_person_from_entity(entity)
-                            graph.add_person(person)
-                            newly_created_ids.add(person.id)
-                            id_mapping[temp_id] = person.id
-                            actions.append(f"新增人物: {person.name}")
+                            # 简单确认（兼容旧格式）→ 仍检查重复
+                            final_name = entity.get("name", "")
+                            dupes = _find_creation_duplicates(final_name, graph)
+                            if dupes and dupes[0][1] >= 0.9:
+                                id_mapping[temp_id] = dupes[0][0].id
+                                actions.append(f"关联已有(重复检测): {final_name} → {dupes[0][0].name}")
+                            else:
+                                person = _create_person_from_entity(entity)
+                                graph.add_person(person)
+                                newly_created_ids.add(person.id)
+                                id_mapping[temp_id] = person.id
+                                actions.append(f"新增人物: {person.name}")
                     else:
                         questions.append({
                             "id": q_id,
@@ -1334,6 +1764,8 @@ async def auto_import(family_id: str, request: AutoImportRequest):
             )
 
         # === 2. 关系处理 ===
+        # 祖孙关系通过占位节点链展开为原子边(parent_child)，
+        # 其他关系直接存储
         for rel in parsed.get("relationships", []):
             p1_id = id_mapping.get(rel.get("person1_temp_id", ""))
             p2_id = id_mapping.get(rel.get("person2_temp_id", ""))
@@ -1344,8 +1776,95 @@ async def auto_import(family_id: str, request: AutoImportRequest):
             if p1_id == p2_id:
                 continue
 
-            # 去重：双向检查
             rel_type = rel.get("type", "other")
+
+            # ── 祖孙关系 → 通过占位链展开为 parent_child 原子边 ──
+            if rel_type in ("grandparent_grandchild", "grandparent"):
+                gp = graph.get_person(p1_id)   # 祖父母
+                gc = graph.get_person(p2_id)   # 孙辈
+                if not gp or not gc:
+                    continue
+
+                # 判断支系
+                lineage = "maternal" if any(kw in gp.name for kw in ["外"]) else "paternal"
+
+                # 获取或创建中间代占位（妈妈/爸爸）
+                inter_gender = "female" if lineage == "maternal" else "male"
+                inter_parent, inter_is_new = get_or_create_parent_placeholder(
+                    graph, gc.id, lineage, inter_gender,
+                    reason=f"{gc.name}的{lineage}系父母(为{gp.name}关系创建)"
+                )
+                if inter_parent:
+                    if inter_is_new:
+                        actions.append(f"自动创建中间代(占位): {inter_parent.name}")
+
+                    # 检查祖父母→中间代的 parent_child 是否已存在
+                    existing_gp_inter = any(
+                        r.type == RelationshipType.PARENT_CHILD
+                        and r.person1_id == gp.id and r.person2_id == inter_parent.id
+                        for r in graph.relationships.values()
+                    )
+                    if not existing_gp_inter:
+                        gp_rel = Relationship(gp.id, inter_parent.id, RelationshipType.PARENT_CHILD)
+                        graph.add_relationship(gp_rel)
+                        actions.append(f"建立链路: {gp.name} → {inter_parent.name} → {gc.name}")
+
+                    # 自动补全祖父母配偶（通过同一中间代）
+                    _auto_create_grandparent_spouse(
+                        graph, gp, inter_parent, lineage, actions, newly_created_ids
+                    )
+                continue
+
+            # ── 兄弟姐妹关系 → 反向展开为共同父母 parent_child 原子边 ──
+            # 确保推导引擎能通过父母链产生 downstream 推导（cousin等）
+            if rel_type == "sibling":
+                p1_parents = set()
+                p2_parents = set()
+                for r in graph.relationships.values():
+                    if r.type == RelationshipType.PARENT_CHILD:
+                        if r.person2_id == p1_id:
+                            p1_parents.add(r.person1_id)
+                        if r.person2_id == p2_id:
+                            p2_parents.add(r.person1_id)
+                shared_parents = p1_parents & p2_parents
+                if not shared_parents:
+                    # 一方有父母 → 另一方连接到同一父母
+                    if p1_parents:
+                        for parent_id in p1_parents:
+                            existing_link = any(
+                                r.type == RelationshipType.PARENT_CHILD
+                                and r.person1_id == parent_id and r.person2_id == p2_id
+                                for r in graph.relationships.values()
+                            )
+                            if not existing_link:
+                                graph.add_relationship(Relationship(parent_id, p2_id, RelationshipType.PARENT_CHILD))
+                                pn = graph.get_person(parent_id)
+                                actions.append(f"关联父母: {pn.name if pn else '?'} → {p2_name} (sibling推导)")
+                    elif p2_parents:
+                        for parent_id in p2_parents:
+                            existing_link = any(
+                                r.type == RelationshipType.PARENT_CHILD
+                                and r.person1_id == parent_id and r.person2_id == p1_id
+                                for r in graph.relationships.values()
+                            )
+                            if not existing_link:
+                                graph.add_relationship(Relationship(parent_id, p1_id, RelationshipType.PARENT_CHILD))
+                                pn = graph.get_person(parent_id)
+                                actions.append(f"关联父母: {pn.name if pn else '?'} → {p1_name} (sibling推导)")
+                    else:
+                        # 双方都没有父母 → 创建共享占位父母
+                        placeholder_parent = Person(
+                            name=f"{p1_name}的爸爸",
+                            gender=Gender.MALE,
+                        )
+                        placeholder_parent.is_placeholder = True
+                        placeholder_parent.placeholder_reason = f"sibling关系({p1_name}↔{p2_name})自动创建的共享父母"
+                        graph.add_person(placeholder_parent)
+                        graph.add_relationship(Relationship(placeholder_parent.id, p1_id, RelationshipType.PARENT_CHILD))
+                        graph.add_relationship(Relationship(placeholder_parent.id, p2_id, RelationshipType.PARENT_CHILD))
+                        actions.append(f"自动创建共享父母(占位): {placeholder_parent.name} → {p1_name}/{p2_name}")
+
+            # ── 其他关系：直接存储 ──
             is_dup = any(
                 ((r.person1_id == p1_id and r.person2_id == p2_id) or
                  (r.person1_id == p2_id and r.person2_id == p1_id))
@@ -1355,50 +1874,42 @@ async def auto_import(family_id: str, request: AutoImportRequest):
             if is_dup:
                 continue
 
+            # ── parent_child 关系：检查是否需要替换占位 ──
+            # 当新父母替代已有占位父母时，自动替换
+            if rel_type == "parent_child":
+                parent = graph.get_person(p1_id)   # person1 是父母
+                child = graph.get_person(p2_id)    # person2 是子女
+                if parent and child and not parent.is_placeholder:
+                    # 查找子女的同性别占位父母
+                    for existing_rel in list(graph.relationships.values()):
+                        if existing_rel.type != RelationshipType.PARENT_CHILD:
+                            continue
+                        if existing_rel.person2_id != child.id:
+                            continue
+                        existing_parent = graph.get_person(existing_rel.person1_id)
+                        if not existing_parent or not existing_parent.is_placeholder:
+                            continue
+                        if existing_parent.gender != parent.gender:
+                            continue
+                        # 找到同性别占位父母 → 替换！
+                        replace_placeholder_with_real(graph, existing_parent.id, parent)
+                        actions.append(f"替换占位: {existing_parent.name} → {parent.name}")
+                        # 更新 p1_id（关系边的person1可能已改变）
+                        break
+
             relationship = _create_relationship_from_parsed(p1_id, p2_id, rel)
             graph.add_relationship(relationship)
             p1_name = graph.get_person(p1_id).name if graph.get_person(p1_id) else "?"
             p2_name = graph.get_person(p2_id).name if graph.get_person(p2_id) else "?"
             actions.append(f"新增关系: {p1_name} ↔ {p2_name} ({rel_type})")
 
-        # === 2.5 关系推导补全 ===
-        # 从现有关系推导缺失的关系（夫妻+父子→母子，同父→兄弟等）
-        persons_dict = {}
-        for p in graph.people.values():
-            persons_dict[p.name] = {"gender": p.gender.value if hasattr(p.gender, 'value') else str(p.gender)}
-        rels_list = []
-        for r in graph.relationships.values():
-            p1 = graph.get_person(r.person1_id)
-            p2 = graph.get_person(r.person2_id)
-            if p1 and p2:
-                rels_list.append({"person_a": p1.name, "person_b": p2.name, "type": r.type.value if hasattr(r.type, 'value') else str(r.type)})
-
-        derived = derive_relationships(persons_dict, rels_list)
-        name_to_id = {p.name: pid for pid, p in graph.people.items()}
-
-        # 类型映射：derivation_engine → RelationshipType
-        TYPE_MAP = {"parent_child":"parent_child","spouse":"spouse","sibling":"sibling",
-                    "grandparent":"grandparent_grandchild","grandparent_grandchild":"grandparent_grandchild"}
-
+        # === 2.5 一次性 BFS 扩散式关系推导 ===
+        # 收集本批次所有涉及的节点，从这些节点出发做全图传播
+        affected_ids = set(id_mapping.values())
+        from derivation_engine import propagate_from_nodes
+        derived = propagate_from_nodes(graph, affected_ids)
         for d in derived:
-            a_id = name_to_id.get(d['person_a'])
-            b_id = name_to_id.get(d['person_b'])
-            if a_id and b_id:
-                rel_type = TYPE_MAP.get(d['type'], "other")
-                is_dup = any(
-                    ((r.person1_id == a_id and r.person2_id == b_id) or
-                     (r.person1_id == b_id and r.person2_id == a_id))
-                    and (r.type.value if hasattr(r.type, 'value') else str(r.type)) == rel_type
-                    for r in graph.relationships.values()
-                )
-                if not is_dup:
-                    try:
-                        rt = RelationshipType(rel_type)
-                    except ValueError:
-                        rt = RelationshipType.OTHER
-                    relationship = Relationship(a_id, b_id, rt)
-                    graph.add_relationship(relationship)
-                    actions.append("推导关系: %s ↔ %s (%s)" % (d['person_a'], d['person_b'], rel_type))
+            actions.append(f"推导关系: {d['person_a']} ↔ {d['person_b']} ({d['type']})")
 
         # === 2.6 关系一致性校验（拦截矛盾/冗余关系）===
         all_rel_dicts = []
@@ -1426,6 +1937,24 @@ async def auto_import(family_id: str, request: AutoImportRequest):
             if ev:
                 graph.add_event(ev)
                 actions.append(f"新增事件: {ev.description}")
+
+                # ── 离婚事件 → 移除旧配偶关系 ──
+                if ev.type == EventType.DIVORCE:
+                    participant_ids = [p.get("person_id") for p in ev.participants if p.get("person_id")]
+                    for i in range(len(participant_ids)):
+                        for j in range(i + 1, len(participant_ids)):
+                            a_id, b_id = participant_ids[i], participant_ids[j]
+                            rels_to_remove = [
+                                rid for rid, r in graph.relationships.items()
+                                if r.type == RelationshipType.SPOUSE
+                                and ((r.person1_id == a_id and r.person2_id == b_id) or
+                                     (r.person1_id == b_id and r.person2_id == a_id))
+                            ]
+                            for rid in rels_to_remove:
+                                del graph.relationships[rid]
+                                a_p = graph.get_person(a_id)
+                                b_p = graph.get_person(b_id)
+                                actions.append(f"解除配偶: {a_p.name if a_p else '?'} ↔ {b_p.name if b_p else '?'} (离婚)")
 
         # === 3.5 自动生成生平传记 ===
         # 为本次涉及的所有人物重新生成传记

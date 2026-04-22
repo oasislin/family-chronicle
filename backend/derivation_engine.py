@@ -1,182 +1,199 @@
 """
-关系推导补全引擎
-从已知关系推导缺失的关系
+关系推导传播引擎 v2
+BFS from affected nodes, traversing all first-level atomic relationships.
 
-推导规则：
-1. 夫妻 + 一方是孩子的父/母 → 另一方是孩子的母/父
-2. 同父或同母 → 兄弟姐妹
-3. A是B的父亲 + B是C的父亲 → A是C的祖父
-4. A是B的父亲 + C是B的配偶 → A是C的公公/岳父
+Rules:
+  1. 共同父母 → 兄弟姐妹
+  2. 配偶 + 一方是父/母 → 另一方也是父/母 (co-parent)
+  3a. 父母视角: 子女有另一父母 → 配偶推导
+  3b. 子女视角: 共同父母 → 配偶推导
+  4. 配偶传递性（需实际共同子女验证）
+
+Constraints:
+  - parent_child/sibling 不能同时存在于同对人之间
+  - parent_child 有向 (parent→child)
+  - spouse/sibling 对称
 """
 
+from collections import deque
+from typing import Set, Tuple
 
-def derive_relationships(persons: dict, relationships: list) -> list:
-    """
-    从现有关系推导缺失关系，返回新增关系列表
 
-    persons: {name: {gender, ...}}
-    relationships: [{person_a, person_b, type}, ...]
-    """
+def propagate_from_nodes(graph, seed_ids: set) -> list:
+    """从种子节点出发 BFS 推导新关系"""
+    existing: Set[Tuple[str, str, str]] = set()
+    derived: Set[Tuple[str, str, str]] = set()
+
+    def _rt(r):
+        return r.type.value if hasattr(r.type, 'value') else str(r.type)
+
+    for r in graph.relationships.values():
+        t = _rt(r)
+        if t in ('spouse', 'sibling'):
+            existing.add((r.person1_id, r.person2_id, t))
+            existing.add((r.person2_id, r.person1_id, t))
+        elif t == 'parent_child':
+            existing.add((r.person1_id, r.person2_id, t))
+        else:
+            existing.add((r.person1_id, r.person2_id, t))
+            existing.add((r.person2_id, r.person1_id, t))
+
+    def _add(a, b, rtype):
+        if a == b: return False
+        key = (a, b, rtype)
+        if key in existing or key in derived: return False
+        all_r = existing | derived
+        if rtype == 'spouse' and ((a,b,'parent_child') in all_r or (b,a,'parent_child') in all_r): return False
+        if rtype == 'parent_child' and ((a,b,'spouse') in all_r or (b,a,'spouse') in all_r): return False
+        # 占位节点不参与配偶推导（避免占位↔真人被误推导为配偶）
+        if rtype == 'spouse':
+            pa = graph.get_person(a)
+            pb = graph.get_person(b)
+            if (pa and pa.is_placeholder) or (pb and pb.is_placeholder):
+                return False
+        derived.add(key)
+        if rtype in ('spouse','sibling'): derived.add((b,a,rtype))
+        return True
+
+    def _gp(cid, rs): return {a for (a,b,t) in rs if b==cid and t=='parent_child'}
+    def _gc(pid, rs): return {b for (a,b,t) in rs if a==pid and t=='parent_child'}
+    def _gs(pid, rs): return {b for (a,b,t) in rs if a==pid and t=='spouse'}
+
+    queue = deque()
+    pp: Set[Tuple[str,str]] = set()  # processed_pairs
+    for s in seed_ids:
+        if graph.get_person(s): queue.append(s)
+
+    it = 0
+    while queue and it < 100:
+        it += 1
+        batch = set()
+        while queue: batch.add(queue.popleft())
+        ar = existing | derived
+        nr = set()
+
+        for pid in batch:
+            p = graph.get_person(pid)
+            if not p: continue
+            parents = _gp(pid, ar)
+            children = _gc(pid, ar)
+            spouses = _gs(pid, ar)
+
+            # Rule 1: common parent → siblings
+            for par in parents:
+                for sib in _gc(par, ar):
+                    if sib != pid:
+                        pair = tuple(sorted([pid,sib]))
+                        if pair not in pp:
+                            pp.add(pair)
+                            if _add(pid, sib, 'sibling'):
+                                nr.add(pid); nr.add(sib)
+
+            # Rule 2: co-parent
+            for sp in spouses:
+                for ch in children:
+                    if _add(sp, ch, 'parent_child'):
+                        nr.add(sp); nr.add(ch)
+
+            # Rule 3a: parent perspective → spouse
+            for ch in children:
+                for op in _gp(ch, ar):
+                    if op != pid:
+                        pair = tuple(sorted([pid,op]))
+                        if pair not in pp:
+                            pp.add(pair)
+                            pp_set = _gp(pid, ar)
+                            op_set = _gp(op, ar)
+                            has_pc = (pid,op,'parent_child') in ar or (op,pid,'parent_child') in ar
+                            if pid not in op_set and op not in pp_set and not has_pc:
+                                if _add(pid, op, 'spouse'):
+                                    nr.add(pid); nr.add(op)
+
+            # Rule 3b: child perspective → spouse
+            plist = list(parents)
+            for i in range(len(plist)):
+                for j in range(i+1,len(plist)):
+                    a,b = plist[i], plist[j]
+                    pair = tuple(sorted([a,b]))
+                    if pair not in pp:
+                        pp.add(pair)
+                        ap,bp = _gp(a,ar), _gp(b,ar)
+                        has_pc = (a,b,'parent_child') in ar or (b,a,'parent_child') in ar
+                        if a not in bp and b not in ap and not has_pc:
+                            if _add(a,b,'spouse'):
+                                nr.add(a); nr.add(b)
+
+            # Rule 4: spouse transitivity (must have DIRECT common child in existing)
+            for s1 in spouses:
+                for s2 in spouses:
+                    if s1 != s2:
+                        pair = tuple(sorted([s1,s2]))
+                        if pair not in pp:
+                            pp.add(pair)
+                            s1p, s2p = _gp(s1,ar), _gp(s2,ar)
+                            has_pc = (s1,s2,'parent_child') in ar or (s2,s1,'parent_child') in ar
+                            # Must share a child in EXISTING relationships (not derived)
+                            s1k = _gc(s1, existing)
+                            s2k = _gc(s2, existing)
+                            if s1 not in s2p and s2 not in s1p and not has_pc and (s1k & s2k):
+                                if _add(s1,s2,'spouse'):
+                                    nr.add(s1); nr.add(s2)
+
+        for nid in nr: queue.append(nid)
+
+    # Write results
+    results = []
+    written: Set[Tuple[str,str,str]] = set()
+    from models import Relationship, RelationshipType
+    for (a,b,rtype) in derived:
+        nk = (min(a,b),max(a,b),rtype)
+        if nk in written: continue
+        written.add(nk)
+        if any(((r.person1_id==a and r.person2_id==b) or (r.person1_id==b and r.person2_id==a))
+               and (_rt(r)==rtype) for r in graph.relationships.values()):
+            continue
+        try: rt = RelationshipType(rtype)
+        except ValueError: rt = RelationshipType.OTHER
+        graph.add_relationship(Relationship(a,b,rt))
+        p1,p2 = graph.get_person(a), graph.get_person(b)
+        results.append({'person_a':p1.name if p1 else a,'person_b':p2.name if p2 else b,'type':rtype,'source':'propagation'})
+    return results
+
+
+def derive_relationships(persons, relationships):
+    """兼容旧接口"""
     existing = set()
     for r in relationships:
-        key = (r['person_a'], r['person_b'], r['type'])
-        existing.add(key)
-        # 反向也加入
-        existing.add((r['person_b'], r['person_a'], r['type']))
-
+        a,b,t = r['person_a'],r['person_b'],r['type']
+        existing.add((a,b,t)); existing.add((b,a,t))
     new_rels = []
-
-    def add_rel(a, b, rtype, source="derived"):
-        """添加关系（如果不存在）"""
-        if a == b:
-            return
-        key = (a, b, rtype)
-        if key not in existing:
-            existing.add(key)
-            existing.add((b, a, rtype))
-            new_rels.append({"person_a": a, "person_b": b, "type": rtype, "source": source})
-
-    # 建立索引
-    # parent[child] = {parent_name, ...}
-    # children[parent] = {child_name, ...}
-    # spouses[person] = {spouse_name, ...}
-    # siblings[person] = {sibling_name, ...}
-
-    parents = {}   # child -> set of parents
-    children = {}  # parent -> set of children
-    spouses = {}   # person -> set of spouses
-
+    def add(a,b,rt,src="derived"):
+        if a==b: return
+        if (a,b,rt) not in existing:
+            existing.add((a,b,rt)); existing.add((b,a,rt))
+            new_rels.append({"person_a":a,"person_b":b,"type":rt,"source":src})
+    parents,children,spouses = {},{},{}
     for r in relationships:
-        a, b, t = r['person_a'], r['person_b'], r['type']
-        if t == 'parent_child':
-            # A is B's parent (A→B means A is parent of B, or B is parent of A)
-            # 需要判断方向：通常 辈分高的 是 父母
-            # 简单处理：如果 A 的性别是 male 且 B 是 A 的 "儿子"/"女儿" → A 是 B 的父亲
-            parents.setdefault(b, set()).add(a)
-            children.setdefault(a, set()).add(b)
-        elif t in ('spouse', '夫妻'):
-            spouses.setdefault(a, set()).add(b)
-            spouses.setdefault(b, set()).add(a)
-
-    # ============ 规则1: 夫妻 + 父子 → 母子（或反向）============
-    # 如果 A 和 B 是夫妻，A 是 C 的父亲 → B 是 C 的母亲
-    # 如果 A 和 B 是夫妻，A 是 C 的母亲 → B 是 C 的父亲
-    for person, spouse_set in spouses.items():
-        for spouse in spouse_set:
-            for child in children.get(person, set()):
-                # person 是 child 的父/母
-                person_gender = persons.get(person, {}).get('gender', 'unknown')
-                spouse_gender = persons.get(spouse, {}).get('gender', 'unknown')
-
-                if person_gender == 'male' and spouse_gender == 'female':
-                    add_rel(spouse, child, 'parent_child', '夫妻推导:夫→父,妻→母')
-                elif person_gender == 'female' and spouse_gender == 'male':
-                    add_rel(spouse, child, 'parent_child', '夫妻推导:妻→母,夫→父')
-
-    # ============ 规则2: 同父母 → 兄弟姐妹 ============
-    for child, parent_set in parents.items():
-        for parent in parent_set:
-            for sibling in children.get(parent, set()):
-                if sibling != child:
-                    add_rel(child, sibling, 'sibling', '同父母推导')
-
-    # ============ 规则3: A是B的父亲 + B是C的父亲 → A是C的祖父 ============
-    for child, parent_set in list(parents.items()):
-        for parent in parent_set:
-            for grandchild in children.get(child, set()):
-                parent_gender = persons.get(parent, {}).get('gender', 'unknown')
-                if parent_gender == 'male':
-                    add_rel(parent, grandchild, 'grandparent', '祖父推导')
-                elif parent_gender == 'female':
-                    add_rel(parent, grandchild, 'grandparent', '祖母推导')
-
-    # ============ 规则4: 兄弟的传递性 ============
-    # 如果 A和B是兄弟, B和C是兄弟 → A和C是兄弟
-    # (由规则2已经覆盖了大部分情况)
-
-    # ============ 规则5: 共同子女 → 配偶 ============
-    # 如果 A 是 C 的父/母，B 也是 C 的父/母 → A 和 B 是配偶
-    # 这是规则1的反向：规则1是「夫妻+父子→另一方也是父子」
-    # 规则5是「两个都是某孩子的父/母→他们是夫妻」
-    for child, parent_set in parents.items():
-        parent_list = list(parent_set)
-        for i in range(len(parent_list)):
-            for j in range(i + 1, len(parent_list)):
-                a, b = parent_list[i], parent_list[j]
-                # 两人都不是对方的孩子（避免辈分混乱）
-                if a not in children.get(b, set()) and b not in children.get(a, set()):
-                    add_rel(a, b, 'spouse', '共同子女推导')
-
+        a,b,t = r['person_a'],r['person_b'],r['type']
+        if t=='parent_child':
+            parents.setdefault(b,set()).add(a); children.setdefault(a,set()).add(b)
+        elif t in ('spouse','夫妻'):
+            spouses.setdefault(a,set()).add(b); spouses.setdefault(b,set()).add(a)
+    for p,ss in spouses.items():
+        for s in ss:
+            for c in children.get(p,set()):
+                pg,sg = persons.get(p,{}).get('gender','unknown'), persons.get(s,{}).get('gender','unknown')
+                if pg=='male' and sg=='female': add(s,c,'parent_child','夫妻推导')
+                elif pg=='female' and sg=='male': add(s,c,'parent_child','夫妻推导')
+    for c,ps in parents.items():
+        for p in ps:
+            for s in children.get(p,set()):
+                if s!=c: add(c,s,'sibling','同父母推导')
+    for c,ps in parents.items():
+        pl = list(ps)
+        for i in range(len(pl)):
+            for j in range(i+1,len(pl)):
+                a,b = pl[i],pl[j]
+                if a not in children.get(b,set()) and b not in children.get(a,set()):
+                    add(a,b,'spouse','共同子女推导')
     return new_rels
-
-
-def apply_derivation(case_id: str, actions: list, all_persons: dict, all_rels: list) -> list:
-    """
-    在单条用例处理后，检查是否需要推导补全
-
-    返回: 需要补充的 actions
-    """
-    extra_actions = []
-
-    # 检查是否有新建的夫妻关系
-    new_spouse_rels = [a for a in actions
-                       if a.get('type') == 'ADD_RELATIONSHIP'
-                       and a.get('relation', a.get('rel', '')) in ('spouse', '夫妻')]
-
-    # 检查是否有新建的父子关系
-    new_parent_rels = [a for a in actions
-                       if a.get('type') == 'ADD_RELATIONSHIP'
-                       and a.get('relation', a.get('rel', '')) == 'parent_child']
-
-    for spouse_rel in new_spouse_rels:
-        a = spouse_rel.get('a', spouse_rel.get('person_a', ''))
-        b = spouse_rel.get('b', spouse_rel.get('person_b', ''))
-
-        # 查找 a 或 b 的所有子女
-        for rel in all_rels:
-            if rel['type'] == 'parent_child':
-                if rel['person_a'] == a:
-                    # a 是某人的父/母，b(配偶)也应该是
-                    extra_actions.append({
-                        'type': 'DERIVE_RELATIONSHIP',
-                        'person_a': b,
-                        'person_b': rel['person_b'],
-                        'relation': 'parent_child',
-                        'reason': f'{a}和{b}是夫妻，{a}是{rel["person_b"]}的父/母→{b}也是父/母'
-                    })
-                elif rel['person_a'] == b:
-                    extra_actions.append({
-                        'type': 'DERIVE_RELATIONSHIP',
-                        'person_a': a,
-                        'person_b': rel['person_b'],
-                        'relation': 'parent_child',
-                        'reason': f'{a}和{b}是夫妻，{b}是{rel["person_b"]}的父/母→{a}也是父/母'
-                    })
-
-    return extra_actions
-
-
-if __name__ == '__main__':
-    # 测试
-    persons = {
-        "爷爷": {"gender": "male"},
-        "奶奶": {"gender": "female"},
-        "爸爸": {"gender": "male"},
-        "大伯": {"gender": "male"},
-        "姑姑": {"gender": "female"},
-        "妈妈": {"gender": "female"},
-        "我": {"gender": "male"},
-    }
-    rels = [
-        {"person_a": "爷爷", "person_b": "爸爸", "type": "parent_child"},
-        {"person_a": "爷爷", "person_b": "大伯", "type": "parent_child"},
-        {"person_a": "爷爷", "person_b": "姑姑", "type": "parent_child"},
-        {"person_a": "爷爷", "person_b": "奶奶", "type": "spouse"},
-        {"person_a": "爸爸", "person_b": "妈妈", "type": "spouse"},
-        {"person_a": "爸爸", "person_b": "我", "type": "parent_child"},
-    ]
-
-    new = derive_relationships(persons, rels)
-    print("推导出的新关系:")
-    for r in new:
-        print(f"  {r['person_a']} --[{r['type']}]--> {r['person_b']} ({r['source']})")

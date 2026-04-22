@@ -50,10 +50,11 @@ export const personApi = {
   },
 
   // 获取人物列表
-  list: async (familyId: string, filters?: { name?: string; tag?: string }): Promise<ApiResponse<Person[]>> => {
+  list: async (familyId: string, filters?: { name?: string; tag?: string; show_placeholders?: boolean }): Promise<ApiResponse<Person[]>> => {
     const params = new URLSearchParams();
     if (filters?.name) params.append('name', filters.name);
     if (filters?.tag) params.append('tag', filters.tag);
+    if (filters?.show_placeholders) params.append('show_placeholders', 'true');
     const response = await api.get(`/families/${familyId}/people?${params.toString()}`);
     return response.data;
   },

@@ -12,7 +12,8 @@ export interface FeedMessage {
     message?: string;
     questionType?: string;  // person_match | person_name | logic_conflict | ai_low_confidence | relationship_direction
     // question — person_match
-    candidates?: Array<{ id: string; name: string; score: number }>;
+    candidates?: Array<{ id: string; name: string; score: number; reason?: string }>;
+    allowNew?: boolean;
     // question — logic_conflict
     conflictInfo?: { field: string; old_value: string; new_value: string };
     // question — relationship_direction
@@ -235,27 +236,43 @@ const QuestionCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
 
   // 场景1: 人物匹配歧义
   if (questionType === 'person_match' || (!questionType && candidates && candidates.length > 0)) {
+    const allowNew = message.content.allowNew;
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 shadow-sm">
         <p className="text-sm text-yellow-800 font-medium mb-2">⚠️ {questionText}</p>
         <div className="space-y-1.5">
           {candidates?.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => handleAnswer(c.id)}
-              className="w-full text-left px-3 py-2 bg-white border border-yellow-300 rounded-lg
-                         hover:bg-yellow-100 transition-colors text-sm flex items-center justify-between"
-            >
-              <span>👤 {c.name}</span>
-              {c.score >= 0.9 && <span className="text-xs text-green-600">精确匹配</span>}
-            </button>
+            <div key={c.id} className="flex items-center gap-1.5">
+              <button
+                onClick={() => handleAnswer(c.id)}
+                className="flex-1 text-left px-3 py-2 bg-white border border-yellow-300 rounded-lg
+                           hover:bg-yellow-100 transition-colors text-sm flex items-center justify-between"
+              >
+                <span>👤 {c.name}</span>
+                <span className="flex items-center gap-2">
+                  {c.reason && <span className="text-xs text-gray-400">{c.reason}</span>}
+                  {c.score >= 0.9 && <span className="text-xs text-green-600">精确匹配</span>}
+                  {c.score >= 0.8 && c.score < 0.9 && <span className="text-xs text-blue-600">相似</span>}
+                </span>
+              </button>
+              {allowNew && (
+                <button
+                  onClick={() => handleAnswer(`__merge__:${c.id}`)}
+                  className="px-2 py-2 bg-blue-500 text-white rounded-lg text-xs
+                             hover:bg-blue-600 transition-colors whitespace-nowrap"
+                  title="合并此人（保留已有记录，关联新信息）"
+                >
+                  合并
+                </button>
+              )}
+            </div>
           ))}
           <button
             onClick={() => handleAnswer('__new__')}
             className="w-full text-left px-3 py-2 bg-white border border-yellow-300 rounded-lg
                        hover:bg-yellow-100 transition-colors text-sm text-yellow-700"
           >
-            ➕ 是新人物
+            ➕ {allowNew ? '确认是不同的人，创建新人物' : '是新人物'}
           </button>
         </div>
         {/* 手动输入 */}

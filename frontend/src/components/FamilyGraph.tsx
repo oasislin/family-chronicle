@@ -64,13 +64,18 @@ const PersonNode: React.FC<{ data: Person & { selected?: boolean } }> = ({ data 
   const hasConfirmTag = data.tags.includes('待确认');
   const isFemale = data.gender === 'female';
   const isMale = data.gender === 'male';
+  const isPlaceholder = data.is_placeholder;
 
   return (
-    <div className="flex flex-col items-center" style={{ width: 96, background: 'transparent', border: 'none', padding: 0 }}>
+    <div className="flex flex-col items-center" style={{ 
+      width: 96, background: 'transparent', border: 'none', padding: 0,
+      opacity: isPlaceholder ? 0.5 : 1,
+      filter: isPlaceholder ? 'saturate(0.3)' : 'none',
+    }}>
       <Handle type="target" position={Position.Top} id="top"
         className="!w-2.5 !h-2.5 !border-2 !-top-1.5" style={{ background: colors.handle, borderColor: colors.accent }} />
 
-      {/* 头像 — 大圆形，性别差异化边框 */}
+      {/* 头像 — 大圆形，占位节点用虚线边框 */}
       <div
         className={`
           relative w-[68px] h-[68px] rounded-full overflow-hidden cursor-pointer
@@ -81,45 +86,55 @@ const PersonNode: React.FC<{ data: Person & { selected?: boolean } }> = ({ data 
           ${isDeceased ? 'grayscale opacity-40' : ''}
         `}
         style={{
-          border: `${isMale ? '3px solid' : isFemale ? '3px dashed' : '2.5px solid'} ${data.selected ? '#facc15' : colors.accent}`,
+          border: `${isPlaceholder ? '3px dashed' : isMale ? '3px solid' : isFemale ? '3px dashed' : '2.5px solid'} ${data.selected ? '#facc15' : isPlaceholder ? '#9ca3af' : colors.accent}`,
           boxShadow: data.selected
             ? `0 0 0 2px ${colors.accent}40, 0 4px 16px rgba(0,0,0,0.12)`
             : `0 2px 12px ${colors.glow}, 0 0 0 1px ${colors.accent}15`,
+          background: isPlaceholder ? '#f3f4f6' : 'transparent',
         }}
       >
-        <img
-          src={avatarUrl(data.id, data.gender)}
-          alt={data.name}
-          className="w-full h-full"
-          style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
-          loading="lazy"
-          onError={(e) => {
-            const el = e.target as HTMLImageElement;
-            el.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-xl font-bold" style="color:${colors.accent}">${data.name[0]}</div>`;
-          }}
-        />
+        {isPlaceholder ? (
+          <div className="w-full h-full flex items-center justify-center text-2xl">👻</div>
+        ) : (
+          <img
+            src={avatarUrl(data.id, data.gender)}
+            alt={data.name}
+            className="w-full h-full"
+            style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
+            loading="lazy"
+            onError={(e) => {
+              const el = e.target as HTMLImageElement;
+              el.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-xl font-bold" style="color:${colors.accent}">${data.name[0]}</div>`;
+            }}
+          />
+        )}
       </div>
 
-      {/* 名字 + 信息 — 性别差异化毛玻璃浮层 */}
+      {/* 名字 + 信息 — 占位节点显示特殊样式 */}
       <div
         className="relative -mt-1 px-2.5 py-1 rounded-xl text-center min-w-[72px]"
         style={{
-          background: colors.labelBg,
+          background: isPlaceholder ? 'rgba(243,244,246,0.9)' : colors.labelBg,
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          border: `1px solid ${colors.accent}25`,
+          border: `1px ${isPlaceholder ? 'dashed' : 'solid'} ${isPlaceholder ? '#9ca3af40' : colors.accent}25`,
           boxShadow: `0 1px 8px ${colors.glow}`,
         }}
       >
         <div className={`text-[11px] font-semibold leading-tight truncate ${
-          isDeceased ? 'text-gray-400 line-through' : 'text-gray-700'
+          isPlaceholder ? 'text-gray-400 italic' : isDeceased ? 'text-gray-400 line-through' : 'text-gray-700'
         }`}>
-          {isDeceased ? '✝ ' : ''}{isMale ? '♂ ' : isFemale ? '♀ ' : ''}{data.name}
+          {isPlaceholder ? '👻 ' : isDeceased ? '✝ ' : ''}{isMale ? '♂ ' : isFemale ? '♀ ' : ''}{data.name}
         </div>
-        {data.birth_date && (
+        {isPlaceholder && data.placeholder_reason && (
+          <div className="text-[8px] text-gray-400 leading-tight mt-0.5 truncate" title={data.placeholder_reason}>
+            占位
+          </div>
+        )}
+        {data.birth_date && !isPlaceholder && (
           <div className="text-[9px] text-gray-400 leading-tight mt-0.5">{data.birth_date}</div>
         )}
-        {hasConfirmTag && (
+        {hasConfirmTag && !isPlaceholder && (
           <div className="text-[8px] text-amber-500 font-medium leading-tight mt-0.5">待确认</div>
         )}
       </div>
@@ -136,7 +151,8 @@ const nodeTypes: NodeTypes = { person: PersonNode };
 const EDGE_STYLES: Record<string, { color: string; label: string; dashed?: boolean }> = {
   parent_child: { color: '#0ea5e9', label: '亲子' },
   spouse: { color: '#ec4899', label: '配偶', dashed: true },
-  sibling: { color: '#10b981', label: '兄弟' },
+  sibling: { color: '#10b981', label: '兄弟姐妹' },
+  step_parent_child: { color: '#94a3b8', label: '继亲', dashed: true },
   grandparent_grandchild: { color: '#8b5cf6', label: '祖孙' },
   cousin: { color: '#14b8a6', label: '表亲' },
   aunt_uncle_niece_nephew: { color: '#06b6d4', label: '叔侄' },
@@ -145,6 +161,26 @@ const EDGE_STYLES: Record<string, { color: string; label: string; dashed?: boole
   in_law: { color: '#64748b', label: '姻亲' },
   other: { color: '#94a3b8', label: '其他' },
 };
+
+// 箭头标记 — 用于长辈→晚辈的方向指示
+const ArrowMarker = () => (
+  <svg style={{ position: 'absolute', top: 0, width: 0, height: 0 }}>
+    <defs>
+      <marker id="arrow-parent" viewBox="0 0 12 12" refX="10" refY="6"
+        markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 12 6 L 0 12 z" fill="#0ea5e9" />
+      </marker>
+      <marker id="arrow-step" viewBox="0 0 12 12" refX="10" refY="6"
+        markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 12 6 L 0 12 z" fill="#94a3b8" />
+      </marker>
+      <marker id="arrow-grandparent" viewBox="0 0 12 12" refX="10" refY="6"
+        markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 12 6 L 0 12 z" fill="#8b5cf6" />
+      </marker>
+    </defs>
+  </svg>
+);
 
 interface FamilyGraphProps {
   people: Person[];
@@ -246,6 +282,15 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
       const opacity = hasSelection ? (isConnected ? 1 : 0.1) : 0.7;
       const animated: boolean = rel.type === 'spouse' || (!!hasSelection && isConnected);
 
+      // 箭头标记 — 长辈→晚辈方向
+      const markerEnd = rel.type === 'parent_child'
+        ? 'url(#arrow-parent)'
+        : rel.type === 'step_parent_child'
+        ? 'url(#arrow-step)'
+        : rel.type === 'grandparent_grandchild'
+        ? 'url(#arrow-grandparent)'
+        : undefined;
+
       return {
         id: rel.id,
         source: rel.person1_id,
@@ -254,6 +299,7 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
         targetHandle: 'top',
         label: style.label,
         type: 'smoothstep',
+        markerEnd,
         style: {
           stroke: style.color,
           strokeWidth,
@@ -395,6 +441,7 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
           defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
           attributionPosition="bottom-left"
         >
+          <ArrowMarker />
           <Controls />
           <MiniMap
             nodeStrokeColor={() => '#0ea5e9'}

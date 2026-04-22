@@ -36,6 +36,7 @@ class RelationshipType(Enum):
     PARENT_CHILD = "parent_child"
     SPOUSE = "spouse"
     SIBLING = "sibling"
+    STEP_PARENT_CHILD = "step_parent_child"     # 继父母/子女（非原子，不触发扩散）
     GRANDPARENT_GRANDCHILD = "grandparent_grandchild"
     AUNT_UNCLE_NIECE_NEPHEW = "aunt_uncle_niece_nephew"
     COUSIN = "cousin"
@@ -73,6 +74,8 @@ class Person:
         self.tags: List[str] = []
         self.notes: Optional[str] = None
         self.story: Optional[str] = None
+        self.is_placeholder: bool = False          # 是否为自动创建的占位节点
+        self.placeholder_reason: str = ""           # 占位原因描述
         self.created_at = datetime.now().isoformat()
         self.updated_at = self.created_at
     
@@ -89,6 +92,8 @@ class Person:
             "tags": self.tags,
             "notes": self.notes,
             "story": self.story,
+            "is_placeholder": self.is_placeholder,
+            "placeholder_reason": self.placeholder_reason,
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }
@@ -108,6 +113,8 @@ class Person:
         person.tags = data.get("tags", [])
         person.notes = data.get("notes")
         person.story = data.get("story")
+        person.is_placeholder = data.get("is_placeholder", False)
+        person.placeholder_reason = data.get("placeholder_reason", "")
         person.created_at = data.get("created_at", datetime.now().isoformat())
         person.updated_at = data.get("updated_at", person.created_at)
         return person

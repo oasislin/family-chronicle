@@ -16,6 +16,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [highlightedPerson, setHighlightedPerson] = useState<Person | null>(null);
+  const [showPlaceholders, setShowPlaceholders] = useState(false);
 
   // 合并候选（"A是B" 模式检测）
   const [mergeCandidate, setMergeCandidate] = useState<{
@@ -230,6 +231,7 @@ function App() {
                 conflictInfo: q.conflict_info,
                 directionOptions: q.direction_options,
                 entity: q.entity,
+                allowNew: q.allow_new || false,
               },
               onAnswer: handleAnswer,
             }));
@@ -366,14 +368,17 @@ function App() {
     }
   };
 
-  // 搜索过滤
+  // 搜索过滤 + 占位过滤
+  let displayPeople = showPlaceholders 
+    ? familyData.people 
+    : familyData.people.filter(p => !p.is_placeholder);
   const filteredPeople = searchQuery
-    ? familyData.people.filter(
+    ? displayPeople.filter(
         (p) =>
           p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           p.tags.some((t) => t.includes(searchQuery))
       )
-    : familyData.people;
+    : displayPeople;
 
   if (isHealthy === false) {
     return (
@@ -399,16 +404,29 @@ function App() {
             <span className="text-2xl">📖</span>
             <h1 className="text-xl font-bold text-gray-800">家族编年史</h1>
           </div>
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜索成员..."
-              className="pl-9 pr-4 py-1.5 border border-gray-300 rounded-lg text-sm
-                         focus:ring-2 focus:ring-primary-500 focus:border-transparent w-48"
-            />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="搜索成员..."
+                className="pl-9 pr-4 py-1.5 border border-gray-300 rounded-lg text-sm
+                           focus:ring-2 focus:ring-primary-500 focus:border-transparent w-48"
+              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            </div>
+            <button
+              onClick={() => setShowPlaceholders(!showPlaceholders)}
+              className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                showPlaceholders 
+                  ? 'bg-amber-100 border-amber-400 text-amber-700' 
+                  : 'bg-gray-50 border-gray-300 text-gray-500 hover:bg-gray-100'
+              }`}
+              title={showPlaceholders ? '隐藏占位节点' : '显示占位节点'}
+            >
+              👻 {showPlaceholders ? '隐藏遮罩' : '显示遮罩'}
+            </button>
           </div>
         </div>
       </header>

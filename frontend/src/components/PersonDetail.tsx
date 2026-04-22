@@ -29,6 +29,7 @@ const RELATIONSHIP_LABELS: Record<string, string> = {
   parent_child: '亲子关系',
   spouse: '配偶',
   sibling: '兄弟姐妹',
+  step_parent_child: '继父母/子女',
   grandparent_grandchild: '祖孙关系',
   aunt_uncle_niece_nephew: '叔侄关系',
   cousin: '表亲',
@@ -36,6 +37,15 @@ const RELATIONSHIP_LABELS: Record<string, string> = {
   godparent_godchild: '干亲关系',
   in_law: '姻亲',
   other: '其他',
+};
+
+// 根据两人性别返回具体的兄弟姐妹称谓
+const getSiblingLabel = (gender1: string, gender2: string): string => {
+  if (gender1 === 'male' && gender2 === 'male') return '兄弟';
+  if (gender1 === 'female' && gender2 === 'female') return '姐妹';
+  if (gender1 === 'male' && gender2 === 'female') return '兄妹';
+  if (gender1 === 'female' && gender2 === 'male') return '姐弟';
+  return '兄弟姐妹';
 };
 
 const EVENT_LABELS: Record<string, string> = {
@@ -469,8 +479,16 @@ const PersonDetail: React.FC<PersonDetailProps> = ({
             {/* === 关系网络 Tab === */}
             {activeTab === 'relations' && (
               <div className="max-w-lg space-y-2">
-                {details && details.relationships.length > 0 ? (
-                  details.relationships.map((rel, i) => {
+                {details && details.relationships.filter(rel => {
+                  const otherId = rel.person1_id === person.id ? rel.person2_id : rel.person1_id;
+                  const otherPerson = allPeople.find(p => p.id === otherId);
+                  return !otherPerson?.is_placeholder;
+                }).length > 0 ? (
+                  details.relationships.filter(rel => {
+                    const otherId = rel.person1_id === person.id ? rel.person2_id : rel.person1_id;
+                    const otherPerson = allPeople.find(p => p.id === otherId);
+                    return !otherPerson?.is_placeholder;
+                  }).map((rel, i) => {
                     const isSource = rel.person1_id === person.id;
                     const otherId = isSource ? rel.person2_id : rel.person1_id;
                     const otherName = getPersonName(otherId);
@@ -478,10 +496,23 @@ const PersonDetail: React.FC<PersonDetailProps> = ({
                     const icon = otherGender === 'male' ? '👨' : otherGender === 'female' ? '👩' : '👤';
 
                     return (
-                      <div key={i} className="bg-gray-50 rounded-lg p-3 flex items-center justify-between">
+                      <div key={i} className="bg-gray-50 rounded-lg p-3 flex items-center justify-between"
+                           style={rel.type === 'step_parent_child' ? { border: '1.5px dashed #d1d5db', background: 'rgba(249,250,251,0.6)' } : {}}>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
-                            {RELATIONSHIP_LABELS[rel.type] || rel.type}
+                          <span className={`text-xs px-2 py-0.5 rounded ${
+                            rel.type === 'step_parent_child'
+                              ? 'bg-gray-100 text-gray-500 border border-dashed border-gray-300'
+                              : rel.type === 'sibling'
+                              ? 'bg-green-100 text-green-700'
+                              : rel.type === 'parent_child'
+                              ? 'bg-blue-100 text-blue-700'
+                              : rel.type === 'spouse'
+                              ? 'bg-pink-100 text-pink-700'
+                              : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {rel.type === 'sibling'
+                              ? getSiblingLabel(person.gender, otherGender)
+                              : RELATIONSHIP_LABELS[rel.type] || rel.type}
                           </span>
                           <span>{icon}</span>
                           <span className="text-sm font-medium">{otherName}</span>
