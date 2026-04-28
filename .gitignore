@@ -18,3 +18,7 @@ logs/
 .vscode/
 .idea/
 index.lock
+
+# Secret and Private Data
+.env
+data/

@@ -24,7 +24,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from loguru import logger
 from models import FamilyGraph, Person, Event, Relationship, Gender, EventType, DateAccuracy, Confidence, RelationshipType
-from prompt_engineering import FamilyParsingPrompt
+from prompt_engineering import FamilyParsingPrompt, InteractiveExtractionPrompt
 from pypinyin import pinyin, lazy_pinyin, Style
 from conflict_detector import ConflictDetector, check_conflicts
 
@@ -62,6 +62,7 @@ DATA_DIR.mkdir(exist_ok=True)
 
 # 初始化提示词管理器
 prompt_manager = FamilyParsingPrompt()
+interactive_prompt_manager = InteractiveExtractionPrompt()
 
 # 配置日志
 LOG_DIR = Path("logs")
@@ -125,6 +126,16 @@ class ConflictCheckRequest(BaseModel):
     family_id: str = Field(..., description="家族ID")
     new_data: Dict[str, Any] = Field(..., description="新数据")
 
+class ChatExtractRequest(BaseModel):
+    text: str = Field(..., description="用户输入的自然语言")
+    family_id: str = Field(..., description="家族ID")
+
+class ChatCommitRequest(BaseModel):
+    family_id: str = Field(..., description="家族ID")
+    confirmed_entities: List[Dict[str, Any]]
+    confirmed_relationships: List[Dict[str, Any]]
+    confirmed_events: List[Dict[str, Any]]
+
 class ApiResponse(BaseModel):
     success: bool
     message: str
@@ -157,6 +168,34 @@ def _get_rel_type_str(r) -> str:
 def generate_family_id() -> str:
     """生成家族ID"""
     return f"family_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+def get_relationship_summary(graph: FamilyGraph, person_id: str) -> str:
+    """获取一个人的关系摘要"""
+    rels = []
+    for r in graph.relationships.values():
+        if r.person1_id == person_id:
+            other = graph.get_person(r.person2_id)
+            if other:
+                rels.append(f"{_get_rel_type_str(r)}:{other.name}")
+        elif r.person2_id == person_id:
+            other = graph.get_person(r.person1_id)
+            if other:
+                rels.append(f"{_get_rel_type_str(r)}:{other.name}")
+    return ", ".join(rels[:5]) if rels else "无"
+
+def find_mentioned_people(graph: FamilyGraph, text: str) -> List[Dict[str, Any]]:
+    """在文本中查找可能提到的人物"""
+    mentioned = []
+    # 简单的姓名搜索
+    for p in graph.people.values():
+        if p.name in text and len(p.name) >= 2: # 避免单字误匹配
+            mentioned.append({
+                "id": p.id,
+                "name": p.name,
+                "gender": "M" if p.gender == Gender.MALE else "F" if p.gender == Gender.FEMALE else "UNKNOWN",
+                "relationship_summary": get_relationship_summary(graph, p.id)
+            })
+    return mentioned
 
 # API路由
 @app.get("/", response_model=ApiResponse)
@@ -656,6 +695,27 @@ async def list_relationships(
     """获取关系列表"""
     try:
         graph = load_family_graph(family_id)
+        
+        # 构建人物关系上下文用于AI
+        context_people = []
+        for p in graph.people.values():
+            # 获取该人的主要关系摘要
+            rels = []
+            for r in graph.relationships.values():
+                if r.person1_id == p.id or r.person2_id == p.id:
+                    other_id = r.person2_id if r.person1_id == p.id else r.person1_id
+                    other_p = graph.get_person(other_id)
+                    other_name = other_p.name if other_p else "未知"
+                    rtype_str = r.type.value if hasattr(r.type, 'value') else str(r.type)
+                    rels.append(f"{rtype_str}:{other_name}")
+            
+            context_people.append({
+                "id": p.id,
+                "name": p.name,
+                "gender": p.gender.value if hasattr(p.gender, 'value') else str(p.gender),
+                "relationships": rels[:5] # 限制前5个重要关系
+            })
+            
         relationships = list(graph.relationships.values())
         
         # 应用筛选
@@ -2788,6 +2848,180 @@ async def merge_persons(family_id: str, request: MergeRequest):
 
 
 # 启动应用
+# --- 交互式提取 API (Phase 3) ---
+
+@app.post("/api/chat/extract", response_model=ApiResponse)
+async def chat_extract(request: ChatExtractRequest):
+    """交互式提取：第一步，LLM 提取字面信息"""
+    try:
+        # 1. 获取背景上下文 (拼音匹配 + 关系网匹配)
+        graph = load_family_graph(request.family_id)
+        
+        # 优化上下文获取：主动在文本中查找已有人物
+        mentioned_people = find_mentioned_people(graph, request.text)
+        mentioned_ids = {p["id"] for p in mentioned_people}
+        
+        context_people = mentioned_people
+        
+        # 补充最近活跃的人物作为上下文 (如果还没满)
+        if len(context_people) < 15:
+            recent_history = get_recent_history(request.family_id, limit=30)
+            recent_pids = []
+            for h in reversed(recent_history):
+                pid = h.get("target_id")
+                if h.get("target_type") == "person" and pid and pid not in mentioned_ids and pid not in recent_pids:
+                    recent_pids.append(pid)
+                if len(recent_pids) + len(context_people) >= 15: break
+            
+            for pid in recent_pids:
+                p = graph.get_person(pid)
+                if p:
+                    context_people.append({
+                        "id": p.id,
+                        "name": p.name,
+                        "gender": "M" if p.gender == Gender.MALE else "F" if p.gender == Gender.FEMALE else "UNKNOWN",
+                        "relationship_summary": get_relationship_summary(graph, p.id)
+                    })
+
+        # 2. 调用 LLM
+        messages = interactive_prompt_manager.get_prompt(request.text, context_people)
+        provider_config = get_ai_provider_config()
+        
+        if not provider_config.get("api_key"):
+            return ApiResponse(success=False, message="未配置 AI API 密钥")
+
+        import httpx
+        url = f"{provider_config['base_url']}/v1/chat/completions"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {provider_config['api_key']}"
+        }
+        payload = {
+            "model": provider_config["model"],
+            "messages": messages,
+            "temperature": 0.1,
+            "response_format": {"type": "json_object"}
+        }
+
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(url, json=payload, headers=headers)
+            response.raise_for_status()
+            result = response.json()
+            content = result["choices"][0]["message"]["content"]
+            
+            try:
+                parsed_data = json.loads(content)
+            except:
+                # 尝试从 Markdown 代码块中提取
+                match = re.search(r'```json\n(.*?)\n```', content, re.DOTALL)
+                if match:
+                    parsed_data = json.loads(match.group(1))
+                else:
+                    raise Exception("无法解析 LLM 返回的 JSON")
+
+            return ApiResponse(
+                success=True, 
+                message="提取成功", 
+                data={
+                    "parsed_data": parsed_data,
+                    "prompt_used": {
+                        "system": messages[0]["content"],
+                        "user": messages[1]["content"]
+                    },
+                    "raw_response": content
+                }
+            )
+
+    except Exception as e:
+        logger.error(f"Chat extract failed: {str(e)}")
+        return ApiResponse(success=False, message=str(e))
+
+@app.post("/api/chat/commit", response_model=ApiResponse)
+async def chat_commit(request: ChatCommitRequest):
+    """交互式提取：第二步，确认入库并触发推导引擎"""
+    try:
+        graph = load_family_graph(request.family_id)
+        actions = []
+        temp_to_real_id = {}
+
+        # 1. 处理实体
+        for ent in request.confirmed_entities:
+            if ent["action"] == "CREATE":
+                gender = Gender.MALE if ent["gender"] == "M" else Gender.FEMALE if ent["gender"] == "F" else Gender.UNKNOWN
+                person = Person(name=ent["name"], gender=gender)
+                real_id = graph.add_person(person)
+                temp_to_real_id[ent["temp_id"]] = real_id
+                actions.append(f"新增人物: {ent['name']}")
+                
+                record_action(request.family_id, "create_person", "person", real_id, ent["name"], after=person.to_dict(), summary=f"交互式创建: {ent['name']}")
+            else:
+                real_id = ent["matched_db_id"]
+                temp_to_real_id[ent["temp_id"]] = real_id
+                
+                # 更新已有人的姓名 (如果提供了新的更具体的信息，比如用“林高德”替换“丈夫”)
+                existing_p = graph.get_person(real_id)
+                if existing_p:
+                    old_name = existing_p.name
+                    new_name = ent["name"]
+                    if new_name and new_name != old_name:
+                        existing_p.name = new_name
+                        actions.append(f"更新姓名: {old_name} → {new_name}")
+                        record_action(request.family_id, "update_person", "person", real_id, new_name, summary=f"更新姓名: {old_name} -> {new_name}")
+                
+                actions.append(f"关联到已有人物: {ent['name']}")
+
+        # 2. 处理关系 (通过 derivation_engine 处理 natural_language_desc)
+        # 这里需要 derivation_engine 支持从文字描述推导
+        # 临时方案：直接创建基础关系，然后触发全量推导
+        for rel in request.confirmed_relationships:
+            src_id = temp_to_real_id.get(rel["source_ref"], rel["source_ref"])
+            tgt_id = temp_to_real_id.get(rel["target_ref"], rel["target_ref"])
+            
+            # 这里需要一个将 natural_language_desc 转化为 Relationship 对象的逻辑
+            # 目前简单解析：包含"爸爸/父亲/子/女"等词汇
+            desc = rel["natural_language_desc"]
+            rel_obj = None
+            
+            if "父" in desc or "爸" in desc or "子" in desc or "女" in desc:
+                # 简单判断方向：通常是 "A 是 B 的 X"
+                # 这里假设 A 是 src, B 是 tgt
+                if "父" in desc or "爸" in desc:
+                    rel_obj = Relationship(person1_id=src_id, person2_id=tgt_id, rel_type=RelationshipType.PARENT_CHILD)
+                    rel_obj.subtype = "father"
+                elif "母" in desc or "妈" in desc:
+                    rel_obj = Relationship(person1_id=src_id, person2_id=tgt_id, rel_type=RelationshipType.PARENT_CHILD)
+                    rel_obj.subtype = "mother"
+                elif "子" in desc or "女" in desc:
+                    rel_obj = Relationship(person1_id=tgt_id, person2_id=src_id, rel_type=RelationshipType.PARENT_CHILD)
+            elif "妻" in desc or "夫" in desc or "结婚" in desc:
+                rel_obj = Relationship(person1_id=src_id, person2_id=tgt_id, rel_type=RelationshipType.SPOUSE)
+
+            if rel_obj:
+                graph.add_relationship(rel_obj)
+                actions.append(f"建立关系: {desc}")
+
+        # 3. 处理事件
+        for ev in request.confirmed_events:
+            event = Event(event_type=EventType.OTHER, description=ev["description"])
+            event.date = ev.get("date")
+            event.location = ev.get("location")
+            event.participants = [{"person_id": temp_to_real_id.get(ref, ref), "role": "参与者"} for ref in ev["involved_refs"]]
+            graph.add_event(event)
+            actions.append(f"记录事件: {ev['description']}")
+
+        # 4. 触发推导引擎补全关系
+        from derivation_engine_v2 import derive_relationships_v2
+        derived = derive_relationships_v2(graph)
+        if derived:
+            actions.append(f"自动推导出 {len(derived)} 条新关系")
+
+        save_family_graph(request.family_id, graph)
+        return ApiResponse(success=True, message="已成功入库", data={"actions": actions})
+
+    except Exception as e:
+        logger.error(f"Chat commit failed: {str(e)}")
+        return ApiResponse(success=False, message=str(e))
+
 if __name__ == "__main__":
     print("启动家族编年史API服务器...")
     print("API文档: http://localhost:8000/api/docs")

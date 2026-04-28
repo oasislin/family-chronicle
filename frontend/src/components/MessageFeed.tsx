@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Person, AIExtractionResult, ExtractionCommitRequest } from '../types';
+import ExtractionConfirmCard from './ExtractionConfirmCard';
 
 export interface FeedMessage {
   id: string;
-  type: 'parsing' | 'success' | 'question' | 'error' | 'suggestion';
+  type: 'parsing' | 'success' | 'question' | 'error' | 'suggestion' | 'extraction';
   timestamp: number;
   content: {
     // success
@@ -28,9 +30,21 @@ export interface FeedMessage {
     suggestion?: string;
     // parsing
     text?: string;
+    // extraction
+    extractionData?: AIExtractionResult;
+    // common natural language result
+    replyMessage?: string;
+    // debug info for extraction
+    debugInfo?: {
+      prompt_used: { system: string; user: string };
+      raw_response: string;
+    };
   };
   onAnswer?: (questionId: string, answer: string) => void;
+  onConfirmExtraction?: (commitData: ExtractionCommitRequest) => void;
+  onCancelExtraction?: () => void;
   onRetry?: () => void;
+  allPeople?: Person[];
 }
 
 interface MessageFeedProps {
@@ -81,9 +95,54 @@ const MessageCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
       return <ErrorCard message={message} />;
     case 'suggestion':
       return <SuggestionCard message={message} />;
+    case 'extraction':
+      return <ExtractionWrapper message={message} />;
     default:
       return null;
   }
+};
+
+// 交互式提取确认包装组件
+const ExtractionWrapper: React.FC<{ message: FeedMessage }> = ({ message }) => {
+  const [confirmed, setConfirmed] = useState(false);
+  const { extractionData, allPeople = [] } = message.content;
+
+  if (confirmed) {
+    return (
+      <div className="bg-white border border-green-200 rounded-lg p-3 shadow-sm">
+        <div className="text-xs text-green-600 font-medium mb-2 flex items-center gap-1">
+          <span>✅ 提取结果已确认</span>
+        </div>
+        {extractionData?.reply_message && (
+          <p className="text-sm text-gray-700 leading-relaxed italic border-l-2 border-blue-200 pl-2">
+            "{extractionData.reply_message}"
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (!extractionData) return null;
+
+  return (
+    <ExtractionConfirmCard
+      data={extractionData}
+      allPeople={allPeople}
+      debugInfo={message.content.debugInfo}
+      onConfirm={(commitData) => {
+        setConfirmed(true);
+        if (message.onConfirmExtraction) {
+          message.onConfirmExtraction(commitData);
+        }
+      }}
+      onCancel={() => {
+        setConfirmed(true);
+        if (message.onCancelExtraction) {
+          message.onCancelExtraction();
+        }
+      }}
+    />
+  );
 };
 
 // 解析中
@@ -156,7 +215,7 @@ const SuccessCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
             onClick={() => setReviewing(true)}
             className="text-xs text-green-600 hover:text-green-800 underline"
           >
-            审查
+            查看详情
           </button>
         )}
         {reviewing && (
@@ -168,7 +227,17 @@ const SuccessCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
           </button>
         )}
       </div>
-      <div className="space-y-1">
+
+      {message.content.replyMessage && (
+        <div className="mb-3 bg-white/50 p-2.5 rounded-md border-l-4 border-green-400">
+          <p className="text-sm text-gray-800 leading-relaxed">
+            {message.content.replyMessage}
+          </p>
+        </div>
+      )}
+
+      {reviewing && (
+        <div className="space-y-1 mt-2 pt-2 border-t border-green-100">
         {actions.map((action: string, i: number) => {
           if (deletedIdx.has(i)) return null;
           const info = parseAction(action);
@@ -192,10 +261,11 @@ const SuccessCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
             </div>
           );
         })}
+        {activeActions.length === 0 && (
+          <p className="text-xs text-green-600">所有信息已处理完毕</p>
+        )}
       </div>
-      {activeActions.length === 0 && (
-        <p className="text-xs text-green-600">所有信息已处理完毕</p>
-      )}
+    )}
     </div>
   );
 };

@@ -85,7 +85,7 @@ export interface ApiResponse<T = any> {
   timestamp: string;
 }
 
-// AI解析结果
+// AI解析结果 (旧版本，保留兼容)
 export interface AIParseResult {
   entities: Array<{
     type: 'person';
@@ -121,4 +121,49 @@ export interface AIParseResult {
     ambiguous_references: string[];
     suggested_questions: string[];
   };
+}
+
+// --- 新版交互式抽取模型 ---
+
+export interface AIExtractionEntity {
+  temp_id: string;
+  name: string;
+  gender: 'M' | 'F' | 'UNKNOWN';
+  matched_db_id: string | null;
+  is_new: boolean;
+  confidence: number;
+  reason?: string;
+}
+
+export interface AIExtractionRelationship {
+  source_ref: string; // temp_id or person_id
+  target_ref: string; // temp_id or person_id
+  natural_language_desc: string;
+}
+
+export interface AIExtractionEvent {
+  date?: string;
+  location?: string;
+  description: string;
+  involved_refs: string[]; // list of refs
+}
+
+export interface AIExtractionResult {
+  entities: AIExtractionEntity[];
+  relationships: AIExtractionRelationship[];
+  events: AIExtractionEvent[];
+  reply_message: string;
+  clarification_questions: string[];
+}
+
+export interface ExtractionCommitRequest {
+  confirmed_entities: Array<{
+    temp_id: string;
+    name: string;
+    gender: 'M' | 'F' | 'UNKNOWN';
+    action: 'CREATE' | 'LINK_EXISTING';
+    matched_db_id?: string;
+  }>;
+  confirmed_relationships: AIExtractionRelationship[];
+  confirmed_events: AIExtractionEvent[];
 }

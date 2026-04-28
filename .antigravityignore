@@ -1,0 +1,34 @@
+# Antigravity Agent Defensive Configuration
+# Core goal: Exclude non-core, large, or binary files to prevent Language Server crashes.
+
+# Frontend / Node.js
+node_modules/
+dist/
+build/
+*.map
+
+# Java / C++ / Build Artifacts
+target/
+out/
+bin/
+.idea/
+*.jar
+*.class
+*.o
+*.dll
+
+# PHP / Python
+vendor/
+__pycache__/
+.venv/
+venv/
+
+# General High-Risk Sources
+.git/
+*.sql
+*.log
+*.csv
+
+# Optional: Large JSON files (e.g., package-lock.json or data dumps)
+# package-lock.json
+# *.json

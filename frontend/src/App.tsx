@@ -111,12 +111,69 @@ function App() {
     }
   };
 
+  // 处理交互式抽取确认
+  const handleConfirmExtraction = async (commitData: ExtractionCommitRequest, replyMessage?: string) => {
+    if (!familyId) return;
+    setIsLoading(true);
+    try {
+      // 调用真实后端 API
+      const result = await aiApi.commit(familyId, commitData);
+      
+      if (result.success && result.data) {
+        // 模拟成功反馈
+        addMessage({
+          id: `commit_success_${Date.now()}`,
+          type: 'success',
+          timestamp: Date.now(),
+          content: { 
+            actions: result.data.actions,
+            replyMessage: replyMessage 
+          },
+        });
+        
+        // 刷新图谱
+        const exportRes = await familyApi.export(familyId);
+        if (exportRes.success) {
+          setFamilyData(exportRes.data);
+        }
+      } else {
+        throw new Error(result.message || '入库失败');
+      }
+    } catch (error: any) {
+      addMessage({
+        id: `commit_err_${Date.now()}`,
+        type: 'error',
+        timestamp: Date.now(),
+        content: { error: error.message || '提交确认信息失败' },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelExtraction = () => {
+    addMessage({
+      id: `cancel_ext_${Date.now()}`,
+      type: 'suggestion',
+      timestamp: Date.now(),
+      content: { suggestion: '已取消提取。' },
+    });
+  };
+
   // 核心：处理用户输入 → 先检测合并意图 → 再走正常AI解析
   const handleSend = async (text: string) => {
     if (!familyId) return;
     setIsLoading(true);
     // 新的一轮输入，重置累积答案
     accumulatedAnswersRef.current = {};
+
+    const parsingMsgId = `parsing_${Date.now()}`;
+    addMessage({
+      id: parsingMsgId,
+      type: 'parsing',
+      timestamp: Date.now(),
+      content: { text },
+    });
 
     try {
       // 1. 先用AI判断是否是合并意图
@@ -130,40 +187,44 @@ function App() {
         const foundB = familyData.people.filter(p => p.name === nameB || p.name.startsWith(nameB + ' '));
 
         if (foundA.length >= 1 && foundB.length >= 1 && foundA[0].id !== foundB[0].id) {
+          setMessages((prev) => prev.filter((m) => m.id !== parsingMsgId));
           setIsLoading(false);
           setMergeCandidate({ nameA, nameB, personA: foundA[0], personB: foundB[0] });
           return; // 弹出合并确认，不走AI解析
         }
       }
-    } catch (e) {
-      // 意图检测失败，继续走正常流程
-      console.warn('Intent detection failed, falling through to parse:', e);
-    }
 
-    // 2. 正常AI解析流程
+      // 2. 交互式提取逻辑 (Phase 3)
+      const extractResponse = await aiApi.extract(text, familyId);
+      
+      if (extractResponse.success && extractResponse.data) {
+        // 移除 parsing 消息
+        setMessages((prev) => prev.filter((m) => m.id !== parsingMsgId));
 
-    const parsingMsgId = `parsing_${Date.now()}`;
-    addMessage({
-      id: parsingMsgId,
-      type: 'parsing',
-      timestamp: Date.now(),
-      content: { text },
-    });
+        const parsedData = extractResponse.data.parsed_data;
+        if (!parsedData) {
+            throw new Error("AI 返回数据格式错误：缺少解析结果");
+        }
 
-    try {
-      // 1. AI 解析
-      const parseResponse = await aiApi.parse(text, familyId);
-      if (!parseResponse.success || !parseResponse.data) {
-        throw new Error(parseResponse.message || 'AI解析失败');
+        addMessage({
+          id: `extraction_${Date.now()}`,
+          type: 'extraction',
+          timestamp: Date.now(),
+          content: { 
+            extractionData: parsedData,
+            debugInfo: {
+              prompt_used: extractResponse.data.prompt_used || { system: 'N/A', user: 'N/A' },
+              raw_response: extractResponse.data.raw_response || 'N/A'
+            },
+            allPeople: familyData.people
+          },
+          onConfirmExtraction: (data) => handleConfirmExtraction(data, parsedData.reply_message),
+          onCancelExtraction: handleCancelExtraction
+        });
+        return;
+      } else {
+        throw new Error(extractResponse.message || 'AI解析失败');
       }
-
-      const parsedData: AIParseResult = parseResponse.data.parsed_data;
-
-      // 移除 parsing 消息
-      setMessages((prev) => prev.filter((m) => m.id !== parsingMsgId));
-
-      // 2. 自动导入
-      await runAutoImport(parsedData);
     } catch (error: any) {
       setMessages((prev) => prev.filter((m) => m.id !== parsingMsgId));
       addMessage({

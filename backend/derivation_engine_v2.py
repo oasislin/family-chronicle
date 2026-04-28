@@ -16,26 +16,85 @@
 6. 配偶非唯一（允许再婚）
 """
 
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Set, Tuple, Optional, Any
 from collections import defaultdict
 
 
 def derive_relationships_v2(
-    persons: Dict[str, dict],
-    relationships: List[dict],
+    persons_or_graph: Any,
+    relationships: Optional[List[dict]] = None,
     new_rel: Optional[dict] = None,
 ) -> List[dict]:
     """
-    BFS 扩散式关系推导。
+    BFS 扩散式关系推导。支持直接传入 FamilyGraph 对象。
 
     Args:
-        persons: {name: {gender, ...}}
-        relationships: [{person_a, person_b, type, subtype?}, ...] 已有关系
+        persons_or_graph: FamilyGraph 对象，或者 {id: {gender, ...}} 字典
+        relationships: 如果第一个参数是字典，则此参数为已有关系列表 [{person_a, person_b, type, subtype?}, ...]
         new_rel: 即将新增的单条关系（触发推导的种子）
 
     Returns:
         需要新增的推导关系列表 [{person_a, person_b, type, source}]
     """
+    # 如果传入的是 FamilyGraph
+    is_graph = hasattr(persons_or_graph, 'people') and hasattr(persons_or_graph, 'relationships')
+    
+    if is_graph:
+        graph = persons_or_graph
+        # 转换为内部使用的格式
+        internal_persons = {
+            pid: {"gender": p.gender.value if hasattr(p.gender, 'value') else str(p.gender)}
+            for pid, p in graph.people.items()
+        }
+        internal_rels = []
+        for r in graph.relationships.values():
+            internal_rels.append({
+                "person_a": r.person1_id,
+                "person_b": r.person2_id,
+                "type": r.type.value if hasattr(r.type, 'value') else str(r.type),
+                "subtype": r.subtype
+            })
+        
+        # 调用核心推导逻辑
+        derived_rels = _derive_logic(internal_persons, internal_rels, new_rel)
+        
+        # 将推导出的关系添加回 graph
+        from models import Relationship, RelationshipType
+        results = []
+        for r in derived_rels:
+            try:
+                rtype = RelationshipType(r['type'])
+            except ValueError:
+                rtype = RelationshipType.OTHER
+                
+            new_r = Relationship(
+                person1_id=r['person_a'],
+                person2_id=r['person_b'],
+                rel_type=rtype,
+                is_inferred=True
+            )
+            graph.add_relationship(new_r)
+            
+            p1 = graph.get_person(r['person_a'])
+            p2 = graph.get_person(r['person_b'])
+            results.append({
+                'person_a': p1.name if p1 else r['person_a'],
+                'person_b': p2.name if p2 else r['person_b'],
+                'type': r['type'],
+                'source': r['source']
+            })
+        return results
+    else:
+        # 原有的字典格式处理
+        return _derive_logic(persons_or_graph, relationships or [], new_rel)
+
+
+def _derive_logic(
+    persons: Dict[str, dict],
+    relationships: List[dict],
+    new_rel: Optional[dict] = None,
+) -> List[dict]:
+    """核心推导逻辑（原 derive_relationships_v2 的实现）"""
     # 构建关系索引
     # parents[child] = {parent_name, ...}
     # children[parent] = {child_name, ...}
@@ -128,10 +187,14 @@ def derive_relationships_v2(
             enqueue(a)
             enqueue(b)
 
-    # 初始化队列：新关系涉及的人物
+    # 初始化队列
     if new_rel:
         enqueue(new_rel['person_a'])
         enqueue(new_rel['person_b'])
+    else:
+        # 全量推导：将所有人物加入队列
+        for pid in persons.keys():
+            enqueue(pid)
 
     # ========== BFS 扩散 ==========
     while queue:
@@ -271,7 +334,7 @@ if __name__ == '__main__':
     # 新增：朱雪兰 → 林小红（母亲生了女儿）
     new_rel = {"person_a": "朱雪兰", "person_b": "林小红", "type": "parent_child"}
 
-    derived = derive_relationships_v2(persons, existing_rels, new_rel)
+    derived = _derive_logic(persons, existing_rels, new_rel)
     print("推导出的新关系:")
     for r in derived:
         print(f"  {r['person_a']} --[{r['type']}]--> {r['person_b']} ({r['source']})")

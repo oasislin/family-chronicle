@@ -140,6 +140,17 @@ export const aiApi = {
     const response = await api.get(`/ai/prompt?text=${encodeURIComponent(text)}`);
     return response.data;
   },
+
+  // --- 交互式提取 (Phase 3) ---
+  extract: async (text: string, familyId: string): Promise<ApiResponse<any>> => {
+    const response = await api.post('/chat/extract', { text, family_id: familyId });
+    return response.data;
+  },
+
+  commit: async (familyId: string, commitData: any): Promise<ApiResponse<{ actions: string[] }>> => {
+    const response = await api.post('/chat/commit', { family_id: familyId, ...commitData });
+    return response.data;
+  },
 };
 
 // 冲突检测

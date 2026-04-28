@@ -540,5 +540,110 @@ def test_prompt_with_examples():
         print(f"错误: {validation.get('error')}")
 
 
+
+class InteractiveExtractionPrompt:
+    """交互式自然语言提取提示词管理器 (Phase 3)"""
+    
+    def __init__(self):
+        self.system_prompt = self._create_system_prompt()
+        self.json_schema = self._create_json_schema()
+
+    def _create_system_prompt(self) -> str:
+        return """你是一个家谱信息提取助手。你的任务是从自然语言中提取人物实体、事件以及他们之间的【字面关系描述】。
+
+## 核心规则（非常重要）：
+1. **字面关系描述**：你只负责提取文中直接表达的关系，绝不要进行任何辈分或辈分推导。
+   - 示例：输入“王大壮的儿子是王建国”，你提取的关系描述就是“王建国是王大壮的儿子”。
+   - 严禁行为：不要推导“王大壮的爸爸的兄弟”是“伯公”之类的复杂关系。
+2. **回复语气**：以亲切、专业的“家族史记录官”身份进行简短回复。
+3. **实体对齐**：如果输入中提到了背景上下文中已存在的人物，请尽可能引用其 ID。
+4. **冲突检测**：
+   - 检查用户提到的新关系是否与背景上下文中的已有关系矛盾。
+   - 示例：如果背景中“王梅花”已有丈夫“李四”，而用户说“王梅花的丈夫是张三”，这属于潜在冲突。
+   - 在 clarification_questions 中提出此类疑问，例如：“背景显示王梅花已有一位丈夫（李四），请问张三是她的新丈夫，还是同一人的不同称呼？”
+5. **简洁性**：如果没有提取到新信息，请在回复中说明。
+
+## 输出要求：
+1. **必须严格按照 JSON 格式输出**。
+2. **temp_id**：对于新发现的人物，使用 e_1, e_2 这种简短格式。
+3. **matched_db_id**：如果你认为某个实体与背景上下文中的某人是同一人，请填入其数据库 ID。"""
+
+    def _create_json_schema(self) -> Dict[str, Any]:
+        return {
+            "type": "object",
+            "required": ["entities", "relationships", "events", "reply_message"],
+            "properties": {
+                "entities": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["temp_id", "name", "gender", "is_new"],
+                        "properties": {
+                            "temp_id": {"type": "string"},
+                            "name": {"type": "string"},
+                            "gender": {"type": "string", "enum": ["M", "F", "UNKNOWN"]},
+                            "matched_db_id": {"type": ["string", "null"]},
+                            "is_new": {"type": "boolean"},
+                            "confidence": {"type": "number"},
+                            "reason": {"type": "string"}
+                        }
+                    }
+                },
+                "relationships": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["source_ref", "target_ref", "natural_language_desc"],
+                        "properties": {
+                            "source_ref": {"type": "string", "description": "源人物引用 (ID 或 temp_id)"},
+                            "target_ref": {"type": "string", "description": "目标人物引用 (ID 或 temp_id)"},
+                            "natural_language_desc": {"type": "string", "description": "字面上的关系描述，如：'A是B的父亲'"}
+                        }
+                    }
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["description", "involved_refs"],
+                        "properties": {
+                            "date": {"type": "string"},
+                            "location": {"type": "string"},
+                            "description": {"type": "string"},
+                            "involved_refs": {"type": "array", "items": {"type": "string"}}
+                        }
+                    }
+                },
+                "reply_message": {"type": "string", "description": "对用户的自然语言回复"},
+                "clarification_questions": {"type": "array", "items": {"type": "string"}}
+            }
+        }
+
+    def get_prompt(self, user_input: str, context_people: List[Dict[str, Any]] = None) -> List[Dict[str, str]]:
+        context_text = ""
+        if context_people:
+            context_text = "\n## 背景上下文 (当前已匹配到的库中人物)\n"
+            for p in context_people:
+                gender_str = "男" if p.get("gender") == "M" else "女" if p.get("gender") == "F" else "未知"
+                rel_summary = p.get("relationship_summary", "无")
+                context_text += f"- ID: {p['id']}, 姓名: {p['name']}, 性别: {gender_str}, 已有关系: {rel_summary}\n"
+
+        prompt = f"""{context_text}
+## 用户输入
+{user_input}
+
+## 任务
+请从用户输入中提取实体、关系和事件。如果输入中的人物与上述“背景上下文”中的人物匹配，请在 matched_db_id 中填入其 ID。
+请输出以下 JSON 格式：
+{json.dumps(self.json_schema, ensure_ascii=False, indent=2)}
+
+注意：relationships.natural_language_desc 必须是原文直述，不要做任何推理。"""
+
+        return [
+            {"role": "system", "content": self.system_prompt},
+            {"role": "user", "content": prompt}
+        ]
+
+
 if __name__ == "__main__":
     test_prompt_with_examples()
