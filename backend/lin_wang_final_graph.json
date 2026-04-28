@@ -1,0 +1,1991 @@
+{
+  "people": [
+    {
+      "id": "person_0b536843",
+      "name": "林大明",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "配偶是{{person:person_062f9c23}}。\n长子{{person:person_d686f681}}出生。\n长子{{person:person_6250368e}}出生。\n配偶是{{person:person_f3c66818}}。\n长女{{person:person_f6d71c8f}}出生。\n父亲是{{person:person_2adfb236}}。\n父亲是{{person:person_b529a930}}。\n父亲是{{person:person_62e7cdb6}}。\n父亲是{{person:person_7270903a}}。\n长子{{person:person_d37ab051}}出生。\n迁居至杭州。\n与{{person:person_4023b120}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:00:13.178564",
+      "updated_at": "2026-04-22T14:00:13.178564"
+    },
+    {
+      "id": "person_062f9c23",
+      "name": "赵春花",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "配偶是{{person:person_0b536843}}。\n长子{{person:person_d686f681}}出生。\n长子{{person:person_6250368e}}出生。\n长女{{person:person_f6d71c8f}}出生。\n配偶是{{person:person_f3c66818}}。\n配偶是{{person:person_4023b120}}。\n长子{{person:person_d37ab051}}出生。\n叔/伯是{{person:person_3c5e49be}}。\n儿子{{person:person_d686f681}}出生。\n迁居至杭州。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:00:13.178713",
+      "updated_at": "2026-04-22T14:00:13.178713"
+    },
+    {
+      "id": "person_d686f681",
+      "name": "林绿洲",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "长子",
+        "大的"
+      ],
+      "notes": null,
+      "story": "有哥哥{{person:person_6250368e}}。\n父亲是{{person:person_0b536843}}。\n父亲是{{person:person_062f9c23}}。\n父亲是{{person:person_f3c66818}}。\n有姐姐{{person:person_f6d71c8f}}。\n长子{{person:person_79f42d20}}出生。\n父亲是{{person:person_4023b120}}。\n有哥哥{{person:person_d37ab051}}。\n母亲是{{person:person_062f9c23}}。\n与{{person:person_43e40983}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:00:30.310980",
+      "updated_at": "2026-04-22T14:00:30.310980"
+    },
+    {
+      "id": "person_6250368e",
+      "name": "林青海",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "次子",
+        "小的"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_f4bf5d62}}。\n有哥哥{{person:person_d686f681}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:00:30.311063",
+      "updated_at": "2026-04-22T14:00:30.311063"
+    },
+    {
+      "id": "person_f3c66818",
+      "name": "陈桂芳",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "前妻"
+      ],
+      "notes": null,
+      "story": "配偶是{{person:person_0b536843}}。\n女儿{{person:person_f6d71c8f}}出生。\n长子{{person:person_6250368e}}出生。\n长子{{person:person_d686f681}}出生。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:01:06.775534",
+      "updated_at": "2026-04-22T14:01:06.775534"
+    },
+    {
+      "id": "person_f6d71c8f",
+      "name": "林小月",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "女儿"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_0b536843}}。\n母亲是{{person:person_f3c66818}}。\n有哥哥{{person:person_6250368e}}。\n父亲是{{person:person_062f9c23}}。\n有哥哥{{person:person_d686f681}}。\n女儿{{person:person_40c3d37f}}出生。\n与{{person:person_6ca3fa0a}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:01:06.775682",
+      "updated_at": "2026-04-22T14:01:06.775682"
+    },
+    {
+      "id": "person_2adfb236",
+      "name": "林建国",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "爷爷"
+      ],
+      "notes": null,
+      "story": "长子{{person:person_0b536843}}出生。\n配偶是{{person:person_b529a930}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:01:21.104576",
+      "updated_at": "2026-04-22T14:01:21.104576"
+    },
+    {
+      "id": "person_b529a930",
+      "name": "李玉兰",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "配偶是{{person:person_2adfb236}}。\n长子{{person:person_0b536843}}出生。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:01:33.143330",
+      "updated_at": "2026-04-22T14:01:33.143330"
+    },
+    {
+      "id": "person_62e7cdb6",
+      "name": "朱雪兰",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "外婆"
+      ],
+      "notes": null,
+      "story": "长子{{person:person_0b536843}}出生。\n配偶是{{person:person_b529a930}}。\n配偶是{{person:person_2adfb236}}。\n与{{person:person_7270903a}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:01:45.630976",
+      "updated_at": "2026-04-22T14:01:45.630976"
+    },
+    {
+      "id": "person_7270903a",
+      "name": "朱世杰",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "长子{{person:person_0b536843}}出生。\n配偶是{{person:person_2adfb236}}。\n配偶是{{person:person_b529a930}}。\n父亲是{{person:person_3b25776b}}。\n有弟弟{{person:person_3c5e49be}}。\n与{{person:person_62e7cdb6}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:02:00.539151",
+      "updated_at": "2026-04-22T14:02:00.539151"
+    },
+    {
+      "id": "person_f5998f86",
+      "name": "王大锤",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "长子{{person:person_6ca3fa0a}}出生。\n父亲是{{person:person_43fa2664}}。\n有弟弟{{person:person_2e8bec8a}}。\n有哥哥{{person:person_2e8bec8a}}。\n与{{person:person_38fa324b}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:02:32.009833",
+      "updated_at": "2026-04-22T14:02:32.009833"
+    },
+    {
+      "id": "person_38fa324b",
+      "name": "孙美玲",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "儿子{{person:person_6ca3fa0a}}出生。\n与{{person:person_f5998f86}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:02:32.010024",
+      "updated_at": "2026-04-22T14:02:32.010024"
+    },
+    {
+      "id": "person_6ca3fa0a",
+      "name": "王小明",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "儿子"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_f5998f86}}。\n母亲是{{person:person_38fa324b}}。\n长女{{person:person_40c3d37f}}出生。\n与{{person:person_f6d71c8f}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:02:32.010202",
+      "updated_at": "2026-04-22T14:02:32.010202"
+    },
+    {
+      "id": "person_2e8bec8a",
+      "name": "王二锤",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "父亲是{{person:person_43fa2664}}。\n有弟弟{{person:person_f5998f86}}。\n有哥哥{{person:person_f5998f86}}。\n长女{{person:person_43e40983}}出生。\n长子{{person:person_16c7cc08}}出生。\n父亲是{{person:person_f3225cee}}。\n父亲是{{person:person_8b950fe8}}。\n长女{{person:person_da0b31d6}}出生。\n与{{person:person_5a044103}}结婚。\n与{{person:person_5a044103}}离婚。\n与{{person:person_d4063911}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:02:49.513716",
+      "updated_at": "2026-04-22T14:02:49.513716"
+    },
+    {
+      "id": "person_43fa2664",
+      "name": "王大锤的爸爸",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": null,
+      "is_placeholder": true,
+      "placeholder_reason": "sibling关系(王大锤↔王二锤)自动创建的共享父母",
+      "created_at": "2026-04-22T14:02:49.513747",
+      "updated_at": "2026-04-22T14:02:49.513747"
+    },
+    {
+      "id": "person_5a044103",
+      "name": "周小燕",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "女儿{{person:person_43e40983}}出生。\n儿子{{person:person_16c7cc08}}出生。\n与{{person:person_2e8bec8a}}结婚。\n与{{person:person_2e8bec8a}}离婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:03:05.699094",
+      "updated_at": "2026-04-22T14:03:05.699094"
+    },
+    {
+      "id": "person_43e40983",
+      "name": "王芳",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "姐姐"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_2e8bec8a}}。\n母亲是{{person:person_5a044103}}。\n有弟弟{{person:person_16c7cc08}}。\n儿子{{person:person_79f42d20}}出生。\n父亲是{{person:person_d4063911}}。\n有姐姐{{person:person_da0b31d6}}。\n与{{person:person_d686f681}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:03:46.325215",
+      "updated_at": "2026-04-22T14:03:46.325215"
+    },
+    {
+      "id": "person_16c7cc08",
+      "name": "王磊",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "弟弟"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_2e8bec8a}}。\n母亲是{{person:person_5a044103}}。\n有妹妹{{person:person_43e40983}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:03:46.325471",
+      "updated_at": "2026-04-22T14:03:46.325471"
+    },
+    {
+      "id": "person_f3225cee",
+      "name": "王富贵",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "长子{{person:person_2e8bec8a}}出生。\n配偶是{{person:person_8b950fe8}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:03:59.693016",
+      "updated_at": "2026-04-22T14:03:59.693016"
+    },
+    {
+      "id": "person_8b950fe8",
+      "name": "刘翠花",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "配偶是{{person:person_f3225cee}}。\n长子{{person:person_2e8bec8a}}出生。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:04:11.455726",
+      "updated_at": "2026-04-22T14:04:11.455726"
+    },
+    {
+      "id": "person_79f42d20",
+      "name": "林王联合",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "儿子"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_d686f681}}。\n母亲是{{person:person_43e40983}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:04:56.060793",
+      "updated_at": "2026-04-22T14:04:56.060793"
+    },
+    {
+      "id": "person_40c3d37f",
+      "name": "王林小雨",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "母亲是{{person:person_f6d71c8f}}。\n父亲是{{person:person_6ca3fa0a}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:05:36.337920",
+      "updated_at": "2026-04-22T14:05:36.337920"
+    },
+    {
+      "id": "person_4023b120",
+      "name": "刘慧兰",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "长子{{person:person_6250368e}}出生。\n长子{{person:person_d686f681}}出生。\n长女{{person:person_f6d71c8f}}出生。\n儿子{{person:person_d37ab051}}出生。\n配偶是{{person:person_062f9c23}}。\n配偶是{{person:person_f3c66818}}。\n与{{person:person_0b536843}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:06:01.164671",
+      "updated_at": "2026-04-22T14:06:01.164671"
+    },
+    {
+      "id": "person_d37ab051",
+      "name": "林新生",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "儿子"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_0b536843}}。\n母亲是{{person:person_4023b120}}。\n有姐姐{{person:person_f6d71c8f}}。\n有哥哥{{person:person_6250368e}}。\n有哥哥{{person:person_d686f681}}。\n父亲是{{person:person_062f9c23}}。\n父亲是{{person:person_f3c66818}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:06:26.559527",
+      "updated_at": "2026-04-22T14:06:26.559527"
+    },
+    {
+      "id": "person_d4063911",
+      "name": "吴丽丽",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "长子{{person:person_16c7cc08}}出生。\n长女{{person:person_43e40983}}出生。\n女儿{{person:person_da0b31d6}}出生。\n配偶是{{person:person_5a044103}}。\n与{{person:person_2e8bec8a}}结婚。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:06:53.169240",
+      "updated_at": "2026-04-22T14:06:53.169240"
+    },
+    {
+      "id": "person_da0b31d6",
+      "name": "王甜甜",
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "父亲是{{person:person_2e8bec8a}}。\n母亲是{{person:person_d4063911}}。\n有哥哥{{person:person_16c7cc08}}。\n有姐姐{{person:person_43e40983}}。\n父亲是{{person:person_5a044103}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:07:18.024942",
+      "updated_at": "2026-04-22T14:07:18.024942"
+    },
+    {
+      "id": "person_3c5e49be",
+      "name": "朱世豪",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": "父亲是{{person:person_3b25776b}}。\n有弟弟{{person:person_7270903a}}。\n叔/伯是{{person:person_062f9c23}}。\n长子{{person:person_82a9388f}}出生。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:07:36.297268",
+      "updated_at": "2026-04-22T14:07:36.297268"
+    },
+    {
+      "id": "person_3b25776b",
+      "name": "朱世杰的爸爸",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [],
+      "notes": null,
+      "story": null,
+      "is_placeholder": true,
+      "placeholder_reason": "sibling关系(朱世杰↔朱世豪)自动创建的共享父母",
+      "created_at": "2026-04-22T14:07:36.297540",
+      "updated_at": "2026-04-22T14:07:36.297540"
+    },
+    {
+      "id": "person_82a9388f",
+      "name": "朱小勇",
+      "gender": "male",
+      "birth_date": null,
+      "death_date": null,
+      "birth_place": null,
+      "current_residence": null,
+      "tags": [
+        "儿子"
+      ],
+      "notes": null,
+      "story": "父亲是{{person:person_3c5e49be}}。",
+      "is_placeholder": false,
+      "placeholder_reason": "",
+      "created_at": "2026-04-22T14:07:48.391234",
+      "updated_at": "2026-04-22T14:07:48.391234"
+    }
+  ],
+  "events": [
+    {
+      "id": "event_d006e666",
+      "type": "relocation",
+      "description": "林大明和赵春花居住在杭州",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": "杭州",
+      "participants": [
+        {
+          "person_id": "person_0b536843",
+          "role": "居住者"
+        },
+        {
+          "person_id": "person_062f9c23",
+          "role": "居住者"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:00:13.180874"
+    },
+    {
+      "id": "event_5057d40a",
+      "type": "birth",
+      "description": "林小月出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_f6d71c8f",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_0b536843",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_f3c66818",
+          "role": "母亲"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:01:06.776721"
+    },
+    {
+      "id": "event_cea91813",
+      "type": "marriage",
+      "description": "朱雪兰与朱世杰结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_62e7cdb6",
+          "role": "妻子"
+        },
+        {
+          "person_id": "person_7270903a",
+          "role": "丈夫"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:02:00.539604"
+    },
+    {
+      "id": "event_4724cd1d",
+      "type": "marriage",
+      "description": "王大锤与孙美玲结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_f5998f86",
+          "role": "丈夫"
+        },
+        {
+          "person_id": "person_38fa324b",
+          "role": "妻子"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:02:32.010795"
+    },
+    {
+      "id": "event_1feb1931",
+      "type": "birth",
+      "description": "王小明出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_6ca3fa0a",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_f5998f86",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_38fa324b",
+          "role": "母亲"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:02:32.010819"
+    },
+    {
+      "id": "event_88d98cb3",
+      "type": "marriage",
+      "description": "王二锤与周小燕结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_2e8bec8a",
+          "role": "丈夫"
+        },
+        {
+          "person_id": "person_5a044103",
+          "role": "妻子"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:03:05.699832"
+    },
+    {
+      "id": "event_f9b1f499",
+      "type": "marriage",
+      "description": "王二锤与周小燕结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_2e8bec8a",
+          "role": "丈夫"
+        },
+        {
+          "person_id": "person_5a044103",
+          "role": "妻子"
+        }
+      ],
+      "source": null,
+      "confidence": "medium",
+      "created_at": "2026-04-22T14:03:46.326260"
+    },
+    {
+      "id": "event_1145b18f",
+      "type": "birth",
+      "description": "王芳出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_43e40983",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_2e8bec8a",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_5a044103",
+          "role": "母亲"
+        }
+      ],
+      "source": null,
+      "confidence": "medium",
+      "created_at": "2026-04-22T14:03:46.326293"
+    },
+    {
+      "id": "event_9382e98a",
+      "type": "birth",
+      "description": "王磊出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_16c7cc08",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_2e8bec8a",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_5a044103",
+          "role": "母亲"
+        }
+      ],
+      "source": null,
+      "confidence": "medium",
+      "created_at": "2026-04-22T14:03:46.326354"
+    },
+    {
+      "id": "event_7a3d5a8d",
+      "type": "marriage",
+      "description": "林绿洲与王芳结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_d686f681",
+          "role": "新郎"
+        },
+        {
+          "person_id": "person_43e40983",
+          "role": "新娘"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:04:28.814589"
+    },
+    {
+      "id": "event_5289565f",
+      "type": "birth",
+      "description": "林王联合出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_79f42d20",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_d686f681",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_43e40983",
+          "role": "母亲"
+        }
+      ],
+      "source": null,
+      "confidence": "medium",
+      "created_at": "2026-04-22T14:04:56.061875"
+    },
+    {
+      "id": "event_d640ad21",
+      "type": "marriage",
+      "description": "林小月与王小明结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_f6d71c8f",
+          "role": "新娘"
+        },
+        {
+          "person_id": "person_6ca3fa0a",
+          "role": "新郎"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:05:12.555619"
+    },
+    {
+      "id": "event_bc7ca5fd",
+      "type": "birth",
+      "description": "王林小雨出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_40c3d37f",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_f6d71c8f",
+          "role": "母亲"
+        },
+        {
+          "person_id": "person_6ca3fa0a",
+          "role": "父亲"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:05:36.338719"
+    },
+    {
+      "id": "event_28b93475",
+      "type": "death",
+      "description": "赵春花去世",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_062f9c23",
+          "role": "逝者"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:06:01.166186"
+    },
+    {
+      "id": "event_bbdca4ab",
+      "type": "marriage",
+      "description": "林大明与刘慧兰结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_0b536843",
+          "role": "新郎"
+        },
+        {
+          "person_id": "person_4023b120",
+          "role": "新娘"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:06:01.166210"
+    },
+    {
+      "id": "event_fd8f0972",
+      "type": "birth",
+      "description": "林新生出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_d37ab051",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_0b536843",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_4023b120",
+          "role": "母亲"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:06:26.563145"
+    },
+    {
+      "id": "event_cb895bb6",
+      "type": "divorce",
+      "description": "王二锤与周小燕离婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_2e8bec8a",
+          "role": "丈夫"
+        },
+        {
+          "person_id": "person_5a044103",
+          "role": "妻子"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:06:53.170290"
+    },
+    {
+      "id": "event_d314c4f8",
+      "type": "marriage",
+      "description": "王二锤与吴丽丽结婚",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_2e8bec8a",
+          "role": "新郎"
+        },
+        {
+          "person_id": "person_d4063911",
+          "role": "新娘"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:06:53.170344"
+    },
+    {
+      "id": "event_f40a4087",
+      "type": "birth",
+      "description": "王甜甜出生",
+      "date": null,
+      "date_accuracy": "unknown",
+      "location": null,
+      "participants": [
+        {
+          "person_id": "person_da0b31d6",
+          "role": "新生儿"
+        },
+        {
+          "person_id": "person_2e8bec8a",
+          "role": "父亲"
+        },
+        {
+          "person_id": "person_d4063911",
+          "role": "母亲"
+        }
+      ],
+      "source": null,
+      "confidence": "high",
+      "created_at": "2026-04-22T14:07:18.026623"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel_58457c12",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_062f9c23",
+      "type": "spouse",
+      "subtype": "husband",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:00:13.178791"
+    },
+    {
+      "id": "rel_cc620dd4",
+      "person1_id": "person_d686f681",
+      "person2_id": "person_6250368e",
+      "type": "sibling",
+      "subtype": "brother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:00:30.311148"
+    },
+    {
+      "id": "rel_b54a2600",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_d686f681",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:00:42.785721"
+    },
+    {
+      "id": "rel_c191bb26",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_6250368e",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:00:42.785739"
+    },
+    {
+      "id": "rel_e5e17c81",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_d686f681",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:00:42.785757"
+    },
+    {
+      "id": "rel_32b2004e",
+      "person1_id": "person_062f9c23",
+      "person2_id": "person_d686f681",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:00:42.785887"
+    },
+    {
+      "id": "rel_14a46851",
+      "person1_id": "person_062f9c23",
+      "person2_id": "person_6250368e",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:00:42.785908"
+    },
+    {
+      "id": "rel_6b630e8f",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_f3c66818",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.775732"
+    },
+    {
+      "id": "rel_9ef97970",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_f6d71c8f",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.775786"
+    },
+    {
+      "id": "rel_fb77246b",
+      "person1_id": "person_f3c66818",
+      "person2_id": "person_f6d71c8f",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.775819"
+    },
+    {
+      "id": "rel_a5e7a35e",
+      "person1_id": "person_f6d71c8f",
+      "person2_id": "person_6250368e",
+      "type": "sibling",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.776173"
+    },
+    {
+      "id": "rel_58ec4856",
+      "person1_id": "person_062f9c23",
+      "person2_id": "person_f6d71c8f",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.776226"
+    },
+    {
+      "id": "rel_dc461539",
+      "person1_id": "person_f3c66818",
+      "person2_id": "person_6250368e",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.776255"
+    },
+    {
+      "id": "rel_21d1d569",
+      "person1_id": "person_f3c66818",
+      "person2_id": "person_d686f681",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.776282"
+    },
+    {
+      "id": "rel_0ae605ec",
+      "person1_id": "person_d686f681",
+      "person2_id": "person_f6d71c8f",
+      "type": "sibling",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:06.776307"
+    },
+    {
+      "id": "rel_cd46c3f6",
+      "person1_id": "person_2adfb236",
+      "person2_id": "person_0b536843",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:21.104626"
+    },
+    {
+      "id": "rel_abfa3e86",
+      "person1_id": "person_f3c66818",
+      "person2_id": "person_062f9c23",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:21.104816"
+    },
+    {
+      "id": "rel_3a3ee697",
+      "person1_id": "person_2adfb236",
+      "person2_id": "person_b529a930",
+      "type": "spouse",
+      "subtype": "husband",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:33.143381"
+    },
+    {
+      "id": "rel_5045f118",
+      "person1_id": "person_b529a930",
+      "person2_id": "person_0b536843",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:33.143640"
+    },
+    {
+      "id": "rel_945d9589",
+      "person1_id": "person_62e7cdb6",
+      "person2_id": "person_0b536843",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:45.631032"
+    },
+    {
+      "id": "rel_a4ceb291",
+      "person1_id": "person_62e7cdb6",
+      "person2_id": "person_b529a930",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:45.631261"
+    },
+    {
+      "id": "rel_665746ed",
+      "person1_id": "person_62e7cdb6",
+      "person2_id": "person_2adfb236",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:01:45.631282"
+    },
+    {
+      "id": "rel_090271cb",
+      "person1_id": "person_62e7cdb6",
+      "person2_id": "person_7270903a",
+      "type": "spouse",
+      "subtype": "wife",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:00.539179"
+    },
+    {
+      "id": "rel_6d054530",
+      "person1_id": "person_7270903a",
+      "person2_id": "person_0b536843",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:00.539416"
+    },
+    {
+      "id": "rel_f0d77e8b",
+      "person1_id": "person_f5998f86",
+      "person2_id": "person_38fa324b",
+      "type": "spouse",
+      "subtype": "husband",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:32.010253"
+    },
+    {
+      "id": "rel_26523a57",
+      "person1_id": "person_f5998f86",
+      "person2_id": "person_6ca3fa0a",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:32.010312"
+    },
+    {
+      "id": "rel_113a8ddf",
+      "person1_id": "person_38fa324b",
+      "person2_id": "person_6ca3fa0a",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:32.010343"
+    },
+    {
+      "id": "rel_787974ed",
+      "person1_id": "person_43fa2664",
+      "person2_id": "person_f5998f86",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:49.513760"
+    },
+    {
+      "id": "rel_dd939b35",
+      "person1_id": "person_43fa2664",
+      "person2_id": "person_2e8bec8a",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:49.513770"
+    },
+    {
+      "id": "rel_788541df",
+      "person1_id": "person_f5998f86",
+      "person2_id": "person_2e8bec8a",
+      "type": "sibling",
+      "subtype": "elder_brother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:49.513791"
+    },
+    {
+      "id": "rel_eafbfa7a",
+      "person1_id": "person_2e8bec8a",
+      "person2_id": "person_f5998f86",
+      "type": "sibling",
+      "subtype": "younger_brother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:02:49.513820"
+    },
+    {
+      "id": "rel_86ce6974",
+      "person1_id": "person_2e8bec8a",
+      "person2_id": "person_43e40983",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:03:46.325578"
+    },
+    {
+      "id": "rel_0aca8812",
+      "person1_id": "person_5a044103",
+      "person2_id": "person_43e40983",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:03:46.325617"
+    },
+    {
+      "id": "rel_37f87e00",
+      "person1_id": "person_2e8bec8a",
+      "person2_id": "person_16c7cc08",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:03:46.325648"
+    },
+    {
+      "id": "rel_e8ee909e",
+      "person1_id": "person_5a044103",
+      "person2_id": "person_16c7cc08",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:03:46.325679"
+    },
+    {
+      "id": "rel_d5cd0ee0",
+      "person1_id": "person_43e40983",
+      "person2_id": "person_16c7cc08",
+      "type": "sibling",
+      "subtype": "elder_sister",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:03:46.325714"
+    },
+    {
+      "id": "rel_f068c644",
+      "person1_id": "person_f3225cee",
+      "person2_id": "person_2e8bec8a",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:03:59.693165"
+    },
+    {
+      "id": "rel_0995f253",
+      "person1_id": "person_f3225cee",
+      "person2_id": "person_8b950fe8",
+      "type": "spouse",
+      "subtype": "husband",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:04:11.455780"
+    },
+    {
+      "id": "rel_0c9728da",
+      "person1_id": "person_8b950fe8",
+      "person2_id": "person_2e8bec8a",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:04:11.456297"
+    },
+    {
+      "id": "rel_4def5616",
+      "person1_id": "person_d686f681",
+      "person2_id": "person_43e40983",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:04:28.813854"
+    },
+    {
+      "id": "rel_b10745f5",
+      "person1_id": "person_d686f681",
+      "person2_id": "person_43e40983",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:04:56.060853"
+    },
+    {
+      "id": "rel_c846cd5b",
+      "person1_id": "person_d686f681",
+      "person2_id": "person_79f42d20",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:04:56.060926"
+    },
+    {
+      "id": "rel_63344644",
+      "person1_id": "person_43e40983",
+      "person2_id": "person_79f42d20",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:04:56.060970"
+    },
+    {
+      "id": "rel_912d6c8e",
+      "person1_id": "person_f6d71c8f",
+      "person2_id": "person_6ca3fa0a",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:05:12.555431"
+    },
+    {
+      "id": "rel_689b403d",
+      "person1_id": "person_f6d71c8f",
+      "person2_id": "person_6ca3fa0a",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:05:36.337974"
+    },
+    {
+      "id": "rel_3602c204",
+      "person1_id": "person_f6d71c8f",
+      "person2_id": "person_40c3d37f",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:05:36.338021"
+    },
+    {
+      "id": "rel_37c6a4d8",
+      "person1_id": "person_6ca3fa0a",
+      "person2_id": "person_40c3d37f",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:05:36.338058"
+    },
+    {
+      "id": "rel_3f2426cf",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_062f9c23",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:01.164737"
+    },
+    {
+      "id": "rel_2fea7b11",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_4023b120",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:01.164783"
+    },
+    {
+      "id": "rel_d4cbf1f5",
+      "person1_id": "person_2adfb236",
+      "person2_id": "person_7270903a",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:01.165605"
+    },
+    {
+      "id": "rel_22aae7aa",
+      "person1_id": "person_7270903a",
+      "person2_id": "person_b529a930",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:01.165637"
+    },
+    {
+      "id": "rel_4228c2f2",
+      "person1_id": "person_4023b120",
+      "person2_id": "person_6250368e",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:01.165664"
+    },
+    {
+      "id": "rel_df0a929c",
+      "person1_id": "person_4023b120",
+      "person2_id": "person_d686f681",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:01.165691"
+    },
+    {
+      "id": "rel_c55aae91",
+      "person1_id": "person_4023b120",
+      "person2_id": "person_f6d71c8f",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:01.165719"
+    },
+    {
+      "id": "rel_e88a97e8",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_4023b120",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.559564"
+    },
+    {
+      "id": "rel_49dfc1f9",
+      "person1_id": "person_0b536843",
+      "person2_id": "person_d37ab051",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.559622"
+    },
+    {
+      "id": "rel_6689739c",
+      "person1_id": "person_4023b120",
+      "person2_id": "person_d37ab051",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.559656"
+    },
+    {
+      "id": "rel_0b45a875",
+      "person1_id": "person_f6d71c8f",
+      "person2_id": "person_d37ab051",
+      "type": "sibling",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.560980"
+    },
+    {
+      "id": "rel_74881a66",
+      "person1_id": "person_4023b120",
+      "person2_id": "person_062f9c23",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.561012"
+    },
+    {
+      "id": "rel_73dc0977",
+      "person1_id": "person_6250368e",
+      "person2_id": "person_d37ab051",
+      "type": "sibling",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.561037"
+    },
+    {
+      "id": "rel_69bba387",
+      "person1_id": "person_d686f681",
+      "person2_id": "person_d37ab051",
+      "type": "sibling",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.561061"
+    },
+    {
+      "id": "rel_6c7bdf42",
+      "person1_id": "person_062f9c23",
+      "person2_id": "person_d37ab051",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.561133"
+    },
+    {
+      "id": "rel_2678cdcb",
+      "person1_id": "person_f3c66818",
+      "person2_id": "person_d37ab051",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.561164"
+    },
+    {
+      "id": "rel_08f98efd",
+      "person1_id": "person_f3c66818",
+      "person2_id": "person_4023b120",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:26.561189"
+    },
+    {
+      "id": "rel_af432d94",
+      "person1_id": "person_2e8bec8a",
+      "person2_id": "person_d4063911",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:53.169324"
+    },
+    {
+      "id": "rel_f55db7f0",
+      "person1_id": "person_d4063911",
+      "person2_id": "person_16c7cc08",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:53.169829"
+    },
+    {
+      "id": "rel_f8769916",
+      "person1_id": "person_d4063911",
+      "person2_id": "person_43e40983",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:06:53.169857"
+    },
+    {
+      "id": "rel_7311ed0b",
+      "person1_id": "person_2e8bec8a",
+      "person2_id": "person_d4063911",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.024994"
+    },
+    {
+      "id": "rel_e5363d1a",
+      "person1_id": "person_2e8bec8a",
+      "person2_id": "person_da0b31d6",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.025043"
+    },
+    {
+      "id": "rel_8f31d3e0",
+      "person1_id": "person_d4063911",
+      "person2_id": "person_da0b31d6",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.025079"
+    },
+    {
+      "id": "rel_cb24c670",
+      "person1_id": "person_5a044103",
+      "person2_id": "person_2e8bec8a",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.025921"
+    },
+    {
+      "id": "rel_eeb5a220",
+      "person1_id": "person_d4063911",
+      "person2_id": "person_5a044103",
+      "type": "spouse",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.025982"
+    },
+    {
+      "id": "rel_255eceaa",
+      "person1_id": "person_da0b31d6",
+      "person2_id": "person_16c7cc08",
+      "type": "sibling",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.026026"
+    },
+    {
+      "id": "rel_4b4ee6fa",
+      "person1_id": "person_da0b31d6",
+      "person2_id": "person_43e40983",
+      "type": "sibling",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.026059"
+    },
+    {
+      "id": "rel_d2ef1515",
+      "person1_id": "person_5a044103",
+      "person2_id": "person_da0b31d6",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:18.026093"
+    },
+    {
+      "id": "rel_e700a36b",
+      "person1_id": "person_3b25776b",
+      "person2_id": "person_7270903a",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:36.297565"
+    },
+    {
+      "id": "rel_ea0d54b0",
+      "person1_id": "person_3b25776b",
+      "person2_id": "person_3c5e49be",
+      "type": "parent_child",
+      "subtype": null,
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:36.297576"
+    },
+    {
+      "id": "rel_18944a5a",
+      "person1_id": "person_7270903a",
+      "person2_id": "person_3c5e49be",
+      "type": "sibling",
+      "subtype": "elder_brother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:36.297637"
+    },
+    {
+      "id": "rel_260d60ed",
+      "person1_id": "person_3c5e49be",
+      "person2_id": "person_062f9c23",
+      "type": "aunt_uncle_niece_nephew",
+      "subtype": "uncle",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:36.297685"
+    },
+    {
+      "id": "rel_bdb67950",
+      "person1_id": "person_3c5e49be",
+      "person2_id": "person_82a9388f",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:07:48.391295"
+    },
+    {
+      "id": "rel_f458efe4",
+      "person1_id": "person_062f9c23",
+      "person2_id": "person_d686f681",
+      "type": "parent_child",
+      "subtype": "mother",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:08:02.541991"
+    },
+    {
+      "id": "rel_8f28660d",
+      "person1_id": "person_2e8bec8a",
+      "person2_id": "person_43e40983",
+      "type": "parent_child",
+      "subtype": "father",
+      "start_date": null,
+      "end_date": null,
+      "attributes": {},
+      "event_id": null,
+      "notes": null,
+      "created_at": "2026-04-22T14:08:17.593921"
+    }
+  ]
+}

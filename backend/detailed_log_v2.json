@@ -1,0 +1,7001 @@
+[
+  {
+    "id": "T001",
+    "category": "新增人物",
+    "input": "我有个表弟叫周小明，2000年出生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周小明",
+        "gender": "male",
+        "birth": "2000",
+        "tags": [
+          "表弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T002",
+    "category": "新增人物",
+    "input": "爷爷的哥哥叫王大壮，已经去世了",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王大壮",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "哥哥",
+          "长辈"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "王大壮"
+        ],
+        "date": ""
+      },
+      {
+        "type": "关系",
+        "a": "王大壮",
+        "b": "爷爷",
+        "rel": "sibling",
+        "reason": "爷爷的哥哥"
+      }
+    ]
+  },
+  {
+    "id": "T003",
+    "category": "新增人物",
+    "input": "我姑姑叫刘秀英，1955年出生在刘家村，现在住在县城",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘秀英",
+        "gender": "female",
+        "birth": "1955",
+        "tags": [
+          "姑姑"
+        ]
+      },
+      {
+        "type": "更新",
+        "name": "刘秀英",
+        "field": "desc",
+        "value": "出生在刘家村，现在住在县城"
+      },
+      {
+        "type": "关系",
+        "a": "刘秀英",
+        "b": "speaker",
+        "rel": "姑侄",
+        "reason": "我姑姑"
+      }
+    ]
+  },
+  {
+    "id": "T004",
+    "category": "新增人物",
+    "input": "我有三个舅舅，大的叫李国强，二的叫李国富，小的叫李国民",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李国强",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "舅舅"
+        ]
+      },
+      {
+        "type": "创建人物",
+        "name": "李国富",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "舅舅"
+        ]
+      },
+      {
+        "type": "创建人物",
+        "name": "李国民",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "舅舅"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "李国强",
+        "b": "李国富",
+        "rel": "sibling",
+        "reason": "三兄弟"
+      },
+      {
+        "type": "关系",
+        "a": "李国强",
+        "b": "李国民",
+        "rel": "sibling",
+        "reason": "三兄弟"
+      },
+      {
+        "type": "关系",
+        "a": "李国富",
+        "b": "李国民",
+        "rel": "sibling",
+        "reason": "三兄弟"
+      }
+    ]
+  },
+  {
+    "id": "T005",
+    "category": "新增人物",
+    "input": "还有一个人叫张伟",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "张伟",
+        "gender": "male",
+        "birth": "",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "T006",
+    "category": "新增人物",
+    "input": "王建国有个妹妹叫王建红",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王建红",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "妹妹"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "王建红",
+        "rel": "兄妹"
+      }
+    ]
+  },
+  {
+    "id": "T007",
+    "category": "新增人物",
+    "input": "李梅她姐夫叫陈大牛",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "陈大牛",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "姐夫"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "陈大牛",
+        "rel": "姐夫"
+      }
+    ]
+  },
+  {
+    "id": "T008",
+    "category": "新增人物",
+    "input": "大伯的三儿子叫建国华",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "建国华",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "三儿子"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T009",
+    "category": "关联人员",
+    "input": "王建国今年45岁了",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1981"
+      }
+    ]
+  },
+  {
+    "id": "T010",
+    "category": "关联人员",
+    "input": "李梅是隔壁村嫁过来的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "来源:隔壁村"
+      }
+    ]
+  },
+  {
+    "id": "T011",
+    "category": "关联人员",
+    "input": "赵大爷的大名叫赵大雷",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "全名:赵大雷"
+      }
+    ]
+  },
+  {
+    "id": "T012",
+    "category": "关联人员",
+    "input": "王大强老爷子身体还很硬朗",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "身体还很硬朗"
+      }
+    ]
+  },
+  {
+    "id": "T013",
+    "category": "更新信息",
+    "input": "李菊花是1985年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "birth_date",
+        "value": "1985"
+      }
+    ]
+  },
+  {
+    "id": "T014",
+    "category": "更新信息",
+    "input": "李刚出生于1987年",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李刚",
+        "gender": "male",
+        "birth": "1987",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "T015",
+    "category": "更新信息",
+    "input": "李梅是在李家村出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "出生地:李家村"
+      }
+    ]
+  },
+  {
+    "id": "T016",
+    "category": "更新信息",
+    "input": "王建国现在住在省城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "现居:省城"
+      }
+    ]
+  },
+  {
+    "id": "T017",
+    "category": "更新信息",
+    "input": "王大强以前是生产队长",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "职业:生产队长"
+      }
+    ]
+  },
+  {
+    "id": "T018",
+    "category": "生平故事",
+    "input": "王建国年轻的时候长得一表人才，读书成绩一直是班上前几名",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王建国",
+        "text": "年轻时长得一表人才，读书成绩一直是班上前几名"
+      }
+    ]
+  },
+  {
+    "id": "T019",
+    "category": "生平故事",
+    "input": "赵大爷是村里出了名的热心肠，谁家有事都帮忙",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "村里出了名的热心肠，谁家有事都帮忙"
+      }
+    ]
+  },
+  {
+    "id": "T020",
+    "category": "生平故事",
+    "input": "王建国高中毕业后学了木匠手艺，后来在县城开了家具店",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王建国",
+        "text": "高中毕业后学了木匠手艺，后来在县城开了家具店"
+      }
+    ]
+  },
+  {
+    "id": "T021",
+    "category": "生平故事",
+    "input": "李梅从小就喜欢唱歌，是村里文艺队的骨干",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李梅",
+        "text": "从小就喜欢唱歌，是村里文艺队的骨干"
+      }
+    ]
+  },
+  {
+    "id": "T022",
+    "category": "生平故事",
+    "input": "王大强年轻时当过兵，后来回村务农。他为人正直，村里人都很尊敬他",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "年轻时当过兵，后来回村务农。为人正直，村里人都很尊敬他"
+      }
+    ]
+  },
+  {
+    "id": "T023",
+    "category": "新建关系",
+    "input": "王大强还有个大儿子叫王建军",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王建军",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "大儿子"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "王建军",
+        "rel": "父子"
+      },
+      {
+        "type": "关系",
+        "a": "王建军",
+        "b": "王建国",
+        "rel": "sibling",
+        "reason": "王大强的儿子们"
+      }
+    ]
+  },
+  {
+    "id": "T024",
+    "category": "新建关系",
+    "input": "王大强的老婆叫孙桂芳",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "孙桂芳",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "老婆"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "孙桂芳",
+        "rel": "夫妻"
+      },
+      {
+        "type": "推导",
+        "a": "孙桂芳",
+        "b": "王建国",
+        "rel": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T025",
+    "category": "新建关系",
+    "input": "李菊花是李梅的妹妹",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李菊花",
+        "b": "李梅",
+        "rel": "姐妹"
+      }
+    ]
+  },
+  {
+    "id": "T026",
+    "category": "新建关系",
+    "input": "建国认了赵大爷做干爹",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "赵大爷",
+        "rel": "干父子"
+      }
+    ]
+  },
+  {
+    "id": "T027",
+    "category": "新建关系",
+    "input": "王大强的父亲叫王老太爷",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王老太爷",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "父亲"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "王老太爷",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "T028",
+    "category": "新建关系",
+    "input": "李梅的弟弟叫李强",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李强",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "弟弟"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "李强",
+        "rel": "姐弟"
+      }
+    ]
+  },
+  {
+    "id": "T029",
+    "category": "重复关系",
+    "input": "王建国是王大强的儿子",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "王大强",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "T030",
+    "category": "重复关系",
+    "input": "王大强是王建国的父亲",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "王建国",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "T031",
+    "category": "重复关系",
+    "input": "王建国和李梅是两口子",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "李梅",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "T032",
+    "category": "事件",
+    "input": "小明是2000年5月出生在县医院的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "周小明",
+        "field": "birth_date",
+        "value": "2000-05"
+      }
+    ]
+  },
+  {
+    "id": "T033",
+    "category": "事件",
+    "input": "建国和李梅是1995年9月15号结的婚，在县城办的酒席",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "王建国",
+          "李梅"
+        ],
+        "date": "1995-09-15"
+      }
+    ]
+  },
+  {
+    "id": "T034",
+    "category": "事件",
+    "input": "王老太爷是2010年走的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王老太爷",
+        "field": "death_date",
+        "value": "2010"
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "王老太爷"
+        ],
+        "date": "2010"
+      }
+    ]
+  },
+  {
+    "id": "T035",
+    "category": "事件",
+    "input": "2005年王建国一家从王家村搬到了县城",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "王建国"
+        ],
+        "date": "2005"
+      }
+    ]
+  },
+  {
+    "id": "T036",
+    "category": "事件",
+    "input": "2020年李梅生了一场大病",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "illness",
+        "persons": [
+          "李梅"
+        ],
+        "date": "2020"
+      }
+    ]
+  },
+  {
+    "id": "T037",
+    "category": "事件",
+    "input": "1996年建国认赵大爷做干爹，在赵家村办的",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "ceremony",
+        "persons": [
+          "王建国",
+          "赵大爷"
+        ],
+        "date": "1996"
+      }
+    ]
+  },
+  {
+    "id": "T038",
+    "category": "冲突信息",
+    "input": "王建国其实是1979年出生的，不是1980年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1979(更正)"
+      }
+    ]
+  },
+  {
+    "id": "T039",
+    "category": "冲突信息",
+    "input": "李梅是李家村人，不是隔壁村的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "籍贯:李家村(更正)"
+      }
+    ]
+  },
+  {
+    "id": "T040",
+    "category": "冲突信息",
+    "input": "赵大爷其实是王建国的舅舅",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "王建国",
+        "rel": "舅舅"
+      }
+    ]
+  },
+  {
+    "id": "T041",
+    "category": "指代不明",
+    "input": "他小时候很调皮，经常去河里摸鱼",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "指代不明，'他'不知是谁"
+      }
+    ]
+  },
+  {
+    "id": "T042",
+    "category": "指代不明",
+    "input": "大伯的老二叫建国",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "王建国"
+      },
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "大伯老二"
+      },
+      {
+        "type": "关系",
+        "a": "建国",
+        "b": "大伯",
+        "rel": "parent_child",
+        "reason": "大伯的老二"
+      }
+    ]
+  },
+  {
+    "id": "T043",
+    "category": "指代不明",
+    "input": "村里还有个建国，是赵大爷的侄子",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "建国(赵家)",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "侄子"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "建国(赵家)",
+        "rel": "叔侄"
+      }
+    ]
+  },
+  {
+    "id": "T044",
+    "category": "干扰项",
+    "input": "今天天气真好啊",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "T045",
+    "category": "干扰项",
+    "input": "晚饭吃的是饺子",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "T046",
+    "category": "干扰项",
+    "input": "明天要去镇上赶集",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "T047",
+    "category": "干扰项",
+    "input": "我们村有几百年的历史了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "T048",
+    "category": "干扰项",
+    "input": "老王家在村里住了好几代",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "泛指老王家"
+      }
+    ]
+  },
+  {
+    "id": "T049",
+    "category": "干扰项",
+    "input": "今天天气不错，对了，王建国的儿子叫王小明，今年上小学了",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王小明",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "儿子"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "王小明",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "T050",
+    "category": "复杂场景",
+    "input": "我爷爷叫王老根，奶奶叫刘桂花。爷爷有三个儿子，老大王大强是我大伯，老二王大志是我爸，老三王小军是我叔",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王老根",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "爷爷"
+        ]
+      },
+      {
+        "type": "创建人物",
+        "name": "刘桂花",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "奶奶"
+        ]
+      },
+      {
+        "type": "创建人物",
+        "name": "王大志",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "爸爸"
+        ]
+      },
+      {
+        "type": "创建人物",
+        "name": "王小军",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "叔叔"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王老根",
+        "b": "王大强",
+        "rel": "父子"
+      },
+      {
+        "type": "关系",
+        "a": "王老根",
+        "b": "王大志",
+        "rel": "父子"
+      },
+      {
+        "type": "关系",
+        "a": "王老根",
+        "b": "王小军",
+        "rel": "父子"
+      },
+      {
+        "type": "关系",
+        "a": "王老根",
+        "b": "刘桂花",
+        "rel": "spouse",
+        "reason": "爷爷的父母"
+      },
+      {
+        "type": "推导",
+        "a": "刘桂花",
+        "b": "王大强",
+        "rel": "parent_child",
+        "reason": "夫妻推导:王老根是王大强的父亲，刘桂花是王老根的妻子→刘桂花是王大强的母亲"
+      },
+      {
+        "type": "推导",
+        "a": "刘桂花",
+        "b": "王大志",
+        "rel": "parent_child",
+        "reason": "夫妻推导"
+      },
+      {
+        "type": "推导",
+        "a": "刘桂花",
+        "b": "王小军",
+        "rel": "parent_child",
+        "reason": "夫妻推导"
+      },
+      {
+        "type": "推导",
+        "a": "王大强",
+        "b": "王大志",
+        "rel": "sibling",
+        "reason": "同父推导"
+      },
+      {
+        "type": "推导",
+        "a": "王大强",
+        "b": "王小军",
+        "rel": "sibling",
+        "reason": "同父推导"
+      },
+      {
+        "type": "推导",
+        "a": "王大志",
+        "b": "王小军",
+        "rel": "sibling",
+        "reason": "同父推导"
+      }
+    ]
+  },
+  {
+    "id": "T051",
+    "category": "复杂场景",
+    "input": "建国和李梅结婚后第二年生了个女儿叫小芳",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "小芳",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "女儿"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "小芳",
+        "rel": "父女"
+      },
+      {
+        "type": "推导",
+        "a": "李梅",
+        "b": "小芳",
+        "rel": "parent_child",
+        "reason": "夫妻推导:建国是小芳的父亲，李梅是建国的妻子→李梅是小芳的母亲"
+      }
+    ]
+  },
+  {
+    "id": "T052",
+    "category": "复杂场景",
+    "input": "王小军的儿子过继给了王大志，改名叫王继志",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王继志",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "过继"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王大志",
+        "b": "王继志",
+        "rel": "收养"
+      }
+    ]
+  },
+  {
+    "id": "T053",
+    "category": "复杂场景",
+    "input": "王建国和李梅后来离婚了，建国又娶了一个叫张丽的女人",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "divorce",
+        "persons": [
+          "王建国",
+          "李梅"
+        ],
+        "date": ""
+      },
+      {
+        "type": "创建人物",
+        "name": "张丽",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "再婚"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "张丽",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "T054",
+    "category": "日期格式",
+    "input": "赵大爷是45年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945"
+      }
+    ]
+  },
+  {
+    "id": "T055",
+    "category": "日期格式",
+    "input": "李梅是1982年3月15日出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982-03-15"
+      }
+    ]
+  },
+  {
+    "id": "T056",
+    "category": "日期格式",
+    "input": "王建国是1980年12月出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980-12"
+      }
+    ]
+  },
+  {
+    "id": "T057",
+    "category": "日期格式",
+    "input": "赵大爷是1945年腊月生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945-12"
+      }
+    ]
+  },
+  {
+    "id": "T058",
+    "category": "日期格式",
+    "input": "王大强大概是50年代初出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "~1950"
+      }
+    ]
+  },
+  {
+    "id": "T059",
+    "category": "地名",
+    "input": "王大强是王家村土生土长的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "籍贯:王家村"
+      }
+    ]
+  },
+  {
+    "id": "T060",
+    "category": "地名",
+    "input": "李梅娘家是山东的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "娘家:山东"
+      }
+    ]
+  },
+  {
+    "id": "T061",
+    "category": "称呼",
+    "input": "赵大爷的全名是赵大雷",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "全名:赵大雷"
+      }
+    ]
+  },
+  {
+    "id": "T062",
+    "category": "称呼",
+    "input": "建国的小名叫狗蛋",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "小名:狗蛋"
+      }
+    ]
+  },
+  {
+    "id": "T063",
+    "category": "称呼",
+    "input": "赵大爷以前是村长，后来当了支书",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "职业:村长→支书"
+      }
+    ]
+  },
+  {
+    "id": "T064",
+    "category": "死亡",
+    "input": "王老太爷2010年去世了",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王老太爷",
+        "field": "death_date",
+        "value": "2010"
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "王老太爷"
+        ],
+        "date": "2010"
+      }
+    ]
+  },
+  {
+    "id": "T065",
+    "category": "死亡",
+    "input": "我奶奶前年走了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "奶奶(刘桂花)"
+        ],
+        "date": "~2024"
+      }
+    ]
+  },
+  {
+    "id": "T066",
+    "category": "死亡",
+    "input": "赵大爷去年冬天过世了",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "death_date",
+        "value": "~2025冬"
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "赵大爷"
+        ],
+        "date": "~2025冬"
+      }
+    ]
+  },
+  {
+    "id": "EXT_p067",
+    "category": "新增人物",
+    "input": "我有个表哥，叫陈伟",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "陈伟",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "表哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_p068",
+    "category": "新增人物",
+    "input": "表哥陈伟",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "陈伟"
+      }
+    ]
+  },
+  {
+    "id": "EXT_p069",
+    "category": "新增人物",
+    "input": "表哥名字叫陈伟",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "陈伟"
+      }
+    ]
+  },
+  {
+    "id": "EXT_k070",
+    "category": "新增人物",
+    "input": "叔叔梁志强是1951年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "梁志强",
+        "gender": "male",
+        "birth": "1951",
+        "tags": [
+          "叔叔"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k071",
+    "category": "新增人物",
+    "input": "我的叔叔叫黄明",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "黄明",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "叔叔"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k072",
+    "category": "新增人物",
+    "input": "有个阿姨叫谢娟，1955年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "谢娟",
+        "gender": "female",
+        "birth": "1955",
+        "tags": [
+          "阿姨"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k073",
+    "category": "新增人物",
+    "input": "我家阿姨王秀英",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王秀英",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "阿姨"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k074",
+    "category": "新增人物",
+    "input": "我的舅舅叫黄鑫",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "黄鑫",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "舅舅"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k075",
+    "category": "新增人物",
+    "input": "有个舅舅叫林军，1995年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "林军",
+        "gender": "male",
+        "birth": "1995",
+        "tags": [
+          "舅舅"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k076",
+    "category": "新增人物",
+    "input": "姑姑黄芳是1987年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "黄芳",
+        "gender": "female",
+        "birth": "1987",
+        "tags": [
+          "姑姑"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k077",
+    "category": "新增人物",
+    "input": "有个姑姑叫张玉兰，1994年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "张玉兰",
+        "gender": "female",
+        "birth": "1994",
+        "tags": [
+          "姑姑"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k078",
+    "category": "新增人物",
+    "input": "我家爷爷孙华",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "孙华",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "爷爷"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k079",
+    "category": "新增人物",
+    "input": "有个爷爷叫孙志强，1955年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "孙志强",
+        "gender": "male",
+        "birth": "1955",
+        "tags": [
+          "爷爷"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k080",
+    "category": "新增人物",
+    "input": "奶奶赵静是2004年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "赵静",
+        "gender": "female",
+        "birth": "2004",
+        "tags": [
+          "奶奶"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k081",
+    "category": "新增人物",
+    "input": "我的奶奶叫郑雪梅",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "郑雪梅",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "奶奶"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k082",
+    "category": "新增人物",
+    "input": "我的外公叫唐宇",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "唐宇",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "外公"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k083",
+    "category": "新增人物",
+    "input": "外公朱国强是1985年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "朱国强",
+        "gender": "male",
+        "birth": "1985",
+        "tags": [
+          "外公"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k084",
+    "category": "新增人物",
+    "input": "我家外婆梁静",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "梁静",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "外婆"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k085",
+    "category": "新增人物",
+    "input": "我家外婆宋丽华",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "宋丽华",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "外婆"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k086",
+    "category": "新增人物",
+    "input": "我家哥哥吴国强",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "吴国强",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "哥哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k087",
+    "category": "新增人物",
+    "input": "有个哥哥叫赵超，1967年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "赵超",
+        "gender": "male",
+        "birth": "1967",
+        "tags": [
+          "哥哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k088",
+    "category": "新增人物",
+    "input": "姐姐梁静是1960年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "梁静",
+        "gender": "female",
+        "birth": "1960",
+        "tags": [
+          "姐姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k089",
+    "category": "新增人物",
+    "input": "姐姐马美玲是1992年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "马美玲",
+        "gender": "female",
+        "birth": "1992",
+        "tags": [
+          "姐姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k090",
+    "category": "新增人物",
+    "input": "我家弟弟宋国强",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "宋国强",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "弟弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k091",
+    "category": "新增人物",
+    "input": "有个弟弟叫林明，1960年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "林明",
+        "gender": "male",
+        "birth": "1960",
+        "tags": [
+          "弟弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k092",
+    "category": "新增人物",
+    "input": "我家妹妹朱雪梅",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "朱雪梅",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "妹妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k093",
+    "category": "新增人物",
+    "input": "我的妹妹叫谢丽",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "谢丽",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "妹妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k094",
+    "category": "新增人物",
+    "input": "堂哥黄建军是2001年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "黄建军",
+        "gender": "male",
+        "birth": "2001",
+        "tags": [
+          "堂哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k095",
+    "category": "新增人物",
+    "input": "我家堂哥朱华",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "朱华",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "堂哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k096",
+    "category": "新增人物",
+    "input": "有个堂弟叫罗磊，1963年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "罗磊",
+        "gender": "male",
+        "birth": "1963",
+        "tags": [
+          "堂弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k097",
+    "category": "新增人物",
+    "input": "堂弟朱宇是1959年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "朱宇",
+        "gender": "male",
+        "birth": "1959",
+        "tags": [
+          "堂弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k098",
+    "category": "新增人物",
+    "input": "堂姐刘小红是1997年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘小红",
+        "gender": "female",
+        "birth": "1997",
+        "tags": [
+          "堂姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k099",
+    "category": "新增人物",
+    "input": "有个堂姐叫唐燕，1987年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "唐燕",
+        "gender": "female",
+        "birth": "1987",
+        "tags": [
+          "堂姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k100",
+    "category": "新增人物",
+    "input": "有个堂妹叫马小红，1958年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "马小红",
+        "gender": "female",
+        "birth": "1958",
+        "tags": [
+          "堂妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k101",
+    "category": "新增人物",
+    "input": "我的堂妹叫李桂芳",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李桂芳",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "堂妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k102",
+    "category": "新增人物",
+    "input": "有个表哥叫刘勇，2000年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘勇",
+        "gender": "male",
+        "birth": "2000",
+        "tags": [
+          "表哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k103",
+    "category": "新增人物",
+    "input": "有个表哥叫郑国强，1974年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "郑国强",
+        "gender": "male",
+        "birth": "1974",
+        "tags": [
+          "表哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k104",
+    "category": "新增人物",
+    "input": "表弟郑宇是1983年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "郑宇",
+        "gender": "male",
+        "birth": "1983",
+        "tags": [
+          "表弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k105",
+    "category": "新增人物",
+    "input": "我的表弟叫林建国",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "林建国",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "表弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k106",
+    "category": "新增人物",
+    "input": "表姐谢娟是1998年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "谢娟",
+        "gender": "female",
+        "birth": "1998",
+        "tags": [
+          "表姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k107",
+    "category": "新增人物",
+    "input": "表姐梁丽是1957年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "梁丽",
+        "gender": "female",
+        "birth": "1957",
+        "tags": [
+          "表姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k108",
+    "category": "新增人物",
+    "input": "我的表妹叫胡玉兰",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "胡玉兰",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "表妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k109",
+    "category": "新增人物",
+    "input": "我家表妹唐雪梅",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "唐雪梅",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "表妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k110",
+    "category": "新增人物",
+    "input": "姐夫高志强是2005年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "高志强",
+        "gender": "male",
+        "birth": "2005",
+        "tags": [
+          "姐夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k111",
+    "category": "新增人物",
+    "input": "我家姐夫梁鑫",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "梁鑫",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "姐夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k112",
+    "category": "新增人物",
+    "input": "我家嫂子刘静",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘静",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "嫂子"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k113",
+    "category": "新增人物",
+    "input": "嫂子林玲是1950年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "林玲",
+        "gender": "female",
+        "birth": "1950",
+        "tags": [
+          "嫂子"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k114",
+    "category": "新增人物",
+    "input": "弟媳何秀英是1957年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "何秀英",
+        "gender": "female",
+        "birth": "1957",
+        "tags": [
+          "弟媳"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k115",
+    "category": "新增人物",
+    "input": "我家弟媳吴小红",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "吴小红",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "弟媳"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k116",
+    "category": "新增人物",
+    "input": "有个妹夫叫罗国强，1955年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "罗国强",
+        "gender": "male",
+        "birth": "1955",
+        "tags": [
+          "妹夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k117",
+    "category": "新增人物",
+    "input": "我家妹夫李飞",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李飞",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "妹夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k118",
+    "category": "新增人物",
+    "input": "我家儿媳妇刘霞",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘霞",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "儿媳妇"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k119",
+    "category": "新增人物",
+    "input": "有个儿媳妇叫周玲，2005年出生",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周玲",
+        "gender": "female",
+        "birth": "2005",
+        "tags": [
+          "儿媳妇"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k120",
+    "category": "新增人物",
+    "input": "我家女婿杨飞",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "杨飞",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "女婿"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k121",
+    "category": "新增人物",
+    "input": "女婿宋刚是1975年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "宋刚",
+        "gender": "male",
+        "birth": "1975",
+        "tags": [
+          "女婿"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k122",
+    "category": "新增人物",
+    "input": "我的亲家叫郭鑫",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "郭鑫",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "亲家"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k123",
+    "category": "新增人物",
+    "input": "亲家黄明是1954年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "黄明",
+        "gender": "male",
+        "birth": "1954",
+        "tags": [
+          "亲家"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k124",
+    "category": "新增人物",
+    "input": "我家亲家母张娟",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "张娟",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "亲家母"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k125",
+    "category": "新增人物",
+    "input": "我的亲家母叫张丽华",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "张丽华",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "亲家母"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_e126",
+    "category": "事件",
+    "input": "李梅和王建国结婚了",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "王建国",
+        "rel": "夫妻"
+      },
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "李梅",
+          "王建国"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e127",
+    "category": "事件",
+    "input": "王建国娶了王大强",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "王建国",
+          "王大强"
+        ],
+        "date": "⚠️异常"
+      }
+    ]
+  },
+  {
+    "id": "EXT_e128",
+    "category": "事件",
+    "input": "赵大爷嫁给了李梅",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "赵大爷",
+          "李梅"
+        ],
+        "date": "⚠️异常"
+      }
+    ]
+  },
+  {
+    "id": "EXT_e129",
+    "category": "事件",
+    "input": "李菊花与赵大爷喜结连理",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李菊花",
+        "b": "赵大爷",
+        "rel": "夫妻"
+      },
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "李菊花",
+          "赵大爷"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e130",
+    "category": "事件",
+    "input": "赵大爷跟李梅成亲了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "赵大爷",
+          "李梅"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e131",
+    "category": "事件",
+    "input": "赵大爷和王大强办了喜事",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "赵大爷",
+          "王大强"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e132",
+    "category": "事件",
+    "input": "赵大爷出生了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "born",
+        "persons": [
+          "赵大爷"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e133",
+    "category": "事件",
+    "input": "王建国降生了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "born",
+        "persons": [
+          "王建国"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e134",
+    "category": "事件",
+    "input": "王建国来到这个世界",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "born",
+        "persons": [
+          "王建国"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e135",
+    "category": "事件",
+    "input": "家里添了李菊花",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "born",
+        "persons": [
+          "李菊花"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e136",
+    "category": "事件",
+    "input": "李梅去世了",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "death_date",
+        "value": "已故"
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "李梅"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e137",
+    "category": "事件",
+    "input": "王建国走了",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "death_date",
+        "value": "已故"
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "王建国"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e138",
+    "category": "事件",
+    "input": "王建国过世了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "王建国"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e139",
+    "category": "事件",
+    "input": "李梅不在了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "李梅"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e140",
+    "category": "事件",
+    "input": "李梅老了（去世）",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "李梅"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e141",
+    "category": "事件",
+    "input": "送走了赵大爷",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "赵大爷"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e142",
+    "category": "事件",
+    "input": "赵大爷搬到了王家村",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "赵大爷"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e143",
+    "category": "事件",
+    "input": "李菊花从省城迁走了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "李菊花"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e144",
+    "category": "事件",
+    "input": "王大强一家搬到县城去了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "王大强"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e145",
+    "category": "事件",
+    "input": "李菊花生了一场大病",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "illness",
+        "persons": [
+          "李菊花"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e146",
+    "category": "事件",
+    "input": "王建国住院了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "illness",
+        "persons": [
+          "王建国"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_e147",
+    "category": "事件",
+    "input": "李菊花病了好几个月",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "illness",
+        "persons": [
+          "李菊花"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_n001",
+    "category": "干扰项",
+    "input": "今天天气真好",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n002",
+    "category": "干扰项",
+    "input": "明天要下雨了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n003",
+    "category": "干扰项",
+    "input": "午饭吃什么好呢",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n004",
+    "category": "干扰项",
+    "input": "这电视真没意思",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n005",
+    "category": "干扰项",
+    "input": "村口那棵老槐树还在",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n006",
+    "category": "干扰项",
+    "input": "今年收成不错",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n007",
+    "category": "干扰项",
+    "input": "隔壁村的路修好了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n008",
+    "category": "干扰项",
+    "input": "手机没电了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n009",
+    "category": "干扰项",
+    "input": "快递到了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n010",
+    "category": "干扰项",
+    "input": "该理发了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n011",
+    "category": "干扰项",
+    "input": "玉米该收了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n012",
+    "category": "干扰项",
+    "input": "狗又跑出去了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n013",
+    "category": "干扰项",
+    "input": "屋顶漏雨了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n014",
+    "category": "干扰项",
+    "input": "井水不甜了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n015",
+    "category": "干扰项",
+    "input": "菜地该浇水了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n016",
+    "category": "干扰项",
+    "input": "电视机坏了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n017",
+    "category": "干扰项",
+    "input": "洗衣机漏水了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n018",
+    "category": "干扰项",
+    "input": "电费该交了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n019",
+    "category": "干扰项",
+    "input": "门口路灯不亮",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n020",
+    "category": "干扰项",
+    "input": "集市上白菜便宜了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n021",
+    "category": "干扰项",
+    "input": "猪肉又涨价了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n022",
+    "category": "干扰项",
+    "input": "种子买好了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n023",
+    "category": "干扰项",
+    "input": "清明要上坟了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n024",
+    "category": "干扰项",
+    "input": "过年要杀猪了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n025",
+    "category": "干扰项",
+    "input": "中秋要买月饼",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n026",
+    "category": "干扰项",
+    "input": "孩子该上学了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n027",
+    "category": "干扰项",
+    "input": "作业还没写完",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n028",
+    "category": "干扰项",
+    "input": "老师打电话来了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n029",
+    "category": "干扰项",
+    "input": "银行排队好多人",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n030",
+    "category": "干扰项",
+    "input": "医院挂号太难了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n031",
+    "category": "干扰项",
+    "input": "公交改线了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n032",
+    "category": "干扰项",
+    "input": "邻居家盖新房了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n033",
+    "category": "干扰项",
+    "input": "村长换届了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n034",
+    "category": "干扰项",
+    "input": "修路封道了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n035",
+    "category": "干扰项",
+    "input": "听说要拆迁了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n036",
+    "category": "干扰项",
+    "input": "补贴发下来了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n037",
+    "category": "干扰项",
+    "input": "低保办好了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n038",
+    "category": "干扰项",
+    "input": "驾照考下来了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n039",
+    "category": "干扰项",
+    "input": "新买的电动车",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n040",
+    "category": "干扰项",
+    "input": "手机该换了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n041",
+    "category": "干扰项",
+    "input": "天气预报说有暴雨",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n042",
+    "category": "干扰项",
+    "input": "山上有野猪了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n043",
+    "category": "干扰项",
+    "input": "河里鱼少了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n044",
+    "category": "干扰项",
+    "input": "广场舞开始了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n045",
+    "category": "干扰项",
+    "input": "下棋输了三盘",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n046",
+    "category": "干扰项",
+    "input": "钓鱼空军了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r194",
+    "category": "新建关系",
+    "input": "王建国是王大强的儿子",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "王大强",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r195",
+    "category": "新建关系",
+    "input": "王建国是李梅的女儿",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "李梅",
+        "rel": "父女"
+      },
+      "⚠️矛盾:建国为男性"
+    ]
+  },
+  {
+    "id": "EXT_r196",
+    "category": "新建关系",
+    "input": "李菊花是李梅的父亲",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李菊花",
+        "b": "李梅",
+        "rel": "父女"
+      },
+      "⚠️矛盾:菊花为女性"
+    ]
+  },
+  {
+    "id": "EXT_r197",
+    "category": "新建关系",
+    "input": "王大强是王建国的母亲",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "王建国",
+        "rel": "母子"
+      },
+      "⚠️矛盾:大强为男性"
+    ]
+  },
+  {
+    "id": "EXT_r198",
+    "category": "新建关系",
+    "input": "李菊花生了王建国",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李菊花",
+        "b": "王建国",
+        "rel": "母子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r199",
+    "category": "新建关系",
+    "input": "王建国是李菊花的孩子",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "李菊花",
+        "rel": "母子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r200",
+    "category": "新建关系",
+    "input": "赵大爷是王大强的爹",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "王大强",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r201",
+    "category": "新建关系",
+    "input": "王大强是李梅的妈",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "李梅",
+        "rel": "母子"
+      },
+      "⚠️矛盾"
+    ]
+  },
+  {
+    "id": "EXT_r202",
+    "category": "新建关系",
+    "input": "王大强是李梅的老婆",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "李梅",
+        "rel": "夫妻"
+      },
+      "⚠️矛盾",
+      {
+        "type": "推导",
+        "a": "李梅",
+        "b": "王建国",
+        "rel": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r203",
+    "category": "新建关系",
+    "input": "王大强是李菊花的丈夫",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "李菊花",
+        "rel": "夫妻"
+      },
+      {
+        "type": "推导",
+        "a": "李菊花",
+        "b": "王建国",
+        "rel": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r204",
+    "category": "新建关系",
+    "input": "李梅和赵大爷是两口子",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "赵大爷",
+        "rel": "夫妻"
+      },
+      {
+        "type": "推导",
+        "a": "赵大爷",
+        "b": "王建国",
+        "rel": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r205",
+    "category": "新建关系",
+    "input": "赵大爷和王大强结婚了",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "王大强",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r206",
+    "category": "新建关系",
+    "input": "李梅是王建国的媳妇",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "王建国",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r207",
+    "category": "新建关系",
+    "input": "王建国是赵大爷的老公",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "赵大爷",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r208",
+    "category": "新建关系",
+    "input": "王建国是王大强的哥哥",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "王大强",
+        "rel": "兄弟"
+      },
+      "⚠️辈分矛盾"
+    ]
+  },
+  {
+    "id": "EXT_r209",
+    "category": "新建关系",
+    "input": "李菊花是王大强的弟弟",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李菊花",
+        "b": "王大强",
+        "rel": "兄妹"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r210",
+    "category": "新建关系",
+    "input": "李梅是赵大爷的姐姐",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "赵大爷",
+        "rel": "姐弟"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r211",
+    "category": "新建关系",
+    "input": "王建国是王大强的妹妹",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "王大强",
+        "rel": "兄妹"
+      },
+      "⚠️矛盾"
+    ]
+  },
+  {
+    "id": "EXT_r212",
+    "category": "新建关系",
+    "input": "王大强和赵大爷是亲兄弟",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "赵大爷",
+        "rel": "兄弟"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r213",
+    "category": "新建关系",
+    "input": "李梅和李菊花是亲姐妹",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "李菊花",
+        "rel": "姐妹"
+      }
+    ]
+  },
+  {
+    "id": "EXT_r214",
+    "category": "新建关系",
+    "input": "李菊花和王大强是兄妹",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "李菊花",
+        "b": "王大强",
+        "rel": "兄妹"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u215",
+    "category": "更新信息",
+    "input": "王建国是2007年出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "2007"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u216",
+    "category": "更新信息",
+    "input": "李梅是2010年出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "2010"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u217",
+    "category": "更新信息",
+    "input": "王大强是1953年出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "1953"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u218",
+    "category": "更新信息",
+    "input": "赵大爷是1954年出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1954"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u219",
+    "category": "更新信息",
+    "input": "李菊花是2010年出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "birth_date",
+        "value": "2010"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u220",
+    "category": "更新信息",
+    "input": "王建国生于1976年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1976"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u221",
+    "category": "更新信息",
+    "input": "李梅生于1983年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1983"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u222",
+    "category": "更新信息",
+    "input": "王大强生于1973年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "1973"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u223",
+    "category": "更新信息",
+    "input": "赵大爷生于1972年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1972"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u224",
+    "category": "更新信息",
+    "input": "李菊花生于1994年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "birth_date",
+        "value": "1994"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u225",
+    "category": "更新信息",
+    "input": "王建国是6月生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "出生月:6月"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u226",
+    "category": "更新信息",
+    "input": "李梅是3月生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "出生月:3月"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u227",
+    "category": "更新信息",
+    "input": "王大强是9月生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "出生月:9月"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u228",
+    "category": "更新信息",
+    "input": "赵大爷是9月生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "出生月:9月"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u229",
+    "category": "更新信息",
+    "input": "李菊花是2月生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "desc",
+        "value": "出生月:2月"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u230",
+    "category": "更新信息",
+    "input": "王建国是县城人",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "籍贯:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u231",
+    "category": "更新信息",
+    "input": "李梅是李家村人",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "籍贯:李家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u232",
+    "category": "更新信息",
+    "input": "王大强是省城人",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "籍贯:省城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u233",
+    "category": "更新信息",
+    "input": "赵大爷是北京人",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "籍贯:北京"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u234",
+    "category": "更新信息",
+    "input": "李菊花是省城人",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "desc",
+        "value": "籍贯:省城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u235",
+    "category": "更新信息",
+    "input": "王建国老家在县城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "老家:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u236",
+    "category": "更新信息",
+    "input": "李梅老家在王家村",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "老家:王家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u237",
+    "category": "更新信息",
+    "input": "王大强老家在省城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "老家:省城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u238",
+    "category": "更新信息",
+    "input": "赵大爷老家在县城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "老家:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u239",
+    "category": "更新信息",
+    "input": "李菊花老家在北京",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "desc",
+        "value": "老家:北京"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u240",
+    "category": "更新信息",
+    "input": "王建国生在镇上",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "出生地:镇上"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u241",
+    "category": "更新信息",
+    "input": "李梅生在省城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "出生地:省城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u242",
+    "category": "更新信息",
+    "input": "王大强生在县城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "出生地:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u243",
+    "category": "更新信息",
+    "input": "赵大爷生在省城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "出生地:省城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u244",
+    "category": "更新信息",
+    "input": "李菊花生在北京",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "desc",
+        "value": "出生地:北京"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u245",
+    "category": "更新信息",
+    "input": "王建国现在住在县城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "现居:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u246",
+    "category": "更新信息",
+    "input": "李梅现在住在北京",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "现居:北京"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u247",
+    "category": "更新信息",
+    "input": "王大强现在住在北京",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "现居:北京"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u248",
+    "category": "更新信息",
+    "input": "赵大爷现在住在李家村",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "现居:李家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u249",
+    "category": "更新信息",
+    "input": "李菊花现在住在李家村",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "desc",
+        "value": "现居:李家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u250",
+    "category": "更新信息",
+    "input": "王建国搬到了县城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "搬到:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u251",
+    "category": "更新信息",
+    "input": "李梅搬到了李家村",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "搬到:李家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u252",
+    "category": "更新信息",
+    "input": "王大强搬到了县城",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "搬到:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u253",
+    "category": "更新信息",
+    "input": "赵大爷搬到了镇上",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "搬到:镇上"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u254",
+    "category": "更新信息",
+    "input": "李菊花搬到了李家村",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "desc",
+        "value": "搬到:李家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u255",
+    "category": "更新信息",
+    "input": "王建国在王家村安了家",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "desc",
+        "value": "安家:王家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u256",
+    "category": "更新信息",
+    "input": "李梅在县城安了家",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "desc",
+        "value": "安家:县城"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u257",
+    "category": "更新信息",
+    "input": "王大强在李家村安了家",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "desc",
+        "value": "安家:李家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u258",
+    "category": "更新信息",
+    "input": "赵大爷在镇上安了家",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "desc",
+        "value": "安家:镇上"
+      }
+    ]
+  },
+  {
+    "id": "EXT_u259",
+    "category": "更新信息",
+    "input": "李菊花在王家村安了家",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "desc",
+        "value": "安家:王家村"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s260",
+    "category": "生平故事",
+    "input": "王建国年轻时吃过不少苦",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王建国",
+        "text": "年轻时吃过不少苦"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s261",
+    "category": "生平故事",
+    "input": "王大强为人很老实，从不跟人红脸",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "为人很老实，从不跟人红脸"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s262",
+    "category": "生平故事",
+    "input": "李菊花手艺很好，做的家具远近闻名",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李菊花",
+        "text": "手艺很好，做的家具远近闻名"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s263",
+    "category": "生平故事",
+    "input": "王大强脾气不太好，但心地善良",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "脾气不太好，但心地善良"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s264",
+    "category": "生平故事",
+    "input": "王建国以前当过兵，回来后一直很自律",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王建国",
+        "text": "以前当过兵，回来后一直很自律"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s265",
+    "category": "生平故事",
+    "input": "王大强是村里的能人，什么都会修",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "是村里的能人，什么都会修"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s266",
+    "category": "生平故事",
+    "input": "李菊花特别疼孩子，有什么好吃的都留给娃",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李菊花",
+        "text": "特别疼孩子，有什么好吃的都留给娃"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s267",
+    "category": "生平故事",
+    "input": "王大强年轻时候是十里八乡的美人",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "年轻时候是十里八乡的美人"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s268",
+    "category": "生平故事",
+    "input": "赵大爷念过私塾，识文断字",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "念过私塾，识文断字"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s269",
+    "category": "生平故事",
+    "input": "王大强一辈子没出过远门",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "一辈子没出过远门"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s270",
+    "category": "生平故事",
+    "input": "赵大爷在镇上开过小卖部",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "在镇上开过小卖部"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s271",
+    "category": "生平故事",
+    "input": "王大强种地是一把好手",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "种地是一把好手"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s272",
+    "category": "生平故事",
+    "input": "李菊花喜欢喝酒，每顿都得来二两",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李菊花",
+        "text": "喜欢喝酒，每顿都得来二两"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s273",
+    "category": "生平故事",
+    "input": "李梅特别勤快，天不亮就起来干活",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李梅",
+        "text": "特别勤快，天不亮就起来干活"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s274",
+    "category": "生平故事",
+    "input": "李梅会唱戏，逢年过节村里表演",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李梅",
+        "text": "会唱戏，逢年过节村里表演"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s275",
+    "category": "生平故事",
+    "input": "赵大爷养了一辈子牛，是养牛的好手",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "养了一辈子牛，是养牛的好手"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s276",
+    "category": "生平故事",
+    "input": "赵大爷是个木匠，方圆几十里都有名",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "是个木匠，方圆几十里都有名"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s277",
+    "category": "生平故事",
+    "input": "李梅很会做饭，村里红白喜事都请她",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李梅",
+        "text": "很会做饭，村里红白喜事都请她"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s278",
+    "category": "生平故事",
+    "input": "李菊花一辈子省吃俭用，供孩子读书",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李菊花",
+        "text": "一辈子省吃俭用，供孩子读书"
+      }
+    ]
+  },
+  {
+    "id": "EXT_s279",
+    "category": "生平故事",
+    "input": "李菊花在矿上干了一辈子，落下一身病",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李菊花",
+        "text": "在矿上干了一辈子，落下一身病"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m001",
+    "category": "混合场景",
+    "input": "今天去赶集了，买了二斤肉。对了，我二叔叫刘大壮，1960年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘大壮",
+        "gender": "male",
+        "birth": "1960",
+        "tags": [
+          "二叔"
+        ]
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m002",
+    "category": "混合场景",
+    "input": "晚饭吃的面条。想起来我姑姑叫张秀兰，是1958年出生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "张秀兰",
+        "gender": "female",
+        "birth": "1958",
+        "tags": [
+          "姑姑"
+        ]
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m003",
+    "category": "混合场景",
+    "input": "下雨了收衣服。哦对了，建国的儿子叫王小刚，今年上初中了",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王小刚",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "儿子"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "王小刚",
+        "rel": "父子"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m004",
+    "category": "混合场景",
+    "input": "电视又没信号了。话说李梅她妈叫刘桂兰，今年应该七十多了",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘桂兰",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "母亲"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "刘桂兰",
+        "rel": "母女"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m005",
+    "category": "混合场景",
+    "input": "村口修路呢吵死了。差点忘了说，赵大爷有个弟弟叫赵大海",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "赵大海",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "弟弟"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "赵大海",
+        "rel": "兄弟"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m006",
+    "category": "混合场景",
+    "input": "手机又没电了充一下。想起我姥姥叫周玉兰，1930年生的已经走了",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周玉兰",
+        "gender": "female",
+        "birth": "1930",
+        "tags": [
+          "姥姥"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "周玉兰"
+        ],
+        "date": ""
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m007",
+    "category": "混合场景",
+    "input": "明天要赶早集买种子。对了王大强年轻时候当过兵",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "年轻时候当过兵"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m008",
+    "category": "混合场景",
+    "input": "柴火不够了要去砍点。我表姐叫杨小红，嫁到外省去了",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "杨小红",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "表姐"
+        ]
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m009",
+    "category": "混合场景",
+    "input": "鸡又丢了满村找。王建国他媳妇李梅做饭特别好吃",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李梅",
+        "text": "做饭特别好吃"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m010",
+    "category": "混合场景",
+    "input": "自来水又停了。我三爷爷叫王德胜，参加过抗美援朝",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王德胜",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "三爷爷"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "王德胜",
+        "text": "参加过抗美援朝"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b290",
+    "category": "边界情况",
+    "input": "",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b291",
+    "category": "边界情况",
+    "input": "。",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b292",
+    "category": "边界情况",
+    "input": "嗯",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b293",
+    "category": "边界情况",
+    "input": "好的",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b294",
+    "category": "边界情况",
+    "input": "不知道",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b295",
+    "category": "边界情况",
+    "input": "王王王",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b296",
+    "category": "边界情况",
+    "input": "12345",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b297",
+    "category": "边界情况",
+    "input": "abc",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b298",
+    "category": "边界情况",
+    "input": "👨",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_b299",
+    "category": "边界情况",
+    "input": "王建国王建国王建国",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d001",
+    "category": "日期格式",
+    "input": "王建国是80年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d002",
+    "category": "日期格式",
+    "input": "王建国是八零年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d003",
+    "category": "日期格式",
+    "input": "王建国生于1980年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d004",
+    "category": "日期格式",
+    "input": "王建国1980年腊月十八生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980-12"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d005",
+    "category": "日期格式",
+    "input": "王建国是1980年12月8号出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980-12-08"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d006",
+    "category": "日期格式",
+    "input": "王建国八零年冬天出生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d007",
+    "category": "日期格式",
+    "input": "王建国是庚申年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d008",
+    "category": "日期格式",
+    "input": "王建国今年46了（按2026算）",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d009",
+    "category": "日期格式",
+    "input": "李梅是八二年的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d010",
+    "category": "日期格式",
+    "input": "李梅生于壬戌年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d011",
+    "category": "日期格式",
+    "input": "赵大爷四五年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d012",
+    "category": "日期格式",
+    "input": "赵大爷1945年属鸡的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d013",
+    "category": "日期格式",
+    "input": "王大强五零年生人",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "1950"
+      }
+    ]
+  },
+  {
+    "id": "EXT_d014",
+    "category": "日期格式",
+    "input": "王大强1950年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "1950"
+      }
+    ]
+  },
+  {
+    "id": "EXT_a314",
+    "category": "歧义/指代不明",
+    "input": "村里还有个王建国，是开小卖部的",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "同名歧义:村里还有个王建国"
+      }
+    ]
+  },
+  {
+    "id": "EXT_a315",
+    "category": "歧义/指代不明",
+    "input": "大伯说建国该结婚了",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "泛指建国该结婚了"
+      }
+    ]
+  },
+  {
+    "id": "EXT_a316",
+    "category": "歧义/指代不明",
+    "input": "他妈说他小时候很皮",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "指代不明"
+      }
+    ]
+  },
+  {
+    "id": "EXT_a317",
+    "category": "歧义/指代不明",
+    "input": "老王家的老大",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "指代不明"
+      }
+    ]
+  },
+  {
+    "id": "EXT_a318",
+    "category": "歧义/指代不明",
+    "input": "那个谁，叫什么来着",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "信息不完整"
+      }
+    ]
+  },
+  {
+    "id": "EXT_a319",
+    "category": "歧义/指代不明",
+    "input": "好像是姓李还是姓王",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "不确定姓什么"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n320",
+    "category": "干扰项",
+    "input": "猪跑了满院子追",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n321",
+    "category": "干扰项",
+    "input": "鸡下了个双黄蛋",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n322",
+    "category": "干扰项",
+    "input": "猫抓了只老鼠",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n323",
+    "category": "干扰项",
+    "input": "小狗又咬鞋了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n324",
+    "category": "干扰项",
+    "input": "羊该剪毛了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n325",
+    "category": "干扰项",
+    "input": "马蜂窝要捅掉",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n326",
+    "category": "干扰项",
+    "input": "腌的酸菜可以吃了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n327",
+    "category": "干扰项",
+    "input": "晒的红薯干该收了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n328",
+    "category": "干扰项",
+    "input": "磨的豆腐做成了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n329",
+    "category": "干扰项",
+    "input": "酿的酒出缸了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n330",
+    "category": "干扰项",
+    "input": "包的粽子真香",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n331",
+    "category": "干扰项",
+    "input": "擀的面条够吃三天",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n332",
+    "category": "干扰项",
+    "input": "缝的被子真厚实",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n333",
+    "category": "干扰项",
+    "input": "织的毛衣快好了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n334",
+    "category": "干扰项",
+    "input": "纳的鞋底真结实",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n335",
+    "category": "干扰项",
+    "input": "修的房顶不漏了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n336",
+    "category": "干扰项",
+    "input": "垒的院墙真齐整",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n337",
+    "category": "干扰项",
+    "input": "挖的水渠通了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n338",
+    "category": "干扰项",
+    "input": "栽的树活了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n339",
+    "category": "干扰项",
+    "input": "种的花开了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n340",
+    "category": "干扰项",
+    "input": "剪的枝该发芽了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n341",
+    "category": "干扰项",
+    "input": "扑克打了一宿",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n342",
+    "category": "干扰项",
+    "input": "麻将输了五十",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n343",
+    "category": "干扰项",
+    "input": "象棋赢了三盘",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n344",
+    "category": "干扰项",
+    "input": "广场舞学会了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n345",
+    "category": "干扰项",
+    "input": "秧歌扭起来了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n346",
+    "category": "干扰项",
+    "input": "二胡拉得好听了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n347",
+    "category": "干扰项",
+    "input": "下地干活去了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n348",
+    "category": "干扰项",
+    "input": "上山砍柴去了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n349",
+    "category": "干扰项",
+    "input": "下河摸鱼去了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n350",
+    "category": "干扰项",
+    "input": "赶集买菜去了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n351",
+    "category": "干扰项",
+    "input": "走亲戚去了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n352",
+    "category": "干扰项",
+    "input": "串门子去了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n353",
+    "category": "干扰项",
+    "input": "晒太阳真暖和",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n354",
+    "category": "干扰项",
+    "input": "乘凉好舒服",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n355",
+    "category": "干扰项",
+    "input": "烤火真暖和",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n356",
+    "category": "干扰项",
+    "input": "农药该打了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n357",
+    "category": "干扰项",
+    "input": "化肥该买了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n358",
+    "category": "干扰项",
+    "input": "种子该播了",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n359",
+    "category": "干扰项",
+    "input": "犁地要用牛",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n360",
+    "category": "干扰项",
+    "input": "插秧弯着腰",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_n361",
+    "category": "干扰项",
+    "input": "割麦子累得慌",
+    "actions": [
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c362",
+    "category": "复杂场景",
+    "input": "王建国和李梅离婚了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "divorce",
+        "persons": [
+          "王建国",
+          "李梅"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_c363",
+    "category": "复杂场景",
+    "input": "离婚后建国又找了个对象叫张丽",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "张丽",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "再婚"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "张丽",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c364",
+    "category": "复杂场景",
+    "input": "建国和李梅没生养，收了个孤儿叫小宝",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "小宝",
+        "gender": "unknown",
+        "birth": "",
+        "tags": [
+          "收养"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "小宝",
+        "rel": "收养"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c365",
+    "category": "复杂场景",
+    "input": "王老根是王大强的爹",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王老根",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "父亲"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王老根",
+        "b": "王大强",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c366",
+    "category": "复杂场景",
+    "input": "王老根的老爹叫王德厚",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王德厚",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "祖父"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王老根",
+        "b": "王德厚",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c367",
+    "category": "复杂场景",
+    "input": "李梅的爸叫李福来",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李福来",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "父亲"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "李福来",
+        "rel": "父女"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c368",
+    "category": "复杂场景",
+    "input": "李福来的老婆叫钱桂花",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "钱桂花",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "母亲"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "李福来",
+        "b": "钱桂花",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c369",
+    "category": "复杂场景",
+    "input": "大强有三个孩子，老大建国，老二建军，老三建红",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王建军",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "老二"
+        ]
+      },
+      {
+        "type": "创建人物",
+        "name": "王建红",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "老三"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "王建军",
+        "rel": "父子"
+      },
+      {
+        "type": "关系",
+        "a": "王大强",
+        "b": "王建红",
+        "rel": "父女"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c370",
+    "category": "复杂场景",
+    "input": "建国的木匠手艺是跟镇上的黄师傅学的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "黄师傅",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "师傅"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "王建国",
+        "text": "木匠手艺是跟镇上的黄师傅学的"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c371",
+    "category": "复杂场景",
+    "input": "李梅带了个前夫的女儿嫁过来的叫小花",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "小花",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "继女"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "李梅",
+        "b": "小花",
+        "rel": "继母女"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c372",
+    "category": "复杂场景",
+    "input": "赵大爷和王大强家是隔壁邻居",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "王大强",
+        "rel": "邻居"
+      }
+    ]
+  },
+  {
+    "id": "EXT_c373",
+    "category": "复杂场景",
+    "input": "建国和建军分家了各过各的",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "other",
+        "persons": [
+          "王建国",
+          "王建军"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_m374",
+    "category": "混合场景",
+    "input": "哎呀忘了说了，我堂弟叫李小军，95年的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李小军",
+        "gender": "male",
+        "birth": "1995",
+        "tags": [
+          "堂弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_m375",
+    "category": "混合场景",
+    "input": "吃着饭想起来，大伯母叫周玉兰",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周玉兰",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "大伯母"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_m376",
+    "category": "混合场景",
+    "input": "扫地的时候想起建国以前腿摔断过",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王建国",
+        "text": "以前腿摔断过"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m377",
+    "category": "混合场景",
+    "input": "看天气预报呢，对了李梅会做豆腐",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李梅",
+        "text": "会做豆腐"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m378",
+    "category": "混合场景",
+    "input": "浇菜园子呢，想起来赵大爷会编筐",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "会编筐"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m379",
+    "category": "混合场景",
+    "input": "喂猪呢，王大强年轻时候跑过运输",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "年轻时候跑过运输"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m380",
+    "category": "混合场景",
+    "input": "收玉米呢，建国媳妇李梅是1982年的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m381",
+    "category": "混合场景",
+    "input": "修水龙头呢，李菊花嫁到镇上去了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "李菊花"
+        ],
+        "date": ""
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m382",
+    "category": "混合场景",
+    "input": "晾衣服呢，王大强有个姐姐嫁到外县",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王大强姐姐",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "姐姐",
+          "嫁到外县"
+        ]
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_m383",
+    "category": "混合场景",
+    "input": "劈柴呢，赵大爷家的老二在省城上班",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "老二在省城上班"
+      },
+      {
+        "type": "噪声跳过"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw384",
+    "category": "表达变体",
+    "input": "我家还有个人叫李娜",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李娜",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "家人"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw385",
+    "category": "表达变体",
+    "input": "家里有个人叫胡燕",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "胡燕",
+        "gender": "female",
+        "birth": "",
+        "tags": [
+          "家人"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw386",
+    "category": "表达变体",
+    "input": "我们家还有个李娜",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "李娜"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw387",
+    "category": "表达变体",
+    "input": "他叫孙亮",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "孙亮",
+        "gender": "male",
+        "birth": "",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw388",
+    "category": "表达变体",
+    "input": "他的名字是杨波",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "杨波",
+        "gender": "male",
+        "birth": "",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw389",
+    "category": "表达变体",
+    "input": "名字叫孙亮",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "孙亮"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw390",
+    "category": "表达变体",
+    "input": "张伟是我叔叔",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "张伟",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "叔叔"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw391",
+    "category": "表达变体",
+    "input": "我叔叔叫王芳",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王芳",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "叔叔"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw392",
+    "category": "表达变体",
+    "input": "叔叔王芳",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "王芳"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw393",
+    "category": "表达变体",
+    "input": "有个亲戚叫何军",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "何军",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "亲戚"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw394",
+    "category": "表达变体",
+    "input": "我家亲戚王芳",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "王芳"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw395",
+    "category": "表达变体",
+    "input": "远房亲戚叫张伟",
+    "actions": [
+      {
+        "type": "匹配已有",
+        "name": "张伟"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw396",
+    "category": "表达变体",
+    "input": "高秀英出生在1980年",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "高秀英",
+        "gender": "female",
+        "birth": "1980",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw397",
+    "category": "表达变体",
+    "input": "李娜是71年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李娜",
+        "gender": "female",
+        "birth": "1971",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw398",
+    "category": "表达变体",
+    "input": "高秀英生于1988",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "高秀英",
+        "field": "birth_date",
+        "value": "1988"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw399",
+    "category": "表达变体",
+    "input": "孙亮和李梅结婚了",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "孙亮",
+        "b": "李梅",
+        "rel": "夫妻"
+      },
+      {
+        "type": "推导",
+        "a": "孙亮",
+        "b": "王建国",
+        "rel": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw400",
+    "category": "表达变体",
+    "input": "胡燕娶了李菊花",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "胡燕",
+        "b": "李菊花",
+        "rel": "夫妻"
+      },
+      "⚠️异常"
+    ]
+  },
+  {
+    "id": "EXT_rw401",
+    "category": "表达变体",
+    "input": "高秀英嫁给李菊花",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "高秀英",
+        "b": "李菊花",
+        "rel": "夫妻"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw402",
+    "category": "表达变体",
+    "input": "胡燕是赵大爷的儿子",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "胡燕",
+        "b": "赵大爷",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw403",
+    "category": "表达变体",
+    "input": "王建国生了李娜",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王建国",
+        "b": "李娜",
+        "rel": "父女"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw404",
+    "category": "表达变体",
+    "input": "王芳是王大强的孩子",
+    "actions": [
+      {
+        "type": "关系",
+        "a": "王芳",
+        "b": "王大强",
+        "rel": "父子"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw405",
+    "category": "表达变体",
+    "input": "周杰搬到了县城",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周杰",
+        "gender": "male",
+        "birth": "",
+        "tags": []
+      },
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "周杰"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw406",
+    "category": "表达变体",
+    "input": "孙亮在县城安家",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "孙亮"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw407",
+    "category": "表达变体",
+    "input": "王芳去了县城住",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "王芳"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw408",
+    "category": "表达变体",
+    "input": "孙亮去世了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "孙亮"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw409",
+    "category": "表达变体",
+    "input": "王芳走了",
+    "actions": [
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "王芳"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw410",
+    "category": "表达变体",
+    "input": "马丽过世了",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "马丽",
+        "gender": "female",
+        "birth": "",
+        "tags": []
+      },
+      {
+        "type": "事件",
+        "ev": "death",
+        "persons": [
+          "马丽"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw411",
+    "category": "表达变体",
+    "input": "李娜年轻时候当过兵",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李娜",
+        "text": "年轻时候当过兵"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw412",
+    "category": "表达变体",
+    "input": "黄磊以前是军人",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "黄磊",
+        "gender": "male",
+        "birth": "",
+        "tags": []
+      },
+      {
+        "type": "生平",
+        "name": "黄磊",
+        "text": "以前是军人"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw413",
+    "category": "表达变体",
+    "input": "杨波参过军",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "杨波",
+        "text": "参过军"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw414",
+    "category": "表达变体",
+    "input": "何军很老实",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "何军",
+        "text": "很老实"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw415",
+    "category": "表达变体",
+    "input": "何军是个老实人",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "何军",
+        "text": "是个老实人"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw416",
+    "category": "表达变体",
+    "input": "陈静为人老实本分",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "陈静",
+        "gender": "female",
+        "birth": "",
+        "tags": []
+      },
+      {
+        "type": "生平",
+        "name": "陈静",
+        "text": "为人老实本分"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw417",
+    "category": "表达变体",
+    "input": "张伟会做饭",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "张伟",
+        "text": "会做饭"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw418",
+    "category": "表达变体",
+    "input": "周杰手艺好",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "周杰",
+        "text": "手艺好"
+      }
+    ]
+  },
+  {
+    "id": "EXT_rw419",
+    "category": "表达变体",
+    "input": "胡燕炒菜特别好吃",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "胡燕",
+        "text": "炒菜特别好吃"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt420",
+    "category": "日期格式",
+    "input": "王建国是一九八零年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt421",
+    "category": "日期格式",
+    "input": "王建国是民国六十九年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt422",
+    "category": "日期格式",
+    "input": "李梅是八二年三月份的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982-03"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt423",
+    "category": "日期格式",
+    "input": "李梅是壬戌年二月生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982-02"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt424",
+    "category": "日期格式",
+    "input": "赵大爷是乙酉年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt425",
+    "category": "日期格式",
+    "input": "赵大爷四五年冬月的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945-11"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt426",
+    "category": "日期格式",
+    "input": "王大强五零年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "1950"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt427",
+    "category": "日期格式",
+    "input": "王大强是庚寅年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "1950"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt428",
+    "category": "日期格式",
+    "input": "李菊花八五年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "birth_date",
+        "value": "1985"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt429",
+    "category": "日期格式",
+    "input": "李菊花是乙丑年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李菊花",
+        "field": "birth_date",
+        "value": "1985"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt430",
+    "category": "日期格式",
+    "input": "建国是公历1980年12月8日",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980-12-08"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt431",
+    "category": "日期格式",
+    "input": "建国是农历庚申年冬月初二",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980-12-08"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt432",
+    "category": "日期格式",
+    "input": "李梅是新历1982年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt433",
+    "category": "日期格式",
+    "input": "李梅是旧历壬戌年",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt434",
+    "category": "日期格式",
+    "input": "赵大爷属鸡的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt435",
+    "category": "日期格式",
+    "input": "王大强属虎的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "1950"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt436",
+    "category": "日期格式",
+    "input": "王建国属猴的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dt437",
+    "category": "日期格式",
+    "input": "李梅属狗的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or438",
+    "category": "自然口述",
+    "input": "哎我想想啊，我二大爷叫什么来着，对了叫王大柱，一九四八年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王大柱",
+        "gender": "male",
+        "birth": "1948",
+        "tags": [
+          "二大爷"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_or439",
+    "category": "自然口述",
+    "input": "我跟你说啊，我们老李家可大了，我爷爷那辈兄弟五个",
+    "actions": [
+      {
+        "type": "无操作",
+        "note": "泛指老李家"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or440",
+    "category": "自然口述",
+    "input": "你问我爸啊，我爸叫李福来，五三年生人，种了一辈子地",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李福来",
+        "gender": "male",
+        "birth": "1953",
+        "tags": [
+          "父亲"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "李福来",
+        "text": "种了一辈子地"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or441",
+    "category": "自然口述",
+    "input": "我妈姓周，叫周秀兰，五五年生的，娘家在周家屯",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周秀兰",
+        "gender": "female",
+        "birth": "1955",
+        "tags": [
+          "母亲"
+        ]
+      },
+      {
+        "type": "更新",
+        "name": "周秀兰",
+        "field": "desc",
+        "value": "娘家:周家屯"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or442",
+    "category": "自然口述",
+    "input": "我大姐嫁到外县去了，叫李红梅，七零年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李红梅",
+        "gender": "female",
+        "birth": "1970",
+        "tags": [
+          "大姐"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "李红梅"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_or443",
+    "category": "自然口述",
+    "input": "二姐李红霞，七三年的，嫁到镇上开了个饭店",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李红霞",
+        "gender": "female",
+        "birth": "1973",
+        "tags": [
+          "二姐"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "李红霞"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_or444",
+    "category": "自然口述",
+    "input": "我弟弟李小军，八零年的，在南方打工",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李小军",
+        "gender": "male",
+        "birth": "1980",
+        "tags": [
+          "弟弟"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "李小军"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_or445",
+    "category": "自然口述",
+    "input": "我小妹李小燕，八三年的，嫁了个广东人",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "李小燕",
+        "gender": "female",
+        "birth": "1983",
+        "tags": [
+          "小妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_or446",
+    "category": "自然口述",
+    "input": "我大舅在东北，叫周国栋，四七年的，年轻时候闯关东",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周国栋",
+        "gender": "male",
+        "birth": "1947",
+        "tags": [
+          "大舅"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "周国栋",
+        "text": "年轻时候闯关东去了东北"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or447",
+    "category": "自然口述",
+    "input": "二舅周国梁，五零年的，一直在老家",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周国梁",
+        "gender": "male",
+        "birth": "1950",
+        "tags": [
+          "二舅"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "周国梁",
+        "text": "一直在老家"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or448",
+    "category": "自然口述",
+    "input": "三舅周国柱，五五年生的，后来调到省城当干部",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周国柱",
+        "gender": "male",
+        "birth": "1955",
+        "tags": [
+          "三舅"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "周国柱",
+        "text": "后来调到省城当干部"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or449",
+    "category": "自然口述",
+    "input": "我大姨叫周秀荣，四九年的，嫁到临县",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周秀荣",
+        "gender": "female",
+        "birth": "1949",
+        "tags": [
+          "大姨"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "周秀荣"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_or450",
+    "category": "自然口述",
+    "input": "二姨周秀花，五三年的，嫁到镇上",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周秀花",
+        "gender": "female",
+        "birth": "1953",
+        "tags": [
+          "二姨"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "周秀花"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_or451",
+    "category": "自然口述",
+    "input": "我姑父姓刘，叫刘大壮，和我姑姑是五八年结的婚",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘大壮",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "姑父"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "marriage",
+        "persons": [
+          "刘大壮",
+          "姑姑"
+        ],
+        "date": "1958"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or452",
+    "category": "自然口述",
+    "input": "我姑姑的儿子叫刘建国，八零年的，现在在县城当老师",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘建国",
+        "gender": "male",
+        "birth": "1980",
+        "tags": [
+          "表哥",
+          "姑姑之子"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "刘建国",
+        "text": "现在在县城当老师"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or453",
+    "category": "自然口述",
+    "input": "我叔叔家的堂弟叫王小明，八五年生的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "王小明",
+        "gender": "male",
+        "birth": "1985",
+        "tags": [
+          "堂弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_or454",
+    "category": "自然口述",
+    "input": "我舅舅家的表哥叫周强，七八年的，开大车的",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "周强",
+        "gender": "male",
+        "birth": "1978",
+        "tags": [
+          "表哥"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "周强",
+        "text": "开大车的"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or455",
+    "category": "自然口述",
+    "input": "我姨家的表姐叫赵丽华，七六年的，在银行上班",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "赵丽华",
+        "gender": "female",
+        "birth": "1976",
+        "tags": [
+          "表姐"
+        ]
+      },
+      {
+        "type": "生平",
+        "name": "赵丽华",
+        "text": "在银行上班"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or456",
+    "category": "自然口述",
+    "input": "我姑姑家的表妹叫刘小红，八六年的，嫁到省城",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "刘小红",
+        "gender": "female",
+        "birth": "1986",
+        "tags": [
+          "表妹"
+        ]
+      },
+      {
+        "type": "事件",
+        "ev": "move",
+        "persons": [
+          "刘小红"
+        ],
+        "date": ""
+      }
+    ]
+  },
+  {
+    "id": "EXT_or457",
+    "category": "自然口述",
+    "input": "赵大爷家的二小子叫赵建国，七零年的，现在是村长",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "赵建国",
+        "gender": "male",
+        "birth": "1970",
+        "tags": [
+          "赵大爷之子"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "赵建国",
+        "rel": "父子"
+      },
+      {
+        "type": "生平",
+        "name": "赵建国",
+        "text": "现在是村长"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or458",
+    "category": "自然口述",
+    "input": "赵大爷的老伴儿叫孙秀英，四八年生的，人特别好",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "孙秀英",
+        "gender": "female",
+        "birth": "1948",
+        "tags": [
+          "赵大爷老伴"
+        ]
+      },
+      {
+        "type": "关系",
+        "a": "赵大爷",
+        "b": "孙秀英",
+        "rel": "夫妻"
+      },
+      {
+        "type": "生平",
+        "name": "孙秀英",
+        "text": "人特别好"
+      },
+      {
+        "type": "推导",
+        "a": "孙秀英",
+        "b": "王建国",
+        "rel": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or459",
+    "category": "自然口述",
+    "input": "我跟你说，建国小时候可淘了，上树掏鸟窝下河摸鱼",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王建国",
+        "text": "小时候可淘了，上树掏鸟窝下河摸鱼"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or460",
+    "category": "自然口述",
+    "input": "李梅针线活可好了，绣的花跟真的似的",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "李梅",
+        "text": "针线活可好了，绣的花跟真的似的"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or461",
+    "category": "自然口述",
+    "input": "王大强以前赶大车，后来买了拖拉机，是村里第一个有机动车的",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "王大强",
+        "text": "以前赶大车，后来买了拖拉机，是村里第一个有机动车的"
+      }
+    ]
+  },
+  {
+    "id": "EXT_or462",
+    "category": "自然口述",
+    "input": "赵大爷会看牲口，十里八村的牛病了都找他",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "赵大爷",
+        "text": "会看牲口，十里八村的牛病了都找他"
+      }
+    ]
+  },
+  {
+    "id": "EXT_inc463",
+    "category": "增量更新",
+    "input": "我表弟叫孙小伟",
+    "actions": [
+      {
+        "type": "创建人物",
+        "name": "孙小伟",
+        "gender": "male",
+        "birth": "",
+        "tags": [
+          "表弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_inc464",
+    "category": "增量更新",
+    "input": "孙小伟是90年生的",
+    "actions": [
+      {
+        "type": "更新",
+        "name": "孙小伟",
+        "field": "birth_date",
+        "value": "1990"
+      }
+    ]
+  },
+  {
+    "id": "EXT_inc465",
+    "category": "增量更新",
+    "input": "孙小伟在省城读大学",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "孙小伟",
+        "text": "在省城读大学"
+      }
+    ]
+  },
+  {
+    "id": "EXT_inc466",
+    "category": "增量更新",
+    "input": "孙小伟毕业后留在了北京",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "孙小伟",
+        "text": "毕业后留在了北京"
+      }
+    ]
+  },
+  {
+    "id": "EXT_inc467",
+    "category": "增量更新",
+    "input": "孙小伟找了个北京的对象",
+    "actions": [
+      {
+        "type": "生平",
+        "name": "孙小伟",
+        "text": "找了个北京的对象"
+      }
+    ]
+  },
+  {
+    "id": "EXT_dl468",
+    "category": "自然口述",
+    "input": "俺爹叫李大壮",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl469",
+    "category": "自然口述",
+    "input": "俺娘叫周秀兰",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl470",
+    "category": "自然口述",
+    "input": "俺大爷家的老二叫王虎",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl471",
+    "category": "自然口述",
+    "input": "恁知道不，俺爷爷那辈可风光了",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl472",
+    "category": "自然口述",
+    "input": "俺姥娘家是李家庄的",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl473",
+    "category": "自然口述",
+    "input": "俺舅在东北搁着呢",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl474",
+    "category": "自然口述",
+    "input": "俺姨嫁到河南去了",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl475",
+    "category": "自然口述",
+    "input": "俺姑家的表弟考上了大学",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl476",
+    "category": "自然口述",
+    "input": "俺叔家的堂妹学的护士",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl477",
+    "category": "自然口述",
+    "input": "俺大伯母做饭可好吃了",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl478",
+    "category": "自然口述",
+    "input": "俺三爷爷当过兵打过仗",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl479",
+    "category": "自然口述",
+    "input": "俺四奶奶今年九十八了",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl480",
+    "category": "自然口述",
+    "input": "俺五叔公是赤脚医生",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl481",
+    "category": "自然口述",
+    "input": "俺六舅妈是城里人",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl482",
+    "category": "自然口述",
+    "input": "俺七姑父开了个砖窑",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl483",
+    "category": "自然口述",
+    "input": "俺八姨夫跑长途运输",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl484",
+    "category": "自然口述",
+    "input": "俺九表哥是木匠",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl485",
+    "category": "自然口述",
+    "input": "俺十表姐嫁了个当官的",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl486",
+    "category": "自然口述",
+    "input": "俺兄弟三个我最大",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl487",
+    "category": "自然口述",
+    "input": "俺姐妹四个我最小",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl488",
+    "category": "自然口述",
+    "input": "俺闺女今年高考",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl489",
+    "category": "自然口述",
+    "input": "俺儿子在部队",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl490",
+    "category": "自然口述",
+    "input": "俺孙子都会打酱油了",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl491",
+    "category": "自然口述",
+    "input": "俺外甥女考上了研究生",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl492",
+    "category": "自然口述",
+    "input": "俺侄子在南方做生意",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl493",
+    "category": "自然口述",
+    "input": "俺孙女会画画了",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl494",
+    "category": "自然口述",
+    "input": "俺重孙子刚满月",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl495",
+    "category": "自然口述",
+    "input": "俺太爷爷是秀才",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl496",
+    "category": "自然口述",
+    "input": "俺太奶奶活到一百零三",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl497",
+    "category": "自然口述",
+    "input": "俺祖爷爷那辈从山东迁来的",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl498",
+    "category": "自然口述",
+    "input": "俺祖奶奶是满族人",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl499",
+    "category": "自然口述",
+    "input": "俺家谱上写着祖籍山西大槐树",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl500",
+    "category": "自然口述",
+    "input": "俺祠堂里供着三代祖先",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl501",
+    "category": "自然口述",
+    "input": "俺家老宅子有一百多年了",
+    "actions": []
+  },
+  {
+    "id": "EXT_dl502",
+    "category": "自然口述",
+    "input": "俺家祖坟在北山坡上",
+    "actions": []
+  }
+]

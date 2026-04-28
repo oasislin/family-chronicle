@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+backend/.env
+backend/data/
+
+# Node
+node_modules/
+dist/
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Misc
+.vscode/
+.idea/
+index.lock

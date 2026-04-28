@@ -1,0 +1,2454 @@
+[
+  {
+    "step": 1,
+    "input": "林大明和妻子赵春花住在杭州",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林大明",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林大明"
+        },
+        {
+          "type": "person",
+          "name": "赵春花",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "妻子赵春花"
+        }
+      ],
+      "events": [
+        {
+          "type": "relocation",
+          "description": "林大明和赵春花居住在杭州",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": "杭州",
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "居住者"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "居住者"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": "husband",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林大明和赵春花是何时结婚的？",
+          "林大明和赵春花目前是否仍在杭州居住？",
+          "林大明和赵春花是否有子女？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "新增人物: 林大明",
+        "新增人物: 赵春花",
+        "新增关系: 林大明 ↔ 赵春花 (spouse)",
+        "新增事件: 林大明和赵春花居住在杭州"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 2,
+    "input": "他们有两个儿子，大的叫林绿洲，小的叫林青海",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林绿洲",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "长子",
+            "大的"
+          ],
+          "confidence": "high",
+          "source_text": "大的叫林绿洲"
+        },
+        {
+          "type": "person",
+          "name": "林青海",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "次子",
+            "小的"
+          ],
+          "confidence": "high",
+          "source_text": "小的叫林青海"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "sibling",
+          "subtype": "brother",
+          "attributes": {
+            "birth_order": "林绿洲为兄，林青海为弟"
+          },
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.7,
+        "ambiguous_references": [
+          "“他们” - 指代不明，无法确定林绿洲和林青海的父母身份"
+        ],
+        "suggested_questions": [
+          "“他们”具体指代谁？请提供林绿洲和林青海父母的姓名或称呼。",
+          "林绿洲和林青海是否有其他兄弟姐妹？",
+          "林绿洲和林青海的父母是否健在？他们的姓名是什么？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "新增人物: 林绿洲",
+        "新增人物: 林青海",
+        "自动创建共享父母(占位): 林绿洲的爸爸 → 林绿洲/林青海",
+        "新增关系: 林绿洲 ↔ 林青海 (sibling)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 3,
+    "input": "林绿洲的爸爸是林大明",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林绿洲",
+          "temp_id": "temp_person_001",
+          "gender": "unknown",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林绿洲"
+        },
+        {
+          "type": "person",
+          "name": "林大明",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林大明"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.95,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林绿洲的性别是什么？",
+          "林绿洲的母亲是谁？",
+          "林大明是否有其他子女？",
+          "林绿洲和林大明的出生年份或年龄信息？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林绿洲 → 林绿洲",
+        "关联人物: 林大明 → 林大明",
+        "替换占位: 林绿洲的爸爸 → 林大明",
+        "新增关系: 林大明 ↔ 林绿洲 (parent_child)",
+        "推导关系: 赵春花 ↔ 林绿洲 (parent_child)",
+        "推导关系: 赵春花 ↔ 林青海 (parent_child)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 4,
+    "input": "林大明和前妻陈桂芳还生了一个女儿叫林小月",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林大明",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林大明"
+        },
+        {
+          "type": "person",
+          "name": "陈桂芳",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "前妻"
+          ],
+          "confidence": "high",
+          "source_text": "前妻陈桂芳"
+        },
+        {
+          "type": "person",
+          "name": "林小月",
+          "temp_id": "temp_person_003",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "女儿"
+          ],
+          "confidence": "high",
+          "source_text": "女儿叫林小月"
+        }
+      ],
+      "events": [
+        {
+          "type": "birth",
+          "description": "林小月出生",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_003",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "父亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "母亲"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {
+            "marriage_status": "divorced"
+          },
+          "event_temp_id": null,
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林大明和陈桂芳是否还有其他子女？",
+          "林小月的出生年份或大致年龄是多少？",
+          "林大明和陈桂芳离婚的具体时间是什么时候？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林大明 → 林大明",
+        "新增人物: 陈桂芳",
+        "新增人物: 林小月",
+        "新增关系: 林大明 ↔ 陈桂芳 (spouse)",
+        "新增关系: 林大明 ↔ 林小月 (parent_child)",
+        "新增关系: 陈桂芳 ↔ 林小月 (parent_child)",
+        "推导关系: 林小月 ↔ 林青海 (sibling)",
+        "推导关系: 赵春花 ↔ 林小月 (parent_child)",
+        "推导关系: 陈桂芳 ↔ 林青海 (parent_child)",
+        "推导关系: 陈桂芳 ↔ 林绿洲 (parent_child)",
+        "推导关系: 林绿洲 ↔ 林小月 (sibling)",
+        "新增事件: 林小月出生"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 5,
+    "input": "林绿洲的爷爷叫林建国",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林绿洲",
+          "temp_id": "temp_person_001",
+          "gender": "unknown",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林绿洲"
+        },
+        {
+          "type": "person",
+          "name": "林建国",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "爷爷"
+          ],
+          "confidence": "high",
+          "source_text": "林绿洲的爷爷叫林建国"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "grandparent_grandchild",
+          "subtype": "grandfather_grandson",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [
+          "林绿洲的性别未知",
+          "林绿洲与林建国之间的中间一代（林绿洲的父亲/母亲）未提及"
+        ],
+        "suggested_questions": [
+          "林绿洲的性别是什么？",
+          "林绿洲的父亲或母亲是谁？",
+          "林建国是林绿洲的父系爷爷还是母系外公？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林绿洲 → 林绿洲",
+        "新增人物: 林建国",
+        "建立链路: 林建国 → 林大明 → 林绿洲",
+        "推导关系: 陈桂芳 ↔ 赵春花 (spouse)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 6,
+    "input": "林建国的妻子叫李玉兰",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林建国",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林建国"
+        },
+        {
+          "type": "person",
+          "name": "李玉兰",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "李玉兰"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": "husband",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 1.0,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林建国和李玉兰的婚姻是否有具体日期？",
+          "林建国和李玉兰目前是初婚还是再婚？",
+          "林建国和李玉兰是否有子女？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林建国 → 林建国",
+        "新增人物: 李玉兰",
+        "新增关系: 林建国 ↔ 李玉兰 (spouse)",
+        "推导关系: 李玉兰 ↔ 林大明 (parent_child)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 7,
+    "input": "林绿洲的外婆叫朱雪兰",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林绿洲",
+          "temp_id": "temp_person_001",
+          "gender": "unknown",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林绿洲"
+        },
+        {
+          "type": "person",
+          "name": "朱雪兰",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "外婆"
+          ],
+          "confidence": "high",
+          "source_text": "外婆叫朱雪兰"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "grandparent_grandchild",
+          "subtype": "maternal_grandmother",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林绿洲的母亲是谁？",
+          "林绿洲的外公是谁？",
+          "林绿洲的性别是什么？",
+          "朱雪兰的配偶是谁？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林绿洲 → 林绿洲",
+        "新增人物: 朱雪兰",
+        "建立链路: 朱雪兰 → 林大明 → 林绿洲",
+        "推导关系: 朱雪兰 ↔ 李玉兰 (spouse)",
+        "推导关系: 朱雪兰 ↔ 林建国 (spouse)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 8,
+    "input": "朱雪兰的丈夫叫朱世杰",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "朱雪兰",
+          "temp_id": "temp_person_001",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "朱雪兰"
+        },
+        {
+          "type": "person",
+          "name": "朱世杰",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "朱世杰"
+        }
+      ],
+      "events": [
+        {
+          "type": "marriage",
+          "description": "朱雪兰与朱世杰结婚",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "妻子"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "丈夫"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": "wife",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 1.0,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "朱雪兰和朱世杰的婚姻是否有具体日期？",
+          "朱雪兰和朱世杰是否有子女？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 朱雪兰 → 朱雪兰",
+        "新增人物: 朱世杰",
+        "新增关系: 朱雪兰 ↔ 朱世杰 (spouse)",
+        "推导关系: 朱世杰 ↔ 林大明 (parent_child)",
+        "新增事件: 朱雪兰与朱世杰结婚"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 9,
+    "input": "王大锤和妻子孙美玲有一个儿子叫王小明",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王大锤",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王大锤"
+        },
+        {
+          "type": "person",
+          "name": "孙美玲",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "妻子孙美玲"
+        },
+        {
+          "type": "person",
+          "name": "王小明",
+          "temp_id": "temp_person_003",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "儿子"
+          ],
+          "confidence": "high",
+          "source_text": "儿子叫王小明"
+        }
+      ],
+      "events": [
+        {
+          "type": "marriage",
+          "description": "王大锤与孙美玲结婚",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "丈夫"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "妻子"
+            }
+          ],
+          "confidence": "high"
+        },
+        {
+          "type": "birth",
+          "description": "王小明出生",
+          "temp_id": "temp_event_002",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_003",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "父亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "母亲"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": "husband",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_002",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_002",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 1.0,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王大锤和孙美玲的结婚日期是什么时候？",
+          "王小明是什么时候出生的？",
+          "王大锤、孙美玲和王小明是否有其他已知的出生年份或重要日期？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "新增人物: 王大锤",
+        "新增人物: 孙美玲",
+        "新增人物: 王小明",
+        "新增关系: 王大锤 ↔ 孙美玲 (spouse)",
+        "新增关系: 王大锤 ↔ 王小明 (parent_child)",
+        "新增关系: 孙美玲 ↔ 王小明 (parent_child)",
+        "新增事件: 王大锤与孙美玲结婚",
+        "新增事件: 王小明出生"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 10,
+    "input": "王大锤还有个弟弟叫王二锤",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王大锤",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王大锤"
+        },
+        {
+          "type": "person",
+          "name": "王二锤",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王二锤"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "sibling",
+          "subtype": "elder_brother",
+          "attributes": {
+            "birth_order": "老大"
+          },
+          "event_temp_id": null,
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "sibling",
+          "subtype": "younger_brother",
+          "attributes": {
+            "birth_order": "老二"
+          },
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王大锤和王二锤是否有其他兄弟姐妹？",
+          "王大锤和王二锤的父母是谁？",
+          "王大锤和王二锤的出生年份或大致年龄是多少？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王大锤 → 王大锤",
+        "新增人物: 王二锤",
+        "自动创建共享父母(占位): 王大锤的爸爸 → 王大锤/王二锤",
+        "新增关系: 王大锤 ↔ 王二锤 (sibling)",
+        "新增关系: 王二锤 ↔ 王大锤 (sibling)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 11,
+    "input": "王二锤的妻子叫周小燕",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王二锤",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王二锤"
+        },
+        {
+          "type": "person",
+          "name": "周小燕",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "周小燕"
+        }
+      ],
+      "events": [
+        {
+          "type": "marriage",
+          "description": "王二锤与周小燕结婚",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "丈夫"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "妻子"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": "husband",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王二锤和周小燕的结婚时间是什么时候？",
+          "王二锤和周小燕是否有子女？",
+          "王二锤和周小燕的出生年份是什么？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王二锤 → 王二锤",
+        "新增人物: 周小燕",
+        "新增关系: 王二锤 ↔ 周小燕 (spouse)",
+        "新增事件: 王二锤与周小燕结婚"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 12,
+    "input": "王二锤和周小燕有两个孩子，姐姐叫王芳，弟弟叫王磊",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王二锤",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王二锤"
+        },
+        {
+          "type": "person",
+          "name": "周小燕",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "周小燕"
+        },
+        {
+          "type": "person",
+          "name": "王芳",
+          "temp_id": "temp_person_003",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "姐姐"
+          ],
+          "confidence": "high",
+          "source_text": "姐姐叫王芳"
+        },
+        {
+          "type": "person",
+          "name": "王磊",
+          "temp_id": "temp_person_004",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "弟弟"
+          ],
+          "confidence": "high",
+          "source_text": "弟弟叫王磊"
+        }
+      ],
+      "events": [
+        {
+          "type": "marriage",
+          "description": "王二锤与周小燕结婚",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "丈夫"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "妻子"
+            }
+          ],
+          "confidence": "medium"
+        },
+        {
+          "type": "birth",
+          "description": "王芳出生",
+          "temp_id": "temp_event_002",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_003",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "父亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "母亲"
+            }
+          ],
+          "confidence": "medium"
+        },
+        {
+          "type": "birth",
+          "description": "王磊出生",
+          "temp_id": "temp_event_003",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_004",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "父亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "母亲"
+            }
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_002",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_002",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_004",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_003",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_004",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_003",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_003",
+          "person2_temp_id": "temp_person_004",
+          "type": "sibling",
+          "subtype": "elder_sister",
+          "attributes": {
+            "birth_order": "姐姐"
+          },
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.95,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王二锤和周小燕的结婚日期是什么时候？",
+          "王芳和王磊的具体出生日期是什么时候？",
+          "王芳和王磊是否有其他兄弟姐妹？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王二锤 → 王二锤",
+        "关联人物: 周小燕 → 周小燕",
+        "新增人物: 王芳",
+        "新增人物: 王磊",
+        "新增关系: 王二锤 ↔ 周小燕 (spouse)",
+        "新增关系: 王二锤 ↔ 王芳 (parent_child)",
+        "新增关系: 周小燕 ↔ 王芳 (parent_child)",
+        "新增关系: 王二锤 ↔ 王磊 (parent_child)",
+        "新增关系: 周小燕 ↔ 王磊 (parent_child)",
+        "新增关系: 王芳 ↔ 王磊 (sibling)",
+        "新增事件: 王二锤与周小燕结婚",
+        "新增事件: 王芳出生",
+        "新增事件: 王磊出生"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 13,
+    "input": "王芳的爷爷叫王富贵",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王芳",
+          "temp_id": "temp_person_001",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王芳"
+        },
+        {
+          "type": "person",
+          "name": "王富贵",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王芳的爷爷叫王富贵"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "grandparent_grandchild",
+          "subtype": "paternal_grandfather",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [
+          "王芳的爷爷是父系还是母系？描述中未明确是爷爷还是外公。"
+        ],
+        "suggested_questions": [
+          "王芳的爷爷是父亲的父亲（爷爷）还是母亲的父亲（外公）？",
+          "王芳的父亲是谁？",
+          "王芳的奶奶是谁？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王芳 → 王芳",
+        "新增人物: 王富贵",
+        "建立链路: 王富贵 → 王二锤 → 王芳"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 14,
+    "input": "王富贵的妻子叫刘翠花",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王富贵",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王富贵"
+        },
+        {
+          "type": "person",
+          "name": "刘翠花",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "刘翠花"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": "husband",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 1.0,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王富贵和刘翠花是初婚吗？",
+          "他们是否有子女？",
+          "他们结婚的大致年份是什么时候？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王富贵 → 王富贵",
+        "新增人物: 刘翠花",
+        "新增关系: 王富贵 ↔ 刘翠花 (spouse)",
+        "推导关系: 刘翠花 ↔ 王二锤 (parent_child)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 15,
+    "input": "林绿洲娶了王芳",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林绿洲",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林绿洲"
+        },
+        {
+          "type": "person",
+          "name": "王芳",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王芳"
+        }
+      ],
+      "events": [
+        {
+          "type": "marriage",
+          "description": "林绿洲与王芳结婚",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "新郎"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "新娘"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.95,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林绿洲和王芳的结婚是否有具体日期？",
+          "林绿洲和王芳的结婚是否有具体地点？",
+          "林绿洲和王芳的婚姻是初婚还是再婚？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林绿洲 → 林绿洲",
+        "关联人物: 王芳 → 王芳",
+        "新增关系: 林绿洲 ↔ 王芳 (spouse)",
+        "新增事件: 林绿洲与王芳结婚"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 16,
+    "input": "林绿洲和王芳有一个儿子叫林王联合",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林绿洲",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林绿洲"
+        },
+        {
+          "type": "person",
+          "name": "王芳",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王芳"
+        },
+        {
+          "type": "person",
+          "name": "林王联合",
+          "temp_id": "temp_person_003",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "儿子"
+          ],
+          "confidence": "high",
+          "source_text": "儿子叫林王联合"
+        }
+      ],
+      "events": [
+        {
+          "type": "birth",
+          "description": "林王联合出生",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_003",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "父亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "母亲"
+            }
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林绿洲和王芳是初婚吗？",
+          "林王联合是否有其他兄弟姐妹？",
+          "林王联合的出生日期是什么时候？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林绿洲 → 林绿洲",
+        "关联人物: 王芳 → 王芳",
+        "新增人物: 林王联合",
+        "新增关系: 林绿洲 ↔ 王芳 (spouse)",
+        "新增关系: 林绿洲 ↔ 林王联合 (parent_child)",
+        "新增关系: 王芳 ↔ 林王联合 (parent_child)",
+        "新增事件: 林王联合出生"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 17,
+    "input": "林小月嫁给了王小明",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林小月",
+          "temp_id": "temp_person_001",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林小月"
+        },
+        {
+          "type": "person",
+          "name": "王小明",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王小明"
+        }
+      ],
+      "events": [
+        {
+          "type": "marriage",
+          "description": "林小月与王小明结婚",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "新娘"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "新郎"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林小月和王小明的结婚是否有具体日期？",
+          "林小月和王小明的结婚是否有具体地点？",
+          "这是林小月和王小明的第几次婚姻？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林小月 → 林小月",
+        "关联人物: 王小明 → 王小明",
+        "新增关系: 林小月 ↔ 王小明 (spouse)",
+        "新增事件: 林小月与王小明结婚"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 18,
+    "input": "林小月和王小明生了个女儿叫王林小雨",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林小月",
+          "temp_id": "temp_person_001",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林小月"
+        },
+        {
+          "type": "person",
+          "name": "王小明",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王小明"
+        },
+        {
+          "type": "person",
+          "name": "王林小雨",
+          "temp_id": "temp_person_003",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "女儿叫王林小雨"
+        }
+      ],
+      "events": [
+        {
+          "type": "birth",
+          "description": "王林小雨出生",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_003",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "母亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "父亲"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.95,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王林小雨的出生日期是什么时候？",
+          "林小月和王小明是初婚吗？",
+          "林小月和王小明是否有其他子女？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林小月 → 林小月",
+        "关联人物: 王小明 → 王小明",
+        "新增人物: 王林小雨",
+        "新增关系: 林小月 ↔ 王小明 (spouse)",
+        "新增关系: 林小月 ↔ 王林小雨 (parent_child)",
+        "新增关系: 王小明 ↔ 王林小雨 (parent_child)",
+        "新增事件: 王林小雨出生"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 19,
+    "input": "赵春花去世后，林大明又娶了刘慧兰",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "赵春花",
+          "temp_id": "temp_person_001",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "赵春花"
+        },
+        {
+          "type": "person",
+          "name": "林大明",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林大明"
+        },
+        {
+          "type": "person",
+          "name": "刘慧兰",
+          "temp_id": "temp_person_003",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "刘慧兰"
+        }
+      ],
+      "events": [
+        {
+          "type": "death",
+          "description": "赵春花去世",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "逝者"
+            }
+          ],
+          "confidence": "high"
+        },
+        {
+          "type": "marriage",
+          "description": "林大明与刘慧兰结婚",
+          "temp_id": "temp_event_002",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_002",
+              "role": "新郎"
+            },
+            {
+              "temp_id": "temp_person_003",
+              "role": "新娘"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {
+            "marriage_status": "丧偶"
+          },
+          "event_temp_id": null,
+          "confidence": "medium"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {
+            "marriage_number": 2
+          },
+          "event_temp_id": "temp_event_002",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.8,
+        "ambiguous_references": [
+          "赵春花与林大明的婚姻关系是推断的，原文未明确说明",
+          "林大明与刘慧兰的结婚时间未知"
+        ],
+        "suggested_questions": [
+          "赵春花和林大明是什么关系？是夫妻吗？",
+          "赵春花是什么时候去世的？",
+          "林大明和赵春花有孩子吗？",
+          "林大明和刘慧兰是什么时候结婚的？",
+          "林大明和刘慧兰结婚时，赵春花是否已去世？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 赵春花 → 赵春花",
+        "关联人物: 林大明 → 林大明",
+        "新增人物: 刘慧兰",
+        "新增关系: 林大明 ↔ 赵春花 (spouse)",
+        "新增关系: 林大明 ↔ 刘慧兰 (spouse)",
+        "推导关系: 林建国 ↔ 朱世杰 (spouse)",
+        "推导关系: 朱世杰 ↔ 李玉兰 (spouse)",
+        "推导关系: 刘慧兰 ↔ 林青海 (parent_child)",
+        "推导关系: 刘慧兰 ↔ 林绿洲 (parent_child)",
+        "推导关系: 刘慧兰 ↔ 林小月 (parent_child)",
+        "新增事件: 赵春花去世",
+        "新增事件: 林大明与刘慧兰结婚"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 20,
+    "input": "林大明和刘慧兰生了个儿子叫林新生",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林大明",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林大明"
+        },
+        {
+          "type": "person",
+          "name": "刘慧兰",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "刘慧兰"
+        },
+        {
+          "type": "person",
+          "name": "林新生",
+          "temp_id": "temp_person_003",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "儿子"
+          ],
+          "confidence": "high",
+          "source_text": "儿子叫林新生"
+        }
+      ],
+      "events": [
+        {
+          "type": "birth",
+          "description": "林新生出生",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_003",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "父亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "母亲"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林新生是否有具体的出生日期或年份？",
+          "林大明和刘慧兰的婚姻是否有具体日期？",
+          "林新生是林大明和刘慧兰的第几个孩子？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林大明 → 林大明",
+        "关联人物: 刘慧兰 → 刘慧兰",
+        "新增人物: 林新生",
+        "新增关系: 林大明 ↔ 刘慧兰 (spouse)",
+        "新增关系: 林大明 ↔ 林新生 (parent_child)",
+        "新增关系: 刘慧兰 ↔ 林新生 (parent_child)",
+        "推导关系: 林小月 ↔ 林新生 (sibling)",
+        "推导关系: 刘慧兰 ↔ 赵春花 (spouse)",
+        "推导关系: 林青海 ↔ 林新生 (sibling)",
+        "推导关系: 林绿洲 ↔ 林新生 (sibling)",
+        "推导关系: 赵春花 ↔ 林新生 (parent_child)",
+        "推导关系: 陈桂芳 ↔ 林新生 (parent_child)",
+        "推导关系: 陈桂芳 ↔ 刘慧兰 (spouse)",
+        "新增事件: 林新生出生"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 21,
+    "input": "王二锤和周小燕离婚了，又娶了吴丽丽",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王二锤",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王二锤"
+        },
+        {
+          "type": "person",
+          "name": "周小燕",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "周小燕"
+        },
+        {
+          "type": "person",
+          "name": "吴丽丽",
+          "temp_id": "temp_person_003",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "吴丽丽"
+        }
+      ],
+      "events": [
+        {
+          "type": "divorce",
+          "description": "王二锤与周小燕离婚",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "丈夫"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "妻子"
+            }
+          ],
+          "confidence": "high"
+        },
+        {
+          "type": "marriage",
+          "description": "王二锤与吴丽丽结婚",
+          "temp_id": "temp_event_002",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_001",
+              "role": "新郎"
+            },
+            {
+              "temp_id": "temp_person_003",
+              "role": "新娘"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": "ex_spouse",
+          "attributes": {
+            "marriage_status": "divorced"
+          },
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {
+            "marriage_number": 2
+          },
+          "event_temp_id": "temp_event_002",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王二锤与周小燕的离婚事件发生在哪一年？",
+          "王二锤与吴丽丽的结婚事件发生在哪一年？",
+          "王二锤与周小燕是否有子女？",
+          "王二锤与吴丽丽的婚姻是初婚还是再婚？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王二锤 → 王二锤",
+        "关联人物: 周小燕 → 周小燕",
+        "新增人物: 吴丽丽",
+        "新增关系: 王二锤 ↔ 周小燕 (spouse)",
+        "新增关系: 王二锤 ↔ 吴丽丽 (spouse)",
+        "推导关系: 吴丽丽 ↔ 王磊 (parent_child)",
+        "推导关系: 吴丽丽 ↔ 王芳 (parent_child)",
+        "新增事件: 王二锤与周小燕离婚",
+        "解除配偶: 王二锤 ↔ 周小燕 (离婚)",
+        "解除配偶: 王二锤 ↔ 周小燕 (离婚)",
+        "解除配偶: 王二锤 ↔ 周小燕 (离婚)",
+        "新增事件: 王二锤与吴丽丽结婚"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 22,
+    "input": "王二锤和吴丽丽生了个女儿叫王甜甜",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王二锤",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王二锤"
+        },
+        {
+          "type": "person",
+          "name": "吴丽丽",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "吴丽丽"
+        },
+        {
+          "type": "person",
+          "name": "王甜甜",
+          "temp_id": "temp_person_003",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "女儿叫王甜甜"
+        }
+      ],
+      "events": [
+        {
+          "type": "birth",
+          "description": "王甜甜出生",
+          "temp_id": "temp_event_001",
+          "date": null,
+          "date_accuracy": "unknown",
+          "location": null,
+          "participants": [
+            {
+              "temp_id": "temp_person_003",
+              "role": "新生儿"
+            },
+            {
+              "temp_id": "temp_person_001",
+              "role": "父亲"
+            },
+            {
+              "temp_id": "temp_person_002",
+              "role": "母亲"
+            }
+          ],
+          "confidence": "high"
+        }
+      ],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "spouse",
+          "subtype": null,
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": "temp_event_001",
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.95,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王甜甜的出生日期是什么时候？",
+          "王二锤和吴丽丽的结婚日期是什么时候？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王二锤 → 王二锤",
+        "关联人物: 吴丽丽 → 吴丽丽",
+        "新增人物: 王甜甜",
+        "新增关系: 王二锤 ↔ 吴丽丽 (spouse)",
+        "新增关系: 王二锤 ↔ 王甜甜 (parent_child)",
+        "新增关系: 吴丽丽 ↔ 王甜甜 (parent_child)",
+        "推导关系: 周小燕 ↔ 王二锤 (spouse)",
+        "推导关系: 吴丽丽 ↔ 周小燕 (spouse)",
+        "推导关系: 王甜甜 ↔ 王磊 (sibling)",
+        "推导关系: 王甜甜 ↔ 王芳 (sibling)",
+        "推导关系: 周小燕 ↔ 王甜甜 (parent_child)",
+        "新增事件: 王甜甜出生"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 23,
+    "input": "朱世杰的哥哥叫朱世豪，他是赵春花的舅舅",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "朱世杰",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "朱世杰"
+        },
+        {
+          "type": "person",
+          "name": "朱世豪",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "朱世杰的哥哥叫朱世豪"
+        },
+        {
+          "type": "person",
+          "name": "赵春花",
+          "temp_id": "temp_person_003",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "赵春花"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "sibling",
+          "subtype": "elder_brother",
+          "attributes": {
+            "birth_order": "哥哥"
+          },
+          "event_temp_id": null,
+          "confidence": "high"
+        },
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_003",
+          "type": "aunt_uncle_niece_nephew",
+          "subtype": "uncle",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [
+          "“他是赵春花的舅舅”中的“他”指代不明，根据上下文推断为朱世豪。"
+        ],
+        "suggested_questions": [
+          "“他是赵春花的舅舅”中的“他”具体是指朱世杰还是朱世豪？",
+          "朱世杰、朱世豪和赵春花之间是否有其他已知的家族关系？",
+          "是否有关于这些人物出生、婚姻或其他事件的更多信息？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 朱世杰 → 朱世杰",
+        "新增人物: 朱世豪",
+        "关联人物: 赵春花 → 赵春花",
+        "自动创建共享父母(占位): 朱世杰的爸爸 → 朱世杰/朱世豪",
+        "新增关系: 朱世杰 ↔ 朱世豪 (sibling)",
+        "新增关系: 朱世豪 ↔ 赵春花 (aunt_uncle_niece_nephew)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 24,
+    "input": "朱世豪有个儿子叫朱小勇",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "朱世豪",
+          "temp_id": "temp_person_001",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "朱世豪"
+        },
+        {
+          "type": "person",
+          "name": "朱小勇",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [
+            "儿子"
+          ],
+          "confidence": "high",
+          "source_text": "儿子叫朱小勇"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_001",
+          "person2_temp_id": "temp_person_002",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "朱世豪和朱小勇的出生年份或大致年龄是多少？",
+          "朱世豪是否有其他子女？",
+          "朱小勇的母亲是谁？",
+          "朱世豪的配偶是谁？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 朱世豪 → 朱世豪",
+        "新增人物: 朱小勇",
+        "新增关系: 朱世豪 ↔ 朱小勇 (parent_child)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 25,
+    "input": "林绿洲的妈妈叫赵春花",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "林绿洲",
+          "temp_id": "temp_person_001",
+          "gender": "unknown",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "林绿洲"
+        },
+        {
+          "type": "person",
+          "name": "赵春花",
+          "temp_id": "temp_person_002",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "赵春花"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "parent_child",
+          "subtype": "mother",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "林绿洲的性别是什么？",
+          "林绿洲的父亲是谁？",
+          "赵春花的配偶是谁？",
+          "林绿洲和赵春花是否有其他子女或兄弟姐妹？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 林绿洲 → 林绿洲",
+        "关联人物: 赵春花 → 赵春花",
+        "新增关系: 赵春花 ↔ 林绿洲 (parent_child)"
+      ],
+      "questions": []
+    }
+  },
+  {
+    "step": 26,
+    "input": "王芳的爸爸叫王二锤",
+    "parsed": {
+      "entities": [
+        {
+          "type": "person",
+          "name": "王芳",
+          "temp_id": "temp_person_001",
+          "gender": "female",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王芳"
+        },
+        {
+          "type": "person",
+          "name": "王二锤",
+          "temp_id": "temp_person_002",
+          "gender": "male",
+          "birth_year": null,
+          "death_year": null,
+          "tags": [],
+          "confidence": "high",
+          "source_text": "王二锤"
+        }
+      ],
+      "events": [],
+      "relationships": [
+        {
+          "person1_temp_id": "temp_person_002",
+          "person2_temp_id": "temp_person_001",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {},
+          "event_temp_id": null,
+          "confidence": "high"
+        }
+      ],
+      "metadata": {
+        "parsing_confidence": 0.9,
+        "ambiguous_references": [],
+        "suggested_questions": [
+          "王芳的母亲是谁？",
+          "王二锤的出生年份或其他信息？",
+          "王芳是否有兄弟姐妹？"
+        ],
+        "extracted_time_references": []
+      }
+    },
+    "import_result": {
+      "auto_saved": true,
+      "actions": [
+        "关联人物: 王芳 → 王芳",
+        "关联人物: 王二锤 → 王二锤",
+        "新增关系: 王二锤 ↔ 王芳 (parent_child)"
+      ],
+      "questions": []
+    }
+  }
+]

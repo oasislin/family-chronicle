@@ -1,0 +1,408 @@
+{
+  "family_data_schema": {
+    "version": "1.0",
+    "description": "家族编年史智能族谱系统数据结构标准",
+    "entities": {
+      "person": {
+        "type": "object",
+        "description": "家族成员实体",
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "唯一标识符，格式：person_<uuid>"
+          },
+          "name": {
+            "type": "string",
+            "description": "姓名"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female", "unknown"],
+            "description": "性别"
+          },
+          "birth_date": {
+            "type": "string",
+            "description": "出生日期，格式：YYYY-MM-DD 或 YYYY 或 null（未知）"
+          },
+          "death_date": {
+            "type": "string",
+            "description": "去世日期，格式：YYYY-MM-DD 或 YYYY 或 null（在世）"
+          },
+          "birth_place": {
+            "type": "string",
+            "description": "出生地"
+          },
+          "current_residence": {
+            "type": "string",
+            "description": "现居住地"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "标签数组，如：['长子', '手艺人', '村长']"
+          },
+          "notes": {
+            "type": "string",
+            "description": "备注信息"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "最后更新时间"
+          }
+        }
+      },
+      "event": {
+        "type": "object",
+        "description": "家族事件实体",
+        "required": ["id", "type", "date", "description"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "唯一标识符，格式：event_<uuid>"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "birth",
+              "death",
+              "marriage",
+              "divorce",
+              "adoption",
+              "illness",
+              "relocation",
+              "education",
+              "career",
+              "recognition",
+              "other"
+            ],
+            "description": "事件类型"
+          },
+          "date": {
+            "type": "string",
+            "description": "事件日期，格式：YYYY-MM-DD 或 YYYY 或 null（未知）"
+          },
+          "date_accuracy": {
+            "type": "string",
+            "enum": ["exact", "year", "approximate", "unknown"],
+            "description": "日期精确度"
+          },
+          "description": {
+            "type": "string",
+            "description": "事件描述"
+          },
+          "location": {
+            "type": "string",
+            "description": "事件发生地点"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "person_id": {
+                  "type": "string",
+                  "description": "参与者ID"
+                },
+                "role": {
+                  "type": "string",
+                  "description": "在事件中的角色，如：'新郎', '新娘', '证婚人'"
+                }
+              }
+            },
+            "description": "事件参与者列表"
+          },
+          "source": {
+            "type": "string",
+            "description": "信息来源，如：'父亲口述', '家谱记载'"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low", "uncertain"],
+            "description": "信息可信度"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          }
+        }
+      }
+    },
+    "relationships": {
+      "family_relationship": {
+        "type": "object",
+        "description": "家族关系实体",
+        "required": ["id", "person1_id", "person2_id", "type"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "唯一标识符，格式：rel_<uuid>"
+          },
+          "person1_id": {
+            "type": "string",
+            "description": "第一个家族成员ID"
+          },
+          "person2_id": {
+            "type": "string",
+            "description": "第二个家族成员ID"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "parent_child",
+              "spouse",
+              "sibling",
+              "grandparent_grandchild",
+              "aunt_uncle_niece_nephew",
+              "cousin",
+              "adopted_parent_child",
+              "godparent_godchild",
+              "in_law",
+              "other"
+            ],
+            "description": "关系类型"
+          },
+          "subtype": {
+            "type": "string",
+            "description": "关系子类型，如：'father', 'mother', 'elder_brother', 'younger_sister'"
+          },
+          "start_date": {
+            "type": "string",
+            "description": "关系开始日期（如结婚日期）"
+          },
+          "end_date": {
+            "type": "string",
+            "description": "关系结束日期（如离婚日期）"
+          },
+          "attributes": {
+            "type": "object",
+            "description": "关系属性，如：{ 'birth_order': '老二', 'marriage_number': 2 }"
+          },
+          "event_id": {
+            "type": "string",
+            "description": "关联的事件ID（如婚姻事件）"
+          },
+          "notes": {
+            "type": "string",
+            "description": "备注"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          }
+        }
+      }
+    },
+    "example_data": {
+      "description": "示例数据：王建国的家庭关系",
+      "entities": {
+        "people": [
+          {
+            "id": "person_001",
+            "name": "王大强",
+            "gender": "male",
+            "birth_date": "1950",
+            "tags": ["长辈", "农民"],
+            "birth_place": "王家村"
+          },
+          {
+            "id": "person_002",
+            "name": "王建国",
+            "gender": "male",
+            "birth_date": "1980-12-08",
+            "tags": ["老二", "手艺人", "居住地:县城"],
+            "current_residence": "县城"
+          },
+          {
+            "id": "person_003",
+            "name": "李梅",
+            "gender": "female",
+            "birth_date": "1982",
+            "tags": ["隔壁村", "二婚"],
+            "birth_place": "李家村"
+          },
+          {
+            "id": "person_004",
+            "name": "赵大爷",
+            "gender": "male",
+            "birth_date": "1945",
+            "tags": ["村长"],
+            "birth_place": "赵家村"
+          },
+          {
+            "id": "person_005",
+            "name": "小芳",
+            "gender": "female",
+            "birth_date": "1996",
+            "tags": ["女儿"]
+          }
+        ],
+        "events": [
+          {
+            "id": "event_001",
+            "type": "marriage",
+            "date": "1995-09-15",
+            "date_accuracy": "exact",
+            "description": "王建国与李梅结婚（二婚）",
+            "location": "县城",
+            "participants": [
+              {"person_id": "person_002", "role": "新郎"},
+              {"person_id": "person_003", "role": "新娘"}
+            ],
+            "source": "父亲口述",
+            "confidence": "high"
+          },
+          {
+            "id": "event_002",
+            "type": "recognition",
+            "date": "1996",
+            "date_accuracy": "year",
+            "description": "王建国认赵大爷为干爹",
+            "location": "王家村",
+            "participants": [
+              {"person_id": "person_002", "role": "干儿子"},
+              {"person_id": "person_004", "role": "干爹"}
+            ],
+            "source": "父亲口述",
+            "confidence": "medium"
+          },
+          {
+            "id": "event_003",
+            "type": "birth",
+            "date": "1996",
+            "date_accuracy": "year",
+            "description": "小芳出生",
+            "participants": [
+              {"person_id": "person_005", "role": "新生儿"},
+              {"person_id": "person_002", "role": "父亲"},
+              {"person_id": "person_003", "role": "母亲"}
+            ],
+            "source": "父亲口述",
+            "confidence": "high"
+          }
+        ]
+      },
+      "relationships": [
+        {
+          "id": "rel_001",
+          "person1_id": "person_001",
+          "person2_id": "person_002",
+          "type": "parent_child",
+          "subtype": "father",
+          "attributes": {"birth_order": "老二"}
+        },
+        {
+          "id": "rel_002",
+          "person1_id": "person_002",
+          "person2_id": "person_003",
+          "type": "spouse",
+          "start_date": "1995-09-15",
+          "attributes": {"marriage_number": 2},
+          "event_id": "event_001"
+        },
+        {
+          "id": "rel_003",
+          "person1_id": "person_002",
+          "person2_id": "person_004",
+          "type": "godparent_godchild",
+          "subtype": "godfather_godson",
+          "start_date": "1996",
+          "event_id": "event_002"
+        },
+        {
+          "id": "rel_004",
+          "person1_id": "person_002",
+          "person2_id": "person_005",
+          "type": "parent_child",
+          "subtype": "father",
+          "event_id": "event_003"
+        },
+        {
+          "id": "rel_005",
+          "person1_id": "person_003",
+          "person2_id": "person_005",
+          "type": "parent_child",
+          "subtype": "mother",
+          "event_id": "event_003"
+        }
+      ]
+    },
+    "ai_parsing_output": {
+      "description": "AI解析输出格式示例",
+      "example_input": "大伯的老二建国，95年和李梅二婚了，后来认了村长赵大爷做干爹",
+      "example_output": {
+        "entities": [
+          {
+            "type": "person",
+            "name": "建国",
+            "tags": ["老二", "大伯之子"],
+            "temp_id": "temp_person_001"
+          },
+          {
+            "type": "person",
+            "name": "李梅",
+            "temp_id": "temp_person_002"
+          },
+          {
+            "type": "person",
+            "name": "赵大爷",
+            "tags": ["村长"],
+            "temp_id": "temp_person_003"
+          }
+        ],
+        "events": [
+          {
+            "type": "marriage",
+            "date": "1995",
+            "description": "建国与李梅结婚（二婚）",
+            "participants": [
+              {"temp_id": "temp_person_001", "role": "新郎"},
+              {"temp_id": "temp_person_002", "role": "新娘"}
+            ],
+            "temp_id": "temp_event_001"
+          },
+          {
+            "type": "recognition",
+            "date": null,
+            "description": "建国认赵大爷为干爹",
+            "participants": [
+              {"temp_id": "temp_person_001", "role": "干儿子"},
+              {"temp_id": "temp_person_003", "role": "干爹"}
+            ],
+            "temp_id": "temp_event_002"
+          }
+        ],
+        "relationships": [
+          {
+            "person1_temp_id": "temp_person_001",
+            "person2_temp_id": "temp_person_002",
+            "type": "spouse",
+            "event_temp_id": "temp_event_001"
+          },
+          {
+            "person1_temp_id": "temp_person_001",
+            "person2_temp_id": "temp_person_003",
+            "type": "godparent_godchild",
+            "subtype": "godfather_godson",
+            "event_temp_id": "temp_event_002"
+          }
+        ],
+        "metadata": {
+          "parsing_confidence": 0.85,
+          "ambiguous_references": ["大伯 - 需要确认具体人物"],
+          "suggested_questions": ["大伯是指王大强吗？"]
+        }
+      }
+    }
+  }
+}

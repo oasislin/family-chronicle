@@ -1,0 +1,852 @@
+[
+  {
+    "id": "EXT_p067",
+    "input": "我有个表哥，叫陈伟",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "陈伟",
+        "gender": "male",
+        "tags": [
+          "表哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_p068",
+    "input": "表哥陈伟",
+    "actions": [
+      {
+        "type": "MATCH_PERSON",
+        "name": "陈伟",
+        "context": "同EXT_p067"
+      }
+    ]
+  },
+  {
+    "id": "EXT_p069",
+    "input": "表哥名字叫陈伟",
+    "actions": [
+      {
+        "type": "MATCH_PERSON",
+        "name": "陈伟",
+        "context": "同上"
+      }
+    ]
+  },
+  {
+    "id": "EXT_k070",
+    "input": "叔叔梁志强是1951年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "梁志强",
+        "gender": "male",
+        "birth_date": "1951",
+        "tags": [
+          "叔叔"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k071",
+    "input": "我的叔叔叫黄明",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "黄明",
+        "gender": "male",
+        "tags": [
+          "叔叔"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k072",
+    "input": "有个阿姨叫谢娟，1955年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "谢娟",
+        "gender": "female",
+        "birth_date": "1955",
+        "tags": [
+          "阿姨"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k073",
+    "input": "我家阿姨王秀英",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王秀英",
+        "gender": "female",
+        "tags": [
+          "阿姨"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k074",
+    "input": "我的舅舅叫黄鑫",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "黄鑫",
+        "gender": "male",
+        "tags": [
+          "舅舅"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k075",
+    "input": "有个舅舅叫林军，1995年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "林军",
+        "gender": "male",
+        "birth_date": "1995",
+        "tags": [
+          "舅舅"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k076",
+    "input": "姑姑黄芳是1987年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "黄芳",
+        "gender": "female",
+        "birth_date": "1987",
+        "tags": [
+          "姑姑"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k077",
+    "input": "有个姑姑叫张玉兰，1994年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "张玉兰",
+        "gender": "female",
+        "birth_date": "1994",
+        "tags": [
+          "姑姑"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k078",
+    "input": "我家爷爷孙华",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "孙华",
+        "gender": "male",
+        "tags": [
+          "爷爷"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k079",
+    "input": "有个爷爷叫孙志强，1955年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "孙志强",
+        "gender": "male",
+        "birth_date": "1955",
+        "tags": [
+          "爷爷"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k080",
+    "input": "奶奶赵静是2004年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "赵静",
+        "gender": "female",
+        "birth_date": "2004",
+        "tags": [
+          "奶奶"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k081",
+    "input": "我的奶奶叫郑雪梅",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "郑雪梅",
+        "gender": "female",
+        "tags": [
+          "奶奶"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k082",
+    "input": "我的外公叫唐宇",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "唐宇",
+        "gender": "male",
+        "tags": [
+          "外公"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k083",
+    "input": "外公朱国强是1985年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "朱国强",
+        "gender": "male",
+        "birth_date": "1985",
+        "tags": [
+          "外公"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k084",
+    "input": "我家外婆梁静",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "梁静",
+        "gender": "female",
+        "tags": [
+          "外婆"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k085",
+    "input": "我家外婆宋丽华",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "宋丽华",
+        "gender": "female",
+        "tags": [
+          "外婆"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k086",
+    "input": "我家哥哥吴国强",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "吴国强",
+        "gender": "male",
+        "tags": [
+          "哥哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k087",
+    "input": "有个哥哥叫赵超，1967年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "赵超",
+        "gender": "male",
+        "birth_date": "1967",
+        "tags": [
+          "哥哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k088",
+    "input": "姐姐梁静是1960年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "梁静",
+        "gender": "female",
+        "birth_date": "1960",
+        "tags": [
+          "姐姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k089",
+    "input": "姐姐马美玲是1992年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "马美玲",
+        "gender": "female",
+        "birth_date": "1992",
+        "tags": [
+          "姐姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k090",
+    "input": "我家弟弟宋国强",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "宋国强",
+        "gender": "male",
+        "tags": [
+          "弟弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k091",
+    "input": "有个弟弟叫林明，1960年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "林明",
+        "gender": "male",
+        "birth_date": "1960",
+        "tags": [
+          "弟弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k092",
+    "input": "我家妹妹朱雪梅",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "朱雪梅",
+        "gender": "female",
+        "tags": [
+          "妹妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k093",
+    "input": "我的妹妹叫谢丽",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "谢丽",
+        "gender": "female",
+        "tags": [
+          "妹妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k094",
+    "input": "堂哥黄建军是2001年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "黄建军",
+        "gender": "male",
+        "birth_date": "2001",
+        "tags": [
+          "堂哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k095",
+    "input": "我家堂哥朱华",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "朱华",
+        "gender": "male",
+        "tags": [
+          "堂哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k096",
+    "input": "有个堂弟叫罗磊，1963年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "罗磊",
+        "gender": "male",
+        "birth_date": "1963",
+        "tags": [
+          "堂弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k097",
+    "input": "堂弟朱宇是1959年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "朱宇",
+        "gender": "male",
+        "birth_date": "1959",
+        "tags": [
+          "堂弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k098",
+    "input": "堂姐刘小红是1997年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "刘小红",
+        "gender": "female",
+        "birth_date": "1997",
+        "tags": [
+          "堂姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k099",
+    "input": "有个堂姐叫唐燕，1987年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "唐燕",
+        "gender": "female",
+        "birth_date": "1987",
+        "tags": [
+          "堂姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k100",
+    "input": "有个堂妹叫马小红，1958年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "马小红",
+        "gender": "female",
+        "birth_date": "1958",
+        "tags": [
+          "堂妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k101",
+    "input": "我的堂妹叫李桂芳",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "李桂芳",
+        "gender": "female",
+        "tags": [
+          "堂妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k102",
+    "input": "有个表哥叫刘勇，2000年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "刘勇",
+        "gender": "male",
+        "birth_date": "2000",
+        "tags": [
+          "表哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k103",
+    "input": "有个表哥叫郑国强，1974年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "郑国强",
+        "gender": "male",
+        "birth_date": "1974",
+        "tags": [
+          "表哥"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k104",
+    "input": "表弟郑宇是1983年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "郑宇",
+        "gender": "male",
+        "birth_date": "1983",
+        "tags": [
+          "表弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k105",
+    "input": "我的表弟叫林建国",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "林建国",
+        "gender": "male",
+        "tags": [
+          "表弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k106",
+    "input": "表姐谢娟是1998年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "谢娟",
+        "gender": "female",
+        "birth_date": "1998",
+        "tags": [
+          "表姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k107",
+    "input": "表姐梁丽是1957年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "梁丽",
+        "gender": "female",
+        "birth_date": "1957",
+        "tags": [
+          "表姐"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k108",
+    "input": "我的表妹叫胡玉兰",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "胡玉兰",
+        "gender": "female",
+        "tags": [
+          "表妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k109",
+    "input": "我家表妹唐雪梅",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "唐雪梅",
+        "gender": "female",
+        "tags": [
+          "表妹"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k110",
+    "input": "姐夫高志强是2005年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "高志强",
+        "gender": "male",
+        "birth_date": "2005",
+        "tags": [
+          "姐夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k111",
+    "input": "我家姐夫梁鑫",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "梁鑫",
+        "gender": "male",
+        "tags": [
+          "姐夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k112",
+    "input": "我家嫂子刘静",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "刘静",
+        "gender": "female",
+        "tags": [
+          "嫂子"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k113",
+    "input": "嫂子林玲是1950年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "林玲",
+        "gender": "female",
+        "birth_date": "1950",
+        "tags": [
+          "嫂子"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k114",
+    "input": "弟媳何秀英是1957年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "何秀英",
+        "gender": "female",
+        "birth_date": "1957",
+        "tags": [
+          "弟媳"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k115",
+    "input": "我家弟媳吴小红",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "吴小红",
+        "gender": "female",
+        "tags": [
+          "弟媳"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k116",
+    "input": "有个妹夫叫罗国强，1955年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "罗国强",
+        "gender": "male",
+        "birth_date": "1955",
+        "tags": [
+          "妹夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k117",
+    "input": "我家妹夫李飞",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "李飞",
+        "gender": "male",
+        "tags": [
+          "妹夫"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k118",
+    "input": "我家儿媳妇刘霞",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "刘霞",
+        "gender": "female",
+        "tags": [
+          "儿媳妇"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k119",
+    "input": "有个儿媳妇叫周玲，2005年出生",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "周玲",
+        "gender": "female",
+        "birth_date": "2005",
+        "tags": [
+          "儿媳妇"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k120",
+    "input": "我家女婿杨飞",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "杨飞",
+        "gender": "male",
+        "tags": [
+          "女婿"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k121",
+    "input": "女婿宋刚是1975年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "宋刚",
+        "gender": "male",
+        "birth_date": "1975",
+        "tags": [
+          "女婿"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k122",
+    "input": "我的亲家叫郭鑫",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "郭鑫",
+        "gender": "male",
+        "tags": [
+          "亲家"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k123",
+    "input": "亲家黄明是1954年生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "黄明",
+        "gender": "male",
+        "birth_date": "1954",
+        "tags": [
+          "亲家"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k124",
+    "input": "我家亲家母张娟",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "张娟",
+        "gender": "female",
+        "tags": [
+          "亲家母"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EXT_k125",
+    "input": "我的亲家母叫张丽华",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "张丽华",
+        "gender": "female",
+        "tags": [
+          "亲家母"
+        ]
+      }
+    ]
+  }
+]

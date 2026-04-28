@@ -1,0 +1,1026 @@
+[
+  {
+    "id": "T001",
+    "input": "我有个表弟叫周小明，2000年出生的",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "周小明",
+        "gender": "male",
+        "birth_date": "2000",
+        "tags": [
+          "表弟"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T002",
+    "input": "爷爷的哥哥叫王大壮，已经去世了",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王大壮",
+        "gender": "male",
+        "tags": [
+          "哥哥",
+          "长辈"
+        ]
+      },
+      {
+        "type": "ADD_EVENT",
+        "event_type": "death",
+        "persons": [
+          "王大壮"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T003",
+    "input": "我姑姑叫刘秀英，1955年出生在刘家村，现在住在县城",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "刘秀英",
+        "gender": "female",
+        "birth_date": "1955",
+        "tags": [
+          "姑姑"
+        ]
+      },
+      {
+        "type": "UPDATE_PERSON",
+        "name": "刘秀英",
+        "field": "birth_place",
+        "value": "刘家村"
+      },
+      {
+        "type": "UPDATE_PERSON",
+        "name": "刘秀英",
+        "field": "current_location",
+        "value": "县城"
+      }
+    ]
+  },
+  {
+    "id": "T004",
+    "input": "我有三个舅舅，大的叫李国强，二的叫李国富，小的叫李国民",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "李国强",
+        "gender": "male",
+        "tags": [
+          "舅舅",
+          "老大"
+        ]
+      },
+      {
+        "type": "CREATE_PERSON",
+        "name": "李国富",
+        "gender": "male",
+        "tags": [
+          "舅舅",
+          "老二"
+        ]
+      },
+      {
+        "type": "CREATE_PERSON",
+        "name": "李国民",
+        "gender": "male",
+        "tags": [
+          "舅舅",
+          "老三"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T005",
+    "input": "还有一个人叫张伟",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "张伟",
+        "gender": "male",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "T006",
+    "input": "王建国有个妹妹叫王建红",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王建红",
+        "gender": "female",
+        "tags": [
+          "妹妹"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王建国",
+        "person_b": "王建红",
+        "relation": "sibling"
+      }
+    ]
+  },
+  {
+    "id": "T007",
+    "input": "李梅她姐夫叫陈大牛",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "陈大牛",
+        "gender": "male",
+        "tags": [
+          "姐夫"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "李梅",
+        "person_b": "陈大牛",
+        "relation": "brother_in_law"
+      }
+    ]
+  },
+  {
+    "id": "T008",
+    "input": "大伯的三儿子叫建国华",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "建国华",
+        "gender": "male",
+        "tags": [
+          "三儿子"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T009",
+    "input": "王建国今年45岁了",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1981"
+      }
+    ]
+  },
+  {
+    "id": "T010",
+    "input": "李梅是隔壁村嫁过来的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "李梅",
+        "field": "tags_add",
+        "value": "隔壁村"
+      }
+    ]
+  },
+  {
+    "id": "T011",
+    "input": "赵大爷的大名叫赵大雷",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "赵大爷",
+        "field": "full_name",
+        "value": "赵大雷"
+      }
+    ]
+  },
+  {
+    "id": "T012",
+    "input": "王大强老爷子身体还很硬朗",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王大强",
+        "field": "description",
+        "value": "身体硬朗"
+      }
+    ]
+  },
+  {
+    "id": "T013",
+    "input": "李菊花是1985年生的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "李菊花",
+        "field": "birth_date",
+        "value": "1985"
+      }
+    ]
+  },
+  {
+    "id": "T014",
+    "input": "李刚出生于1987年",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "李刚",
+        "gender": "male",
+        "birth_date": "1987",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "T015",
+    "input": "李梅是在李家村出生的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "李梅",
+        "field": "birth_place",
+        "value": "李家村"
+      }
+    ]
+  },
+  {
+    "id": "T016",
+    "input": "王建国现在住在省城",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王建国",
+        "field": "current_location",
+        "value": "省城"
+      }
+    ]
+  },
+  {
+    "id": "T017",
+    "input": "王大强以前是生产队长",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王大强",
+        "field": "occupation",
+        "value": "生产队长"
+      }
+    ]
+  },
+  {
+    "id": "T018",
+    "input": "王建国年轻的时候长得一表人才，读书成绩一直是班上前几名",
+    "actions": [
+      {
+        "type": "ADD_BIOGRAPHY",
+        "person": "王建国",
+        "text": "年轻时长得一表人才，读书成绩一直是班上前几名"
+      }
+    ]
+  },
+  {
+    "id": "T019",
+    "input": "赵大爷是村里出了名的热心肠，谁家有事都帮忙",
+    "actions": [
+      {
+        "type": "ADD_BIOGRAPHY",
+        "person": "赵大爷",
+        "text": "村里出了名的热心肠，谁家有事都帮忙"
+      }
+    ]
+  },
+  {
+    "id": "T020",
+    "input": "王建国高中毕业后学了木匠手艺，后来在县城开了家具店",
+    "actions": [
+      {
+        "type": "ADD_BIOGRAPHY",
+        "person": "王建国",
+        "text": "高中毕业后学了木匠手艺，后来在县城开了家具店"
+      }
+    ]
+  },
+  {
+    "id": "T021",
+    "input": "李梅从小就喜欢唱歌，是村里文艺队的骨干",
+    "actions": [
+      {
+        "type": "ADD_BIOGRAPHY",
+        "person": "李梅",
+        "text": "从小就喜欢唱歌，是村里文艺队的骨干"
+      }
+    ]
+  },
+  {
+    "id": "T022",
+    "input": "王大强年轻时当过兵，后来回村务农。他为人正直，村里人都很尊敬他",
+    "actions": [
+      {
+        "type": "ADD_BIOGRAPHY",
+        "person": "王大强",
+        "text": "年轻时当过兵，后来回村务农。为人正直，村里人都很尊敬他"
+      }
+    ]
+  },
+  {
+    "id": "T023",
+    "input": "王大强还有个大儿子叫王建军",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王建军",
+        "gender": "male",
+        "tags": [
+          "大儿子"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王大强",
+        "person_b": "王建军",
+        "relation": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T024",
+    "input": "王大强的老婆叫孙桂芳",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "孙桂芳",
+        "gender": "female",
+        "tags": [
+          "老婆"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王大强",
+        "person_b": "孙桂芳",
+        "relation": "spouse"
+      }
+    ]
+  },
+  {
+    "id": "T025",
+    "input": "李菊花是李梅的妹妹",
+    "actions": [
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "李菊花",
+        "person_b": "李梅",
+        "relation": "sibling"
+      }
+    ]
+  },
+  {
+    "id": "T026",
+    "input": "建国认了赵大爷做干爹",
+    "actions": [
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王建国",
+        "person_b": "赵大爷",
+        "relation": "godparent"
+      }
+    ]
+  },
+  {
+    "id": "T027",
+    "input": "王大强的父亲叫王老太爷",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王老太爷",
+        "gender": "male",
+        "tags": [
+          "父亲"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王大强",
+        "person_b": "王老太爷",
+        "relation": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T028",
+    "input": "李梅的弟弟叫李强",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "李强",
+        "gender": "male",
+        "tags": [
+          "弟弟"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "李梅",
+        "person_b": "李强",
+        "relation": "sibling"
+      }
+    ]
+  },
+  {
+    "id": "T029",
+    "input": "王建国是王大强的儿子",
+    "actions": [
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王建国",
+        "person_b": "王大强",
+        "relation": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T030",
+    "input": "王大强是王建国的父亲",
+    "actions": [
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王大强",
+        "person_b": "王建国",
+        "relation": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T031",
+    "input": "王建国和李梅是两口子",
+    "actions": [
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王建国",
+        "person_b": "李梅",
+        "relation": "spouse"
+      }
+    ]
+  },
+  {
+    "id": "T032",
+    "input": "小明是2000年5月出生在县医院的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "周小明",
+        "field": "birth_date",
+        "value": "2000-05"
+      },
+      {
+        "type": "UPDATE_PERSON",
+        "name": "周小明",
+        "field": "birth_place",
+        "value": "县医院"
+      }
+    ]
+  },
+  {
+    "id": "T033",
+    "input": "建国和李梅是1995年9月15号结的婚，在县城办的酒席",
+    "actions": [
+      {
+        "type": "ADD_EVENT",
+        "event_type": "marriage",
+        "date": "1995-09-15",
+        "persons": [
+          "王建国",
+          "李梅"
+        ],
+        "location": "县城"
+      }
+    ]
+  },
+  {
+    "id": "T034",
+    "input": "王老太爷是2010年走的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王老太爷",
+        "field": "death_date",
+        "value": "2010"
+      },
+      {
+        "type": "ADD_EVENT",
+        "event_type": "death",
+        "date": "2010",
+        "persons": [
+          "王老太爷"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T035",
+    "input": "2005年王建国一家从王家村搬到了县城",
+    "actions": [
+      {
+        "type": "ADD_EVENT",
+        "event_type": "move",
+        "date": "2005",
+        "persons": [
+          "王建国"
+        ],
+        "from": "王家村",
+        "to": "县城"
+      }
+    ]
+  },
+  {
+    "id": "T036",
+    "input": "2020年李梅生了一场大病",
+    "actions": [
+      {
+        "type": "ADD_EVENT",
+        "event_type": "illness",
+        "date": "2020",
+        "persons": [
+          "李梅"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T037",
+    "input": "1996年建国认赵大爷做干爹，在赵家村办的",
+    "actions": [
+      {
+        "type": "ADD_EVENT",
+        "event_type": "ceremony",
+        "date": "1996",
+        "persons": [
+          "王建国",
+          "赵大爷"
+        ],
+        "description": "认干爹",
+        "location": "赵家村"
+      }
+    ]
+  },
+  {
+    "id": "T038",
+    "input": "王建国其实是1979年出生的，不是1980年",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1979",
+        "note": "更正：此前记录为1980"
+      }
+    ]
+  },
+  {
+    "id": "T039",
+    "input": "李梅是李家村人，不是隔壁村的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "李梅",
+        "field": "origin",
+        "value": "李家村",
+        "note": "更正：此前标签为隔壁村"
+      }
+    ]
+  },
+  {
+    "id": "T040",
+    "input": "赵大爷其实是王建国的舅舅",
+    "actions": [
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "赵大爷",
+        "person_b": "王建国",
+        "relation": "uncle",
+        "note": "更正关系"
+      }
+    ]
+  },
+  {
+    "id": "T041",
+    "input": "他小时候很调皮，经常去河里摸鱼",
+    "actions": [
+      {
+        "type": "NO_ACTION",
+        "reason": "指代不明，不确定'他'是谁"
+      }
+    ]
+  },
+  {
+    "id": "T042",
+    "input": "大伯的老二叫建国",
+    "actions": [
+      {
+        "type": "MATCH_PERSON",
+        "name": "王建国",
+        "context": "大伯的二儿子是建国，可能指王建国"
+      }
+    ]
+  },
+  {
+    "id": "T043",
+    "input": "村里还有个建国，是赵大爷的侄子",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "建国(赵家)",
+        "gender": "male",
+        "tags": [
+          "侄子"
+        ],
+        "note": "与王建国区分"
+      }
+    ]
+  },
+  {
+    "id": "T044",
+    "input": "今天天气真好啊",
+    "actions": [
+      {
+        "type": "NOISE"
+      }
+    ]
+  },
+  {
+    "id": "T045",
+    "input": "晚饭吃的是饺子",
+    "actions": [
+      {
+        "type": "NOISE"
+      }
+    ]
+  },
+  {
+    "id": "T046",
+    "input": "明天要去镇上赶集",
+    "actions": [
+      {
+        "type": "NOISE"
+      }
+    ]
+  },
+  {
+    "id": "T047",
+    "input": "我们村有几百年的历史了",
+    "actions": [
+      {
+        "type": "NOISE"
+      }
+    ]
+  },
+  {
+    "id": "T048",
+    "input": "老王家在村里住了好几代",
+    "actions": [
+      {
+        "type": "NO_ACTION",
+        "reason": "泛指老王家，无具体人物信息"
+      }
+    ]
+  },
+  {
+    "id": "T049",
+    "input": "今天天气不错，对了，王建国的儿子叫王小明，今年上小学了",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王小明",
+        "gender": "male",
+        "tags": [
+          "儿子"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王建国",
+        "person_b": "王小明",
+        "relation": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T050",
+    "input": "我爷爷叫王老根，奶奶叫刘桂花。爷爷有三个儿子，老大王大强是我大伯，老二王大志是我爸，老三王小军是我叔",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王老根",
+        "gender": "male",
+        "tags": [
+          "爷爷"
+        ]
+      },
+      {
+        "type": "CREATE_PERSON",
+        "name": "刘桂花",
+        "gender": "female",
+        "tags": [
+          "奶奶"
+        ]
+      },
+      {
+        "type": "CREATE_PERSON",
+        "name": "王大志",
+        "gender": "male",
+        "tags": [
+          "爸爸",
+          "老二"
+        ]
+      },
+      {
+        "type": "CREATE_PERSON",
+        "name": "王小军",
+        "gender": "male",
+        "tags": [
+          "叔叔",
+          "老三"
+        ]
+      },
+      {
+        "type": "MATCH_PERSON",
+        "name": "王大强",
+        "context": "已存在，是大伯"
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王老根",
+        "person_b": "王大强",
+        "relation": "parent_child"
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王老根",
+        "person_b": "王大志",
+        "relation": "parent_child"
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王老根",
+        "person_b": "王小军",
+        "relation": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T051",
+    "input": "建国和李梅结婚后第二年生了个女儿叫小芳",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "小芳",
+        "gender": "female",
+        "tags": [
+          "女儿"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王建国",
+        "person_b": "小芳",
+        "relation": "parent_child"
+      }
+    ]
+  },
+  {
+    "id": "T052",
+    "input": "王小军的儿子过继给了王大志，改名叫王继志",
+    "actions": [
+      {
+        "type": "CREATE_PERSON",
+        "name": "王继志",
+        "gender": "male",
+        "tags": [
+          "过继",
+          "儿子"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王小军",
+        "person_b": "王继志",
+        "relation": "biological_parent"
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王大志",
+        "person_b": "王继志",
+        "relation": "adoptive_parent"
+      }
+    ]
+  },
+  {
+    "id": "T053",
+    "input": "王建国和李梅后来离婚了，建国又娶了一个叫张丽的女人",
+    "actions": [
+      {
+        "type": "ADD_EVENT",
+        "event_type": "divorce",
+        "persons": [
+          "王建国",
+          "李梅"
+        ]
+      },
+      {
+        "type": "CREATE_PERSON",
+        "name": "张丽",
+        "gender": "female",
+        "tags": [
+          "妻子",
+          "再婚"
+        ]
+      },
+      {
+        "type": "ADD_RELATIONSHIP",
+        "person_a": "王建国",
+        "person_b": "张丽",
+        "relation": "spouse"
+      }
+    ]
+  },
+  {
+    "id": "T054",
+    "input": "赵大爷是45年生的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945"
+      }
+    ]
+  },
+  {
+    "id": "T055",
+    "input": "李梅是1982年3月15日出生的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "李梅",
+        "field": "birth_date",
+        "value": "1982-03-15"
+      }
+    ]
+  },
+  {
+    "id": "T056",
+    "input": "王建国是1980年12月出生的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王建国",
+        "field": "birth_date",
+        "value": "1980-12"
+      }
+    ]
+  },
+  {
+    "id": "T057",
+    "input": "赵大爷是1945年腊月生的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "赵大爷",
+        "field": "birth_date",
+        "value": "1945-12",
+        "note": "腊月即农历十二月"
+      }
+    ]
+  },
+  {
+    "id": "T058",
+    "input": "王大强大概是50年代初出生的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王大强",
+        "field": "birth_date",
+        "value": "约1950",
+        "note": "约50年代初"
+      }
+    ]
+  },
+  {
+    "id": "T059",
+    "input": "王大强是王家村土生土长的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王大强",
+        "field": "origin",
+        "value": "王家村"
+      }
+    ]
+  },
+  {
+    "id": "T060",
+    "input": "李梅娘家是山东的",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "李梅",
+        "field": "origin",
+        "value": "山东"
+      }
+    ]
+  },
+  {
+    "id": "T061",
+    "input": "赵大爷的全名是赵大雷",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "赵大爷",
+        "field": "full_name",
+        "value": "赵大雷"
+      }
+    ]
+  },
+  {
+    "id": "T062",
+    "input": "建国的小名叫狗蛋",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王建国",
+        "field": "nickname",
+        "value": "狗蛋"
+      }
+    ]
+  },
+  {
+    "id": "T063",
+    "input": "赵大爷以前是村长，后来当了支书",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "赵大爷",
+        "field": "occupation",
+        "value": "村长→支书"
+      }
+    ]
+  },
+  {
+    "id": "T064",
+    "input": "王老太爷2010年去世了",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "王老太爷",
+        "field": "death_date",
+        "value": "2010"
+      },
+      {
+        "type": "ADD_EVENT",
+        "event_type": "death",
+        "date": "2010",
+        "persons": [
+          "王老太爷"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T065",
+    "input": "我奶奶前年走了",
+    "actions": [
+      {
+        "type": "ADD_EVENT",
+        "event_type": "death",
+        "date": "约2024",
+        "persons": [
+          "奶奶"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "T066",
+    "input": "赵大爷去年冬天过世了",
+    "actions": [
+      {
+        "type": "UPDATE_PERSON",
+        "name": "赵大爷",
+        "field": "death_date",
+        "value": "约2025冬"
+      },
+      {
+        "type": "ADD_EVENT",
+        "event_type": "death",
+        "date": "约2025冬",
+        "persons": [
+          "赵大爷"
+        ]
+      }
+    ]
+  }
+]
