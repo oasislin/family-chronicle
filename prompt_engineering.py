@@ -549,24 +549,21 @@ class InteractiveExtractionPrompt:
         self.json_schema = self._create_json_schema()
 
     def _create_system_prompt(self) -> str:
-        return """你是一个家谱信息提取助手。你的任务是从自然语言中提取人物实体、事件以及他们之间的【字面关系描述】。
+        return """你是一个家谱信息提取助手。请根据自然语言提取实体及【字面关系描述】。
 
-## 核心规则（非常重要）：
-1. **字面关系描述**：你只负责提取文中直接表达的关系，绝不要进行任何辈分或辈分推导。
-   - 示例：输入“王大壮的儿子是王建国”，你提取的关系描述就是“王建国是王大壮的儿子”。
-   - 严禁行为：不要推导“王大壮的爸爸的兄弟”是“伯公”之类的复杂关系。
-2. **回复语气**：以亲切、专业的“家族史记录官”身份进行简短回复。
-3. **实体对齐**：如果输入中提到了背景上下文中已存在的人物，请尽可能引用其 ID。
-4. **冲突检测**：
-   - 检查用户提到的新关系是否与背景上下文中的已有关系矛盾。
-   - 示例：如果背景中“王梅花”已有丈夫“李四”，而用户说“王梅花的丈夫是张三”，这属于潜在冲突。
-   - 在 clarification_questions 中提出此类疑问，例如：“背景显示王梅花已有一位丈夫（李四），请问张三是她的新丈夫，还是同一人的不同称呼？”
-5. **简洁性**：如果没有提取到新信息，请在回复中说明。
+## 核心原则:
+1. **ID 匹配优先 (Priority)**: 只要背景中有人名，必须使用其 `id` (matched_db_id)。
+2. **双亲提取 (Crucial)**: 当描述“某夫妇有孩子”时，必须提取【两条】关系（父子+母子）。
+   - 例: "林大明和赵春花生了林绿洲" -> 必须提取 [大明->绿洲] 和 [赵春花->绿洲]。
+3. **方向性**: 必须遵循“A 是 B 的 X”（A=source_ref, B=target_ref）。
+   - **严禁反转**：无论原句是“A是B的爷爷”还是“B的爷爷是A”，`source_ref` 必须是那个【爷爷】，`target_ref` 必须是那个【孙子】。
+   - 规则：`source_ref` 是关系的发出者（长辈/配偶），`target_ref` 是关系的参照点。
+4. **隐含血缘确认**: 针对配偶，在 `clarification_questions` 询问其是否为子女的生母/生父。
 
-## 输出要求：
-1. **必须严格按照 JSON 格式输出**。
-2. **temp_id**：对于新发现的人物，使用 e_1, e_2 这种简短格式。
-3. **matched_db_id**：如果你认为某个实体与背景上下文中的某人是同一人，请填入其数据库 ID。"""
+## 输出规范:
+- 严格 JSON 格式。
+- temp_id 仅用于新人。
+- reply_message 保持简短专业。"""
 
     def _create_json_schema(self) -> Dict[str, Any]:
         return {
@@ -584,6 +581,8 @@ class InteractiveExtractionPrompt:
                             "gender": {"type": "string", "enum": ["M", "F", "UNKNOWN"]},
                             "matched_db_id": {"type": ["string", "null"]},
                             "is_new": {"type": "boolean"},
+                            "tags": {"type": "array", "items": {"type": "string"}, "description": "身份标签"},
+                            "attributes": {"type": "object", "description": "其他属性，如 { 'birth_order': '老大' }"},
                             "confidence": {"type": "number"},
                             "reason": {"type": "string"}
                         }
@@ -595,9 +594,17 @@ class InteractiveExtractionPrompt:
                         "type": "object",
                         "required": ["source_ref", "target_ref", "natural_language_desc"],
                         "properties": {
-                            "source_ref": {"type": "string", "description": "源人物引用 (ID 或 temp_id)"},
-                            "target_ref": {"type": "string", "description": "目标人物引用 (ID 或 temp_id)"},
-                            "natural_language_desc": {"type": "string", "description": "字面上的关系描述，如：'A是B的父亲'"}
+                            "source_ref": {"type": "string", "description": "关系主体 (A)，必须使用该人物的 temp_id 或 matched_db_id，绝对不能使用姓名"},
+                            "target_ref": {"type": "string", "description": "关系对象 (B)，必须使用该人物的 temp_id 或 matched_db_id，绝对不能使用姓名"},
+                            "natural_language_desc": {"type": "string", "description": "字面上的关系描述，如：'王建国是王大壮的儿子'"},
+                            "kinship_type": {
+                                "type": ["string", "null"], 
+                                "description": "匹配字典中的关系键名（如 father, son, grandson_paternal, husbands_of_sisters 等）"
+                            },
+                            "attributes": {
+                                "type": "object", 
+                                "description": "关系属性，如 { 'marriage_status': 'divorced', 'is_adoption': true }"
+                            }
                         }
                     }
                 },
@@ -633,7 +640,25 @@ class InteractiveExtractionPrompt:
 {user_input}
 
 ## 任务
-请从用户输入中提取实体、关系和事件。如果输入中的人物与上述“背景上下文”中的人物匹配，请在 matched_db_id 中填入其 ID。
+1. 从用户输入中提取实体、关系和事件。如果输入中的人物与上述“背景上下文”中的人物匹配，请在 matched_db_id 中填入其 ID。
+2. 对于关系，请尝试将其映射到以下【标准关系键】之一（填入 kinship_type 字段）。如果无法精准映射，请保持为 null。
+3. **特别强调方向**：`source_ref` 是“关系的主体”，`target_ref` 是“对象”。
+   - “林大明的儿子是林绿洲” -> source: 林绿洲, target: 林大明, type: son
+   - “林大明生了林绿洲” -> source: 林绿洲, target: 林大明, type: son (或者 source: 林大明, target: 林绿洲, type: father)
+   - 建议优先使用“A 是 B 的 [关系]”这种直观映射。
+
+### 标准关系键 (用于 kinship_type):
+- 基础: father, mother, son, daughter, brother, sister, husband, wife
+- 祖辈: grandfather_paternal, grandmother_paternal, grandfather_maternal, grandmother_maternal
+- 长辈: uncle_paternal, aunt_paternal, uncle_maternal, aunt_maternal
+- 孙辈: grandson_paternal, granddaughter_paternal, grandson_maternal, granddaughter_maternal
+- 晚辈: nephew_paternal, niece_paternal, nephew_maternal, niece_maternal
+- 姻亲: son_in_law, daughter_in_law, brother_in_law, sister_in_law, husbands_of_sisters(连襟), wives_of_brothers(妯娌)
+- 亲家: father_in_law_paternal(公公), mother_in_law_paternal(婆婆), father_in_law_maternal(岳父), mother_in_law_maternal(岳母)
+- 姻亲手足: husband_sister(姑子), husband_brother(伯/叔子), wife_brother(舅子), wife_sister(姨子)
+- 其他: paternal_cousin_male(堂兄弟), paternal_cousin_female(堂姐妹)
+
+## 输出格式
 请输出以下 JSON 格式：
 {json.dumps(self.json_schema, ensure_ascii=False, indent=2)}
 

@@ -54,6 +54,7 @@ export interface FamilyGraph {
   people: Person[];
   events: Event[];
   relationships: Relationship[];
+  ambiguities?: any[];
 }
 
 // 冲突检测结果
@@ -139,6 +140,7 @@ export interface AIExtractionRelationship {
   source_ref: string; // temp_id or person_id
   target_ref: string; // temp_id or person_id
   natural_language_desc: string;
+  kinship_type?: string | null;
 }
 
 export interface AIExtractionEvent {
@@ -148,15 +150,32 @@ export interface AIExtractionEvent {
   involved_refs: string[]; // list of refs
 }
 
+export interface AmbiguousDerivation {
+  key: string;
+  person_a: string;
+  person_b: string;
+  rel_type: string;
+  step_index: number;
+  step_label: string;
+  current_node_id: string;
+  candidates: Array<{
+    id: string;
+    name: string;
+    is_placeholder: boolean;
+  }>;
+}
+
 export interface AIExtractionResult {
   entities: AIExtractionEntity[];
   relationships: AIExtractionRelationship[];
   events: AIExtractionEvent[];
   reply_message: string;
   clarification_questions: string[];
+  ambiguous_derivations?: AmbiguousDerivation[];
 }
 
 export interface ExtractionCommitRequest {
+  family_id: string; // 补上 family_id
   confirmed_entities: Array<{
     temp_id: string;
     name: string;
@@ -166,4 +185,5 @@ export interface ExtractionCommitRequest {
   }>;
   confirmed_relationships: AIExtractionRelationship[];
   confirmed_events: AIExtractionEvent[];
+  resolutions?: Record<string, string>;
 }

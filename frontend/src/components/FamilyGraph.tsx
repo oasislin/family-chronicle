@@ -10,6 +10,8 @@ import ReactFlow, {
   NodeTypes,
   Position,
   Handle,
+  useReactFlow,
+  ReactFlowProvider,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Person, Relationship } from '../types';
@@ -58,7 +60,7 @@ const GENDER_COLORS: Record<string, { accent: string; handle: string; gradient: 
 };
 
 // 人物节点 — DiceBear 头像 + 性别差异化毛玻璃效果
-const PersonNode: React.FC<{ data: Person & { selected?: boolean } }> = ({ data }) => {
+const PersonNode: React.FC<{ data: Person & { selected?: boolean, isConnected?: boolean, hasSelection?: boolean } }> = ({ data }) => {
   const colors = GENDER_COLORS[data.gender] || GENDER_COLORS.unknown;
   const isDeceased = !!data.death_date;
   const hasConfirmTag = data.tags.includes('待确认');
@@ -67,34 +69,41 @@ const PersonNode: React.FC<{ data: Person & { selected?: boolean } }> = ({ data 
   const isPlaceholder = data.is_placeholder;
 
   return (
-    <div className="flex flex-col items-center" style={{ 
+    <div className="flex flex-col items-center transition-opacity duration-300" style={{ 
       width: 96, background: 'transparent', border: 'none', padding: 0,
-      opacity: isPlaceholder ? 0.5 : 1,
-      filter: isPlaceholder ? 'saturate(0.3)' : 'none',
+      opacity: data.hasSelection 
+        ? (data.isConnected ? (isPlaceholder ? 0.7 : 1) : 0.15) 
+        : (isPlaceholder ? 0.7 : 1),
     }}>
       <Handle type="target" position={Position.Top} id="top"
         className="!w-2.5 !h-2.5 !border-2 !-top-1.5" style={{ background: colors.handle, borderColor: colors.accent }} />
 
-      {/* 头像 — 大圆形，占位节点用虚线边框 */}
+      {/* 头像 — 大圆形 */}
       <div
         className={`
           relative w-[68px] h-[68px] rounded-full overflow-hidden cursor-pointer
-          transition-all duration-200
+          transition-all duration-200 flex items-center justify-center
           ${data.selected
             ? 'ring-3 ring-yellow-400 shadow-xl scale-110'
             : 'hover:shadow-lg hover:scale-105'}
           ${isDeceased ? 'grayscale opacity-40' : ''}
+          ${isPlaceholder ? 'bg-gray-100' : 'bg-transparent'}
         `}
         style={{
-          border: `${isPlaceholder ? '3px dashed' : isMale ? '3px solid' : isFemale ? '3px dashed' : '2.5px solid'} ${data.selected ? '#facc15' : isPlaceholder ? '#9ca3af' : colors.accent}`,
+          // 占位符使用灰色虚线，普通人用实线（颜色区分性别）
+          border: `${isPlaceholder ? '3px dashed #9ca3af' : '3px solid ' + colors.accent}`,
           boxShadow: data.selected
             ? `0 0 0 2px ${colors.accent}40, 0 4px 16px rgba(0,0,0,0.12)`
-            : `0 2px 12px ${colors.glow}, 0 0 0 1px ${colors.accent}15`,
-          background: isPlaceholder ? '#f3f4f6' : 'transparent',
+            : isPlaceholder 
+              ? 'none' 
+              : `0 2px 12px ${colors.glow}, 0 0 0 1px ${colors.accent}15`,
         }}
       >
         {isPlaceholder ? (
-          <div className="w-full h-full flex items-center justify-center text-2xl">👻</div>
+          <div className="flex flex-col items-center justify-center">
+            <span className="text-2xl filter grayscale opacity-60">👻</span>
+            <span className="text-[7px] text-gray-400 font-bold uppercase tracking-tighter">Placeholder</span>
+          </div>
         ) : (
           <img
             src={avatarUrl(data.id, data.gender)}
@@ -114,28 +123,32 @@ const PersonNode: React.FC<{ data: Person & { selected?: boolean } }> = ({ data 
       <div
         className="relative -mt-1 px-2.5 py-1 rounded-xl text-center min-w-[72px]"
         style={{
-          background: isPlaceholder ? 'rgba(243,244,246,0.9)' : colors.labelBg,
+          background: isPlaceholder ? 'rgba(243,244,246,0.95)' : colors.labelBg,
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          border: `1px ${isPlaceholder ? 'dashed' : 'solid'} ${isPlaceholder ? '#9ca3af40' : colors.accent}25`,
-          boxShadow: `0 1px 8px ${colors.glow}`,
+          border: `1px ${isPlaceholder ? 'dashed #9ca3af' : 'solid ' + colors.accent + '25'}`,
+          boxShadow: isPlaceholder ? 'none' : `0 1px 8px ${colors.glow}`,
         }}
       >
         <div className={`text-[11px] font-semibold leading-tight truncate ${
-          isPlaceholder ? 'text-gray-400 italic' : isDeceased ? 'text-gray-400 line-through' : 'text-gray-700'
+          isPlaceholder ? 'text-gray-500 italic' : isDeceased ? 'text-gray-400 line-through' : 'text-gray-700'
         }`}>
           {isPlaceholder ? '👻 ' : isDeceased ? '✝ ' : ''}{isMale ? '♂ ' : isFemale ? '♀ ' : ''}{data.name}
         </div>
-        {isPlaceholder && data.placeholder_reason && (
-          <div className="text-[8px] text-gray-400 leading-tight mt-0.5 truncate" title={data.placeholder_reason}>
-            占位
+        
+        {isPlaceholder ? (
+          <div className="text-[8px] text-gray-400 leading-tight mt-0.5 font-medium">
+            系统推导占位
           </div>
-        )}
-        {data.birth_date && !isPlaceholder && (
-          <div className="text-[9px] text-gray-400 leading-tight mt-0.5">{data.birth_date}</div>
-        )}
-        {hasConfirmTag && !isPlaceholder && (
-          <div className="text-[8px] text-amber-500 font-medium leading-tight mt-0.5">待确认</div>
+        ) : (
+          <>
+            {data.birth_date && (
+              <div className="text-[9px] text-gray-400 leading-tight mt-0.5">{data.birth_date}</div>
+            )}
+            {hasConfirmTag && (
+              <div className="text-[8px] text-amber-500 font-medium leading-tight mt-0.5">待确认</div>
+            )}
+          </>
         )}
       </div>
 
@@ -200,9 +213,10 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [showInferred, setShowInferred] = useState<boolean>(true);
   const [displayDepth, setDisplayDepth] = useState<number>(1); // 默认显示 1 层
-  const [isFocusMode, setIsFocusMode] = useState<boolean>(false); // 默认全量显示，开启后聚焦选中人
+  const [isFocusMode, setIsFocusMode] = useState<boolean>(false);
+  const { fitView } = useReactFlow();
 
-  // 持久化节点位置 — 不随数据更新而重置
+  // 持久化节点位置
   const positionsRef = useRef<Record<string, { x: number; y: number }>>({});
   const [layoutKey, setLayoutKey] = useState(0); // 手动重置时递增
 
@@ -212,27 +226,29 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
     const existingIds = new Set(Object.keys(positions));
     const newPeople = people.filter(p => !existingIds.has(p.id));
 
-    if (newPeople.length === 0 && layoutKey === 0) return; // 没有新节点，不需要更新
+    // 如果节点总数变化很大，或者初次加载，强制重排
+    const shouldReorder = Object.keys(positions).length !== people.length || layoutKey > 0;
 
-    // 如果是手动重置（layoutKey > 0），全部重新计算
-    if (layoutKey > 0 || Object.keys(positions).length === 0) {
+    if (shouldReorder) {
+      console.log(`Reordering graph: ${people.length} nodes`);
       const cols = Math.ceil(Math.sqrt(people.length || 1));
       const newPositions: Record<string, { x: number; y: number }> = {};
       people.forEach((person, index) => {
         const row = Math.floor(index / cols);
         const col = index % cols;
-        newPositions[person.id] = { x: col * 120 + 60, y: row * 140 + 40 };
+        newPositions[person.id] = { x: col * 160 + 60, y: row * 180 + 40 };
       });
       positionsRef.current = newPositions;
-    } else {
-      // 只为新节点分配位置：放在现有节点的下方
+      if (layoutKey > 0) setLayoutKey(0); // 重置重排标记
+    } else if (newPeople.length > 0) {
+      // 只为少量新节点分配位置
       const existingPositions = Object.values(positions);
       const maxY = existingPositions.length > 0 ? Math.max(...existingPositions.map(p => p.y)) : 0;
       const cols = Math.ceil(Math.sqrt(people.length || 1));
       newPeople.forEach((person, index) => {
         const row = Math.floor(index / cols);
         const col = index % cols;
-        positions[person.id] = { x: col * 120 + 60, y: maxY + 140 + row * 140 };
+        positions[person.id] = { x: col * 160 + 60, y: maxY + 180 + row * 180 };
       });
     }
   }, [people, layoutKey]);
@@ -272,8 +288,11 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
   }, [selectedPersonId, relationships, displayDepth, isFocusMode]);
 
   const filteredPeople = useMemo(() => {
-    if (!isFocusMode || !distances) return people;
-    return people.filter(p => distances[p.id] !== undefined);
+    // 基础检查：如果没开聚焦模式，直接返回全量数据
+    if (!isFocusMode) return people;
+    if (!distances) return people;
+    
+    return people.filter(p => distances[p.id] !== undefined || p.is_placeholder);
   }, [people, distances, isFocusMode]);
 
   const filteredRelationships = useMemo(() => {
@@ -293,15 +312,32 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
   // 节点 — 使用持久化位置
   const buildNodes = useCallback((): Node[] => {
     const positions = positionsRef.current;
+    
+    // 预计算选中状态
+    const connectedPersonIds = new Set<string>();
+    if (selectedPersonId) {
+      connectedPersonIds.add(selectedPersonId);
+      relationships.forEach(rel => {
+        if (rel.person1_id === selectedPersonId) connectedPersonIds.add(rel.person2_id);
+        if (rel.person2_id === selectedPersonId) connectedPersonIds.add(rel.person1_id);
+      });
+    }
+    const hasSelection = !!selectedPersonId;
+
     return filteredPeople.map((person) => ({
       id: person.id,
       type: 'person',
       position: positions[person.id] || { x: 0, y: 0 },
-      data: { ...person, selected: person.id === selectedPersonId },
+      data: { 
+        ...person, 
+        selected: person.id === selectedPersonId,
+        isConnected: connectedPersonIds.has(person.id),
+        hasSelection: hasSelection
+      },
       sourcePosition: Position.Bottom,
       targetPosition: Position.Top,
     }));
-  }, [filteredPeople, selectedPersonId]);
+  }, [filteredPeople, selectedPersonId, people.length, relationships]);
 
   // 边 — 根据选中人物高亮连接的关系
   const initialEdges: Edge[] = useMemo(() => {
@@ -372,28 +408,28 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   // 数据变化时：只更新节点数据（保留位置），边正常重建
+  // 当原始数据变化时，强制刷新节点和边
   useEffect(() => {
-    const currentNodes = buildNodes();
-    setNodes((prevNodes) => {
-      // 保留用户拖动后的位置
-      const posMap = new Map(prevNodes.map(n => [n.id, n.position]));
-      return currentNodes.map(n => ({
-        ...n,
-        position: posMap.get(n.id) || n.position,
-      }));
-    });
+    console.log(`Data changed: ${people.length} people, ${relationships.length} rels`);
+    ensurePositions();
+    setNodes(buildNodes());
     setEdges(initialEdges);
+    // 初次加载或人数变化时，尝试适配视图
+    setTimeout(() => fitView({ duration: 400, padding: 0.2 }), 100);
+  }, [people, relationships, setNodes, setEdges, fitView, selectedPersonId, initialEdges]);
 
-    // 清理已删除人物的位置
-    const currentIds = new Set(people.map(p => p.id));
-    Object.keys(positionsRef.current).forEach(id => {
-      if (!currentIds.has(id)) delete positionsRef.current[id];
-    });
-  }, [filteredPeople, initialEdges, setNodes, setEdges, people]);
-
-  const resetLayout = useCallback(() => {
-    setLayoutKey(k => k + 1);
-  }, []);
+  // 监听选中人物变化，自动聚焦
+  useEffect(() => {
+    if (selectedPersonId) {
+      setTimeout(() => {
+        fitView({ 
+          nodes: [{ id: selectedPersonId }], 
+          duration: 600, 
+          padding: 0.5 
+        });
+      }, 50);
+    }
+  }, [selectedPersonId, fitView]);
 
   // layoutKey 变化时重新布局
   useEffect(() => {
@@ -408,19 +444,15 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
       const person = people.find((p) => p.id === node.id);
       if (person && onPersonClick) {
         onPersonClick(person);
-        // 如果开启了聚焦模式，点击新节点时可能需要更新视图
-        // 但这里我们主要依赖 App.tsx 传回来的 selectedPersonId
       }
     },
     [people, onPersonClick]
   );
 
-  // 点击空白区域取消选择
   const onPaneClick = useCallback(() => {
     if (onPersonClick) onPersonClick(null);
   }, [onPersonClick]);
 
-  // 双击节点 → 打开详情面板
   const onNodeDoubleClick = useCallback(
     (_event: React.MouseEvent, node: Node) => {
       const person = people.find((p) => p.id === node.id);
@@ -429,10 +461,16 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
     [people, onPersonDoubleClick]
   );
 
-  const handleFitView = () => {
-    // ReactFlow fitView via instance — simplified
-    setNodes((nds) => nds.map((n) => ({ ...n })));
-  };
+  // 居中视图
+  const handleFitView = useCallback(() => {
+    fitView({ duration: 800, padding: 0.2 });
+  }, [fitView]);
+
+  const resetLayout = useCallback(() => {
+    positionsRef.current = {};
+    setLayoutKey(prev => prev + 1);
+    setTimeout(() => fitView({ duration: 800, padding: 0.2 }), 50);
+  }, [fitView]);
 
   if (people.length === 0) {
     return (
@@ -565,4 +603,10 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
   );
 };
 
-export default FamilyGraphView;
+const FamilyGraph: React.FC<FamilyGraphProps> = (props) => (
+  <ReactFlowProvider>
+    <FamilyGraphView {...props} />
+  </ReactFlowProvider>
+);
+
+export default FamilyGraph;

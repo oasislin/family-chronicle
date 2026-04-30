@@ -323,10 +323,15 @@ class KinshipEngine:
                 # 如果之前没有 ascend（prev==0），第一个 ascend 决定血统
                 if lineage == "unknown" and prev_ascend == 0:
                     lineage = "paternal" if s.gender == "male" else "maternal"
+                # 记录特殊血缘属性（养、干等）
+                if s.lineage != "blood":
+                    final_lineage_type = s.lineage
             elif s.op == "sibling":
                 turning_gen = ascend_so_far
                 if lineage == "unknown":
                     lineage = "paternal" if s.gender == "male" else "maternal"
+                if s.lineage != "blood":
+                    final_lineage_type = s.lineage
             elif s.op == "spouse":
                 turning_gen = ascend_so_far
 
@@ -344,6 +349,7 @@ class KinshipEngine:
             "lineage": lineage,
             "turning_gen": turning_gen,
             "other_gender": other_gender,
+            "lineage_type": final_lineage_type if 'final_lineage_type' in locals() else "blood"
         }
 
     # ─────────────────────────────────────────────────
@@ -357,12 +363,17 @@ class KinshipEngine:
         if not chain:
             return "自己"
 
+        # 如果是单跳且有自定义标签，优先使用
+        if len(chain) == 1 and chain[0].label:
+            return chain[0].label
+
         analysis = self.analyze_chain(chain)
         compressed = analysis["compressed"]
         gen_diff = analysis["gen_diff"]
         other_gender = analysis["other_gender"]
         num_lateral = analysis["num_lateral"]
         lineage = analysis.get("lineage", "unknown")
+        lineage_type = analysis.get("lineage_type", "blood")
 
         # ── 情况1: 纯纵向链（只有 ascend/descend，无 sibling/spouse）──
         if num_lateral == 0 or (num_lateral > 0 and not any(s.op in ("sibling","spouse") for s in compressed)):
@@ -372,7 +383,7 @@ class KinshipEngine:
             if pure_gen_diff < 0 and compressed and compressed[0].op == "descend":
                 if compressed[0].gender == "female":
                     lineage = "maternal"
-            return self._pure_vertical_label(pure_gen_diff, other_gender, lineage)
+            return self._pure_vertical_label(pure_gen_diff, other_gender, lineage, lineage_type)
 
         # ── 情况2: ascend → sibling（父/母的兄弟姐妹）──
         if (num_lateral == 1 and compressed[-1].op == "sibling"
@@ -485,7 +496,7 @@ class KinshipEngine:
             # descend 链首跳性别决定血统
             first_desc_gender = compressed[1].gender if len(compressed) > 1 else "unknown"
             effective_lineage = "maternal" if first_desc_gender == "female" else lineage
-            return self._pure_vertical_label(-descend_n, descend_gender, effective_lineage)
+            return self._pure_vertical_label(-descend_n, descend_gender, effective_lineage, lineage_type)
 
         # ── 情况10: spouse → sibling → descend（配偶的兄弟姐妹的子女）──
         if (len(compressed) == 3
@@ -501,26 +512,35 @@ class KinshipEngine:
             # 判断母系：如果第一个 descend 通过女性
             if compressed and compressed[0].gender == "female":
                 lineage = "maternal"
-            return self._pure_vertical_label(gen_diff, other_gender, lineage)
+            return self._pure_vertical_label(gen_diff, other_gender, lineage, lineage_type)
 
         # 兜底
         return self._complex_label(chain, analysis)
 
-    def _pure_vertical_label(self, gen_diff: int, gender: str, lineage: str = "unknown") -> str:
+    def _pure_vertical_label(self, gen_diff: int, gender: str, lineage: str = "unknown", lineage_type: str = "blood") -> str:
         """纯纵向称谓，区分父系/母系"""
         if gen_diff == 0:
             return "自己"
+
+        prefix = ""
+        if lineage_type == "adoptive":
+            prefix = "养"
+        elif lineage_type == "god":
+            prefix = "干"
+        elif lineage_type == "step":
+            prefix = "继"
+
 
         if gen_diff > 0:
             # 对方辈分更高（祖先）
             if gen_diff == 1:
                 if gender == "male":
-                    return "父亲"
-                return "母亲"
+                    return prefix + "父亲" if prefix else "父亲"
+                return prefix + "母亲" if prefix else "母亲"
             if gen_diff == 2:
                 if lineage == "maternal":
-                    return "外祖父" if gender == "male" else "外祖母"
-                return "祖父" if gender == "male" else "祖母"
+                    return prefix + "外公" if prefix else "外公"
+                return prefix + "爷爷" if prefix else "爷爷"
             if gen_diff == 3:
                 prefix = "外" if lineage == "maternal" else ""
                 if gender == "male":
@@ -678,9 +698,9 @@ class KinshipEngine:
             elif s.op == "descend":
                 parts.append(self._pure_vertical_label(-s.count, s.gender))
             elif s.op == "sibling":
-                parts.append("兄弟" if s.gender == "male" else "姐妹")
+                parts.append(s.label if s.label else ("兄弟" if s.gender == "male" else "姐妹"))
             elif s.op == "spouse":
-                parts.append("配偶")
+                parts.append(s.label if s.label else "配偶")
 
         return "的".join(parts) if parts else "亲戚"
 

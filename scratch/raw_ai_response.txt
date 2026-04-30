@@ -1,0 +1,136 @@
+```json
+{
+  "entities": [
+    {
+      "temp_id": "person_1",
+      "name": "林大明",
+      "gender": "M",
+      "is_new": true,
+      "matched_db_id": null,
+      "tags": [],
+      "attributes": {},
+      "confidence": 1,
+      "reason": "用户输入中明确提到"
+    },
+    {
+      "temp_id": "person_2",
+      "name": "赵春花",
+      "gender": "F",
+      "is_new": true,
+      "matched_db_id": null,
+      "tags": ["妻子"],
+      "attributes": {},
+      "confidence": 1,
+      "reason": "用户输入中明确提到是林大明的妻子"
+    },
+    {
+      "temp_id": "person_3",
+      "name": "林绿洲",
+      "gender": "M",
+      "is_new": true,
+      "matched_db_id": null,
+      "tags": ["儿子"],
+      "attributes": {
+        "birth_order": "老大"
+      },
+      "confidence": 1,
+      "reason": "用户输入中明确提到是林大明和赵春花的儿子，且是大的"
+    },
+    {
+      "temp_id": "person_4",
+      "name": "林青海",
+      "gender": "M",
+      "is_new": true,
+      "matched_db_id": null,
+      "tags": ["儿子"],
+      "attributes": {
+        "birth_order": "小的"
+      },
+      "confidence": 1,
+      "reason": "用户输入中明确提到是林大明和赵春花的儿子，且是小的"
+    },
+    {
+      "temp_id": "person_5",
+      "name": "陈桂芳",
+      "gender": "F",
+      "is_new": true,
+      "matched_db_id": null,
+      "tags": ["前妻"],
+      "attributes": {},
+      "confidence": 1,
+      "reason": "用户输入中明确提到是林大明的前妻"
+    },
+    {
+      "temp_id": "person_6",
+      "name": "林小月",
+      "gender": "F",
+      "is_new": true,
+      "matched_db_id": null,
+      "tags": ["女儿"],
+      "attributes": {},
+      "confidence": 1,
+      "reason": "用户输入中明确提到是林大明和陈桂芳的女儿"
+    }
+  ],
+  "relationships": [
+    {
+      "source_ref": "person_2",
+      "target_ref": "person_1",
+      "natural_language_desc": "赵春花是林大明的妻子",
+      "kinship_type": "wife",
+      "attributes": {}
+    },
+    {
+      "source_ref": "person_3",
+      "target_ref": "person_1",
+      "natural_language_desc": "林绿洲的爸爸是林大明",
+      "kinship_type": "son",
+      "attributes": {}
+    },
+    {
+      "source_ref": "person_3",
+      "target_ref": "person_2",
+      "natural_language_desc": "林绿洲是赵春花的儿子",
+      "kinship_type": "son",
+      "attributes": {}
+    },
+    {
+      "source_ref": "person_4",
+      "target_ref": "person_1",
+      "natural_language_desc": "林青海是林大明的儿子",
+      "kinship_type": "son",
+      "attributes": {}
+    },
+    {
+      "source_ref": "person_4",
+      "target_ref": "person_2",
+      "natural_language_desc": "林青海是赵春花的儿子",
+      "kinship_type": "son",
+      "attributes": {}
+    },
+    {
+      "source_ref": "person_6",
+      "target_ref": "person_1",
+      "natural_language_desc": "林小月是林大明的女儿",
+      "kinship_type": "daughter",
+      "attributes": {}
+    },
+    {
+      "source_ref": "person_6",
+      "target_ref": "person_5",
+      "natural_language_desc": "林小月是陈桂芳的女儿",
+      "kinship_type": "daughter",
+      "attributes": {}
+    }
+  ],
+  "events": [
+    {
+      "description": "林大明和妻子赵春花住在杭州",
+      "involved_refs": ["person_1", "person_2"],
+      "location": "杭州"
+    }
+  ],
+  "reply_message": "已提取林大明、赵春花、林绿洲、林青海、陈桂芳、林小月共6位实体，以及7条血缘关系和1条居住事件。",
+  "clarification_questions": []
+}
+```

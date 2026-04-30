@@ -304,6 +304,32 @@ const QuestionCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
     }
   };
 
+  // 场景0: 推导歧义确认 (Relationship Ambiguity)
+  if (message.content.isAmbiguity) {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 shadow-sm">
+        <p className="text-sm text-blue-800 font-medium mb-2">🤔 发现潜在关联</p>
+        <p className="text-xs text-gray-700 mb-3 leading-relaxed">{questionText}</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleAnswer('yes')}
+            className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium
+                       hover:bg-blue-700 transition shadow-sm"
+          >
+            ✅ 是的
+          </button>
+          <button
+            onClick={() => handleAnswer('no')}
+            className="flex-1 px-3 py-2 bg-white border border-blue-300 rounded-lg text-sm
+                       text-blue-700 hover:bg-blue-100 transition"
+          >
+            ❌ 不是
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // 场景1: 人物匹配歧义
   if (questionType === 'person_match' || (!questionType && candidates && candidates.length > 0)) {
     const allowNew = message.content.allowNew;

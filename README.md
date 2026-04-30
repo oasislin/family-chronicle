@@ -4,17 +4,17 @@
 
 ## 核心特性
 
-- **🚀 交互式自然语言提取**: 采用“解析-确认-入库”三段式流程，确保 AI 提取的数据准确无误，防止幻觉。
-- **🧠 扩散式关系推导 (v2)**: 基于 BFS 算法的推导引擎，能够根据已有的父子、配偶关系自动补全庞大的家族关系网（如祖孙、兄弟姐妹、叔侄等）。
-- **🛡️ 冲突检测与数据对齐**: 实时检测录入数据与已有图谱的逻辑冲突，支持实体对齐（Reconciliation）防止重复创建人物。
-- **📊 动态可视化**: 基于 React Flow 的交互式族谱图，支持人物拖拽、详情查看及生平传记展示。
-- **📝 生平自动生成**: 根据家族图谱中的事件和关系，利用 AI 自动撰写人物传记。
+- **🚀 交互式自然语言提取**: 采用“解析-确认-入库”三段式流程，基于 Phase 3 架构，强制 source_ref 方向一致性。
+- **🧠 逻辑主权编译引擎 (CompilerEngine)**: 采用“事件溯源 (Event Sourcing)”架构。所有操作均记录为事实，动态编译成图。
+- **🛡️ 铁律级冲突检测**: 实时检测血缘环路、代际跳跃及父母唯一性冲突。严禁任何逻辑违规数据进入数据库。
+- **📊 动态可视化聚焦**: 基于 React Flow，支持选中人物自动居中、非关联节点交互式淡化，突出核心血缘脉络。
+- **👻 智能占位符推导**: 自动识别并创建推导中的中间节点（占位人物），支持自动性别推导。
 
 ## 技术栈
 
-- **后端**: Python 3.10+ / FastAPI / JSON 文件存储 / Loguru 日志
-- **前端**: React 18 + TypeScript / Tailwind CSS / React Flow / Lucide Icons
-- **AI**: 支持 DeepSeek (通过华为 ModelArts)、智谱 GLM、OpenAI、Anthropic Claude
+- **后端**: Python 3.10+ / FastAPI / 事件溯源 (Fact Log) / 深度拓扑分析 (DFS)
+- **前端**: React 18 + TypeScript / Tailwind CSS / React Flow (v11) / useReactFlow 状态管理
+- **AI**: 针对中文亲属语义优化的 Prompt Engineering，支持 DeepSeek/GLM 等主流模型
 
 ## 快速开始
 
@@ -48,25 +48,20 @@ npm run dev                   # 启动前端 (默认端口: 3000)
 ```
 family-chronicle/
 ├── backend/
-│   ├── main.py               # FastAPI 主入口及路由
-│   ├── config.py             # 环境变量与提供商配置
+│   ├── main.py               # API 路由与逻辑熔断层
+│   ├── compiler_engine.py    # 逻辑主权引擎 (核心：负责事实编译与约束校验)
+│   ├── fact_store.py         # 基于 JSON 的事件溯源事实存储库
 │   ├── ai_service.py         # AI 核心抽象层
-│   ├── derivation_engine_v2.py  # BFS 扩散式关系推导引擎
-│   ├── conflict_detector.py     # 逻辑冲突检测
-│   ├── biography_engine.py      # AI 传记生成引擎
-│   ├── relationship_validator.py # 关系合法性校验与自动修复
-│   ├── history.py               # 操作审计与历史追踪
-│   └── data/                    # 家族 JSON 数据存储
+│   └── data/                 # 家族 Fact Log JSON 数据存储
 ├── frontend/
 │   └── src/
 │       ├── components/
-│       │   ├── FamilyGraph.tsx        # 族谱可视化画布
-│       │   ├── ExtractionConfirmCard.tsx # AI 提取结果确认卡片 (核心)
-│       │   ├── MessageFeed.tsx        # 交互式对话流
-│       │   └── PersonDetail.tsx       # 人物详情侧边栏
-│       └── services/api.ts            # 前端 API 调用封装
-├── models.py                 # 统一的数据模型定义 (Pydantic/Dataclass)
-├── .antigravityignore        # AI Agent 防崩溃忽略配置
+│       │   ├── FamilyGraph.tsx        # 族谱可视化画布 (支持居中聚焦/高亮淡化)
+│       │   ├── ExtractionConfirmCard.tsx # AI 提取结果确认卡片
+│       │   └── PersonNode.tsx         # 深度自定义人物节点
+│       └── App.tsx                    # 前端逻辑入口与状态分发
+├── prompt_engineering.py      # AI 提取指令集 (含方向性约束铁律)
+├── models.py                  # 统一的数据模型定义
 └── README.md
 ```
 

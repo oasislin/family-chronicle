@@ -16,7 +16,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [highlightedPerson, setHighlightedPerson] = useState<Person | null>(null);
-  const [showPlaceholders, setShowPlaceholders] = useState(false);
+  const [showPlaceholders, setShowPlaceholders] = useState(true);
 
   // 合并候选（"A是B" 模式检测）
   const [mergeCandidate, setMergeCandidate] = useState<{
@@ -40,16 +40,30 @@ function App() {
     try {
       await healthApi.check();
       setIsHealthy(true);
-      const familiesResponse = await familyApi.list();
-      if (familiesResponse.success && familiesResponse.data && familiesResponse.data.length > 0) {
-        const firstFamily = familiesResponse.data[0];
-        setFamilyId(firstFamily.family_id);
-        await loadFamilyData(firstFamily.family_id);
-      } else {
+
+      // 1. 优先从 URL 获取 family_id
+      const urlParams = new URLSearchParams(window.location.search);
+      let fId = urlParams.get('family_id');
+
+      // 2. 如果 URL 没有，再从列表里取第一个
+      if (!fId) {
+        const familiesResponse = await familyApi.list();
+        if (familiesResponse.success && familiesResponse.data && familiesResponse.data.length > 0) {
+          fId = familiesResponse.data[0].family_id;
+        }
+      }
+
+      // 3. 如果还是没有，创建一个
+      if (!fId) {
         const createResponse = await familyApi.create('我的家族');
         if (createResponse.success && createResponse.data) {
-          setFamilyId(createResponse.data.family_id);
+          fId = createResponse.data.family_id;
         }
+      }
+
+      if (fId) {
+        setFamilyId(fId);
+        await loadFamilyData(fId);
       }
     } catch (error) {
       console.error('Failed to initialize:', error);
@@ -62,6 +76,66 @@ function App() {
       const exportResponse = await familyApi.export(fId);
       if (exportResponse.success && exportResponse.data) {
         setFamilyData(exportResponse.data);
+        
+        // --- 核心：自动扫描推导歧义并推送到消息流 ---
+        if (exportResponse.data.ambiguities && exportResponse.data.ambiguities.length > 0) {
+          const newQuestions = exportResponse.data.ambiguities.map((amb: any) => ({
+            id: `amb_${amb.type}_${amb.nodes.join('_')}`,
+            type: 'question' as const,
+            timestamp: Date.now(),
+            content: {
+              questionId: `amb_${amb.nodes.join('_')}`,
+              message: amb.message,
+              questionType: 'DIRECT_RELATIONSHIP',
+              suggestion: amb.suggestion,
+              isAmbiguity: true
+            },
+            onAnswer: async (qId: string, answer: string) => {
+              if (answer === 'yes') {
+                const res = await aiApi.commit(fId, {
+                  family_id: fId,
+                  confirmed_entities: [],
+                  confirmed_relationships: [],
+                  confirmed_events: [],
+                  resolutions: [{ ...amb.suggestion, action: 'ADD_EDGE' }]
+                });
+                if (res.success) {
+                  addMessage({
+                    id: `confirmed_${Date.now()}`,
+                    type: 'success',
+                    timestamp: Date.now(),
+                    content: { actions: [amb.message + " - 已确认"] }
+                  });
+                  await loadFamilyData(fId);
+                }
+              } else if (answer === 'no') {
+                // 提交拒绝方案
+                const res = await aiApi.commit(fId, {
+                  family_id: fId,
+                  confirmed_entities: [],
+                  confirmed_relationships: [],
+                  confirmed_events: [],
+                  resolutions: [{ ...amb.suggestion, action: 'REJECT_EDGE' }]
+                });
+                if (res.success) {
+                  addMessage({
+                    id: `rejected_${Date.now()}`,
+                    type: 'info',
+                    timestamp: Date.now(),
+                    content: { actions: [amb.message + " - 已忽略"] }
+                  });
+                  await loadFamilyData(fId);
+                }
+              }
+            }
+          }));
+          
+          setMessages((prev) => {
+            const existingIds = new Set(prev.map(m => m.id));
+            const uniqueNew = newQuestions.filter(q => !existingIds.has(q.id));
+            return [...prev, ...uniqueNew];
+          });
+        }
       }
     } catch (error) {
       console.error('Failed to load family data:', error);
@@ -488,7 +562,7 @@ function App() {
               }`}
               title={showPlaceholders ? '隐藏占位节点' : '显示占位节点'}
             >
-              👻 {showPlaceholders ? '隐藏遮罩' : '显示遮罩'}
+              👻 {showPlaceholders ? '隐藏占位' : '显示占位'}
             </button>
           </div>
         </div>

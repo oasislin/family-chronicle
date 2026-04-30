@@ -5,7 +5,7 @@ Family Chronicle Intelligent Genealogy System - Configuration
 
 import os
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
@@ -24,7 +24,13 @@ class Settings(BaseSettings):
     PORT: int = Field(default=8000, env="PORT")
     
     # 数据目录
-    DATA_DIR: Path = Field(default=Path("data"), env="DATA_DIR")
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent
+    DATA_DIR: Optional[Path] = Field(default=None, env="DATA_DIR")
+    
+    def __init__(self, **values):
+        super().__init__(**values)
+        if self.DATA_DIR is None:
+            self.DATA_DIR = self.BASE_DIR / "data"
     
     # AI服务配置
     AI_PROVIDER: str = Field(default="deepseek", env="AI_PROVIDER")  # deepseek, zhipu, openai, claude
@@ -44,7 +50,11 @@ class Settings(BaseSettings):
     
     # 日志配置
     LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
-    LOG_FILE: Path = Field(default=Path("logs/app.log"), env="LOG_FILE")
+    LOG_FILE: Optional[Path] = Field(default=None, env="LOG_FILE")
+
+    def post_init_logic(self):
+        if self.LOG_FILE is None:
+            self.LOG_FILE = self.BASE_DIR / "logs" / "app.log"
     
     # CORS配置
     CORS_ORIGINS: list = Field(default=["*"], env="CORS_ORIGINS")
@@ -57,10 +67,11 @@ class Settings(BaseSettings):
 
 # 创建全局设置实例
 settings = Settings()
+settings.post_init_logic()
 
 # 确保必要的目录存在
-settings.DATA_DIR.mkdir(exist_ok=True)
-settings.LOG_FILE.parent.mkdir(exist_ok=True)
+settings.DATA_DIR.mkdir(exist_ok=True, parents=True)
+settings.LOG_FILE.parent.mkdir(exist_ok=True, parents=True)
 
 
 def get_ai_provider_config() -> Dict[str, Any]:

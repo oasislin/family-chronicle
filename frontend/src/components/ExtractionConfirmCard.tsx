@@ -24,6 +24,7 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
   const [events, setEvents] = useState<AIExtractionEvent[]>(data?.events || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
+  const [resolutions, setResolutions] = useState<Record<string, string>>({});
 
   // Sync state if data changes
   useEffect(() => {
@@ -68,6 +69,10 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
     setEvents(newEvents);
   };
 
+  const handleResolutionChange = (key: string, value: string) => {
+    setResolutions(prev => ({ ...prev, [key]: value }));
+  };
+
   const getDisplayName = (ref: string) => {
     // Check entities first
     const entity = entities.find(e => e.temp_id === ref);
@@ -92,6 +97,7 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
       })),
       confirmed_relationships: relationships,
       confirmed_events: events,
+      resolutions: resolutions,
     };
     onConfirm(commitData);
   };
@@ -132,6 +138,39 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
             </ul>
             <p className="text-[10px] text-amber-600 mt-2">
               提示：你可以根据这些疑问，在下方手动调整匹配的人员或描述。
+            </p>
+          </div>
+        )}
+
+        {/* Ambiguous Derivations Section */}
+        {data.ambiguous_derivations && data.ambiguous_derivations.length > 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-3">
+            <h4 className="text-xs font-bold text-amber-700 flex items-center gap-1">
+              <span>⚖️</span> 发现推导歧义 ({data.ambiguous_derivations.length})
+            </h4>
+            <div className="space-y-4">
+              {data.ambiguous_derivations.map((amb) => (
+                <div key={amb.key} className="space-y-2">
+                  <p className="text-[11px] text-amber-900 font-medium">
+                    推导 <span className="text-blue-700">{getDisplayName(amb.person_a)}</span> 的{amb.step_label}时，发现多个可能的目标：
+                  </p>
+                  <select
+                    value={resolutions[amb.key] || ''}
+                    onChange={(e) => handleResolutionChange(amb.key, e.target.value)}
+                    className="w-full px-2 py-1.5 bg-white border border-amber-300 rounded text-xs outline-none focus:ring-1 focus:ring-amber-500"
+                  >
+                    <option value="">-- 保持歧义（将创建占位节点） --</option>
+                    {amb.candidates.map(cand => (
+                      <option key={cand.id} value={cand.id}>
+                        {cand.name} {cand.is_placeholder ? '(占位符)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-amber-600">
+              提示：选择特定的候选人可以避免产生多余的“未知”节点。
             </p>
           </div>
         )}

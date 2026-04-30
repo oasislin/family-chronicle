@@ -148,7 +148,7 @@ export const aiApi = {
   },
 
   commit: async (familyId: string, commitData: any): Promise<ApiResponse<{ actions: string[] }>> => {
-    const response = await api.post('/chat/commit', { family_id: familyId, ...commitData });
+    const response = await api.post('/chat/commit', { ...commitData, family_id: familyId });
     return response.data;
   },
 };

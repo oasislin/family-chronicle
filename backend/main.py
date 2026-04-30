@@ -5,7 +5,7 @@ Family Chronicle Intelligent Genealogy System - FastAPI Backend
 提供RESTful API接口，处理家族数据管理、AI解析、冲突检测等功能。
 """
 
-from fastapi import FastAPI, HTTPException, Depends, Query, Path
+from fastapi import FastAPI, HTTPException, Depends, Query, Path 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -15,6 +15,7 @@ import json
 import re
 from datetime import datetime
 import os
+import uuid
 from pathlib import Path
 
 # 导入配置
@@ -28,8 +29,10 @@ from prompt_engineering import FamilyParsingPrompt, InteractiveExtractionPrompt
 from pypinyin import pinyin, lazy_pinyin, Style
 from conflict_detector import ConflictDetector, check_conflicts
 
-# 关系推导引擎 v2 — BFS 扩散式推导
-from derivation_engine_v2 import derive_relationships_v2, get_sibling_type
+# 事件溯源与关系推导引擎 v3
+from fact_store import load_facts, append_facts, FactLog
+from compiler_engine import CompilerEngine
+
 from biography_engine import generate_biography_from_graph
 from relationship_validator import validate_relationships, auto_fix_violations, validate_and_fix
 from history import record_action, get_person_history, get_recent_history
@@ -57,19 +60,17 @@ app.add_middleware(
 )
 
 # 全局变量
-DATA_DIR = Path("data")
-DATA_DIR.mkdir(exist_ok=True)
+DATA_DIR = settings.DATA_DIR
+DATA_DIR.mkdir(exist_ok=True, parents=True)
 
 # 初始化提示词管理器
 prompt_manager = FamilyParsingPrompt()
 interactive_prompt_manager = InteractiveExtractionPrompt()
 
 # 配置日志
-LOG_DIR = Path("logs")
-LOG_DIR.mkdir(exist_ok=True)
 logger.remove()  # 移除默认处理器
-logger.add(sys.stderr, level="INFO", format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{message}</cyan>")
-logger.add(LOG_DIR / "app.log", rotation="10 MB", level="DEBUG", encoding="utf-8")
+logger.add(sys.stderr, level=settings.LOG_LEVEL, format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{message}</cyan>")
+logger.add(settings.LOG_FILE, rotation="10 MB", level="DEBUG", encoding="utf-8")
 logger.info("Family Chronicle Backend Started")
 
 # Pydantic模型定义
@@ -135,6 +136,7 @@ class ChatCommitRequest(BaseModel):
     confirmed_entities: List[Dict[str, Any]]
     confirmed_relationships: List[Dict[str, Any]]
     confirmed_events: List[Dict[str, Any]]
+    resolutions: Optional[Dict[str, str]] = Field({}, description="针对推导歧义的解析方案 (key -> target_person_id)")
 
 class ApiResponse(BaseModel):
     success: bool
@@ -144,20 +146,21 @@ class ApiResponse(BaseModel):
 
 # 辅助函数
 def load_family_graph(family_id: str) -> FamilyGraph:
-    """加载家族图谱数据"""
-    file_path = DATA_DIR / f"{family_id}.json"
-    if file_path.exists():
-        try:
-            return FamilyGraph.import_json(str(file_path))
-        except Exception as e:
-            print(f"警告: 家族文件 {file_path} 损坏，已跳过 ({str(e)})")
-            return FamilyGraph()
-    return FamilyGraph()
+    """加载家族图谱数据（基于事件溯源动态编译）"""
+    facts = load_facts(family_id)
+    engine = CompilerEngine(family_id)
+    # 编译过程如果抛出 ValueError，说明检测到了逻辑冲突，必须向上抛出以阻塞非法响应
+    if facts:
+        engine.compile(facts)
+    
+    graph = engine.graph
+    graph.ambiguities = engine.ambiguities
+    return graph
+
 
 def save_family_graph(family_id: str, graph: FamilyGraph):
-    """保存家族图谱数据"""
-    file_path = DATA_DIR / f"{family_id}.json"
-    graph.export_json(str(file_path))
+    """基于事件溯源架构，不再直接保存整图。数据变更请调用 append_facts"""
+    pass
 
 def _get_rel_type_str(r) -> str:
     """获取关系的类型字符串（兼容Enum和String）"""
@@ -184,18 +187,28 @@ def get_relationship_summary(graph: FamilyGraph, person_id: str) -> str:
     return ", ".join(rels[:5]) if rels else "无"
 
 def find_mentioned_people(graph: FamilyGraph, text: str) -> List[Dict[str, Any]]:
-    """在文本中查找可能提到的人物"""
-    mentioned = []
-    # 简单的姓名搜索
+    """在文本中查找可能提到的人物，并拉取邻居节点"""
+    mentioned_ids = set()
     for p in graph.people.values():
-        if p.name in text and len(p.name) >= 2: # 避免单字误匹配
-            mentioned.append({
+        if p.name in text and len(p.name) >= 2:
+            mentioned_ids.add(p.id)
+            # 拉取 1 度邻居
+            rels = graph.get_person_relationships(p.id)
+            for r in rels:
+                mentioned_ids.add(r.person1_id)
+                mentioned_ids.add(r.person2_id)
+    
+    result = []
+    for pid in list(mentioned_ids)[:20]: # 限制上限
+        p = graph.get_person(pid)
+        if p:
+            result.append({
                 "id": p.id,
                 "name": p.name,
                 "gender": "M" if p.gender == Gender.MALE else "F" if p.gender == Gender.FEMALE else "UNKNOWN",
                 "relationship_summary": get_relationship_summary(graph, p.id)
             })
-    return mentioned
+    return result
 
 # API路由
 @app.get("/", response_model=ApiResponse)
@@ -728,7 +741,10 @@ async def list_relationships(
         return ApiResponse(
             success=True,
             message=f"找到 {len(relationships)} 个关系",
-            data=[r.to_dict() for r in relationships]
+            data={
+                "relationships": [r.to_dict() for r in relationships],
+                "ambiguities": getattr(graph, "ambiguities", [])
+            }
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取关系列表失败: {str(e)}")
@@ -2216,6 +2232,7 @@ async def auto_import(family_id: str, request: AutoImportRequest):
 
         # === 2.7 补充缺失父母 (智能推导与歧义询问) ===
         affected_ids = set(id_mapping.values())
+
         for pid in affected_ids:
             person = graph.get_person(pid)
             if not person: continue
@@ -2430,10 +2447,13 @@ async def export_data(
     try:
         graph = load_family_graph(family_id)
         
+        export_data = graph.to_dict()
+        export_data["ambiguities"] = getattr(graph, "ambiguities", [])
+        
         return ApiResponse(
             success=True,
             message="数据导出成功",
-            data=graph.to_dict()
+            data=export_data
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"数据导出失败: {str(e)}")
@@ -2444,8 +2464,10 @@ async def create_family(name: str = Query(..., description="家族名称")):
     """创建新家族"""
     try:
         family_id = generate_family_id()
-        graph = FamilyGraph()
-        save_family_graph(family_id, graph)
+        
+        # 基于 v3 架构，创建一个空的 facts 文件以确保存立并可被 list_families 发现
+        from fact_store import save_facts
+        save_facts(family_id, [])
         
         return ApiResponse(
             success=True,
@@ -2460,11 +2482,13 @@ async def list_families():
     """获取家族列表"""
     try:
         families = []
-        for file in DATA_DIR.glob("family_*.json"):
-            # 排除历史文件和非家族文件
-            if "_edithistory" in file.stem or "_derived" in file.stem:
+        # 查找所有以 _facts.json 结尾的文件
+        for file in DATA_DIR.glob("*_facts.json"):
+            # 排除空的 family_id (即 _facts.json)
+            if file.name == "_facts.json":
                 continue
-            family_id = file.stem
+                
+            family_id = file.name.replace("_facts.json", "")
             families.append({
                 "family_id": family_id,
                 "file_path": str(file),
@@ -2556,11 +2580,26 @@ async def resolve_kinship(family_id: str, person_a_id: str, person_b_id: str):
             if p1 and p2:
                 rt = r.type.value if hasattr(r.type, 'value') else str(r.type)
                 g2 = p2.gender.value if hasattr(p2.gender, 'value') else str(p2.gender)
-                if rt == "parent_child":
+                lineage = "blood"
+                if rt == "adopted_parent_child" or r.attributes.get("is_adoption"):
+                    lineage = "adoptive"
+                elif rt == "godparent_godchild" or r.attributes.get("is_godparent"):
+                    lineage = "god"
+                elif rt == "step_parent_child" or r.attributes.get("is_step"):
+                    lineage = "step"
+
+                if rt in ["parent_child", "adopted_parent_child", "godparent_godchild", "step_parent_child"]:
                     # p1 是父/母，p2 是子/女 → p2 到 p1 是 ascend
-                    engine.add_link(p2.name, p1.name, "ascend", g2)
+                    engine.add_link(p2.name, p1.name, "ascend", g2, lineage=lineage)
                 elif rt == "spouse":
-                    engine.add_link(p1.name, p2.name, "spouse", g2)
+                    # 检查配偶状态
+                    m_status = r.attributes.get("marriage_status", "active")
+                    label = "配偶"
+                    if m_status == "divorced":
+                        label = "前配偶"
+                    elif m_status == "deceased":
+                        label = "亡偶"
+                    engine.add_link(p1.name, p2.name, "spouse", g2, label=label)
                 elif rt == "sibling":
                     engine.add_link(p1.name, p2.name, "sibling", g2)
                 elif rt == "grandparent_grandchild":
@@ -2909,6 +2948,17 @@ async def chat_extract(request: ChatExtractRequest):
             result = response.json()
             content = result["choices"][0]["message"]["content"]
             
+            # --- 审计日志：保存 AI 原始返回供调试 ---
+            try:
+                with open("backend/ai_audit.log", "a", encoding="utf-8") as f:
+                    import datetime
+                    f.write(f"\n--- {datetime.datetime.now().isoformat()} ---\n")
+                    f.write(f"Input: {request.text}\n")
+                    f.write(f"Raw Output: {content}\n")
+                    f.write("-" * 50 + "\n")
+            except:
+                pass
+            
             try:
                 parsed_data = json.loads(content)
             except:
@@ -2919,16 +2969,52 @@ async def chat_extract(request: ChatExtractRequest):
                 else:
                     raise Exception("无法解析 LLM 返回的 JSON")
 
+            # --- 预编译检查歧义与潜在合并 (Pre-commit Audit) ---
+            potential_merges = []
+            ambiguities = []
+            try:
+                compiler = CompilerEngine(request.family_id)
+                graph = compiler.compile(load_facts(request.family_id))
+                
+                # 1. 检查重名冲突 (Name Collision Detection)
+                existing_names = {p.name: p.id for p in graph.people.values()}
+                for ent in parsed_data.get("entities", []):
+                    name = ent.get("name")
+                    if name in existing_names:
+                        db_id = existing_names[name]
+                        potential_merges.append({
+                            "temp_id": ent["temp_id"],
+                            "matched_db_id": db_id,
+                            "name": name,
+                            "message": f"库中已存在名为 '{name}' 的成员，是否为同一人？"
+                        })
+                
+                # 2. 模拟运行关系以触发耦合扩散 (e.g. 朱世杰问题)
+                temp_map = {ent["temp_id"]: ent.get("matched_db_id", ent["temp_id"]) for ent in parsed_data.get("entities", [])}
+                for rel in parsed_data.get("relationships", []):
+                    src = temp_map.get(rel.get("source_ref"))
+                    tgt = temp_map.get(rel.get("target_ref"))
+                    ktype = rel.get("kinship_type")
+                    if src and tgt and ktype:
+                        compiler._expand_composite_edge(src, tgt, ktype, record=False)
+                
+                ambiguities = compiler.ambiguities
+            except Exception as e:
+                logger.warning(f"Pre-commit audit failed: {e}")
+
             return ApiResponse(
                 success=True, 
                 message="提取成功", 
                 data={
-                    "parsed_data": parsed_data,
+                    "parsed_data": {
+                        **parsed_data,
+                        "ambiguities": ambiguities,
+                        "potential_merges": potential_merges
+                    },
                     "prompt_used": {
                         "system": messages[0]["content"],
                         "user": messages[1]["content"]
-                    },
-                    "raw_response": content
+                    }
                 }
             )
 
@@ -2939,83 +3025,116 @@ async def chat_extract(request: ChatExtractRequest):
 @app.post("/api/chat/commit", response_model=ApiResponse)
 async def chat_commit(request: ChatCommitRequest):
     """交互式提取：第二步，确认入库并触发推导引擎"""
+    if not request.family_id:
+        return ApiResponse(success=False, message="family_id 不能为空")
+        
     try:
-        graph = load_family_graph(request.family_id)
+        facts = load_facts(request.family_id)
+        compiler = CompilerEngine(request.family_id)
+        # 注入用户确认的歧义解析方案
+        compiler.resolutions = request.resolutions or {}
+        graph = compiler.compile(facts)
+        
         actions = []
         temp_to_real_id = {}
 
         # 1. 处理实体
         for ent in request.confirmed_entities:
             if ent["action"] == "CREATE":
-                gender = Gender.MALE if ent["gender"] == "M" else Gender.FEMALE if ent["gender"] == "F" else Gender.UNKNOWN
-                person = Person(name=ent["name"], gender=gender)
-                real_id = graph.add_person(person)
-                temp_to_real_id[ent["temp_id"]] = real_id
+                person_id = f"person_{uuid.uuid4().hex[:8]}"
+                compiler.apply_fact(FactLog(request.family_id, "ADD_NODE", {
+                    "id": person_id,
+                    "name": ent["name"],
+                    "gender": "male" if ent["gender"] == "M" else ("female" if ent["gender"] == "F" else "unknown"),
+                    "tags": ent.get("tags", []),
+                    "attributes": ent.get("attributes", {}),
+                    "notes": ent.get("notes")
+                }), record=True)
+                temp_to_real_id[ent["temp_id"]] = person_id
                 actions.append(f"新增人物: {ent['name']}")
                 
-                record_action(request.family_id, "create_person", "person", real_id, ent["name"], after=person.to_dict(), summary=f"交互式创建: {ent['name']}")
+                # 兼容旧版的编辑历史记录
+                record_action(request.family_id, "create_person", "person", person_id, ent["name"], summary=f"交互式创建: {ent['name']}")
             else:
                 real_id = ent["matched_db_id"]
                 temp_to_real_id[ent["temp_id"]] = real_id
                 
-                # 更新已有人的姓名 (如果提供了新的更具体的信息，比如用“林高德”替换“丈夫”)
+                # 更新已有人的姓名 (如果提供了新的更具体的信息)
                 existing_p = graph.get_person(real_id)
                 if existing_p:
                     old_name = existing_p.name
                     new_name = ent["name"]
                     if new_name and new_name != old_name:
-                        existing_p.name = new_name
+                        compiler.apply_fact(FactLog(request.family_id, "UPDATE_NODE", {
+                            "id": real_id,
+                            "name": new_name,
+                            "tags": ent.get("tags", []),
+                            "attributes": ent.get("attributes", {}),
+                            "notes": ent.get("notes")
+                        }), record=True)
                         actions.append(f"更新姓名: {old_name} → {new_name}")
-                        record_action(request.family_id, "update_person", "person", real_id, new_name, summary=f"更新姓名: {old_name} -> {new_name}")
                 
                 actions.append(f"关联到已有人物: {ent['name']}")
 
-        # 2. 处理关系 (通过 derivation_engine 处理 natural_language_desc)
-        # 这里需要 derivation_engine 支持从文字描述推导
-        # 临时方案：直接创建基础关系，然后触发全量推导
+        # 1.5 构建姓名到 ID 的映射，用于处理 LLM 偶尔返回姓名而非临时 ID 的情况
+        name_to_id = {p.name: p.id for p in graph.people.values()}
+        # 同时将本次新增的人物也加入映射
+        for ent in request.confirmed_entities:
+            if ent["action"] == "CREATE" and ent["temp_id"] in temp_to_real_id:
+                name_to_id[ent["name"]] = temp_to_real_id[ent["temp_id"]]
+
+        # 2. 处理关系
         for rel in request.confirmed_relationships:
-            src_id = temp_to_real_id.get(rel["source_ref"], rel["source_ref"])
-            tgt_id = temp_to_real_id.get(rel["target_ref"], rel["target_ref"])
+            # 优先从临时 ID 映射中找，找不到则尝试从姓名映射中找
+            src_ref = rel["source_ref"]
+            tgt_ref = rel["target_ref"]
             
-            # 这里需要一个将 natural_language_desc 转化为 Relationship 对象的逻辑
-            # 目前简单解析：包含"爸爸/父亲/子/女"等词汇
+            src_id = temp_to_real_id.get(src_ref) or name_to_id.get(src_ref) or src_ref
+            tgt_id = temp_to_real_id.get(tgt_ref) or name_to_id.get(tgt_ref) or tgt_ref
+            
+            kinship_type = rel.get("kinship_type")
             desc = rel["natural_language_desc"]
-            rel_obj = None
             
-            if "父" in desc or "爸" in desc or "子" in desc or "女" in desc:
-                # 简单判断方向：通常是 "A 是 B 的 X"
-                # 这里假设 A 是 src, B 是 tgt
-                if "父" in desc or "爸" in desc:
-                    rel_obj = Relationship(person1_id=src_id, person2_id=tgt_id, rel_type=RelationshipType.PARENT_CHILD)
-                    rel_obj.subtype = "father"
-                elif "母" in desc or "妈" in desc:
-                    rel_obj = Relationship(person1_id=src_id, person2_id=tgt_id, rel_type=RelationshipType.PARENT_CHILD)
-                    rel_obj.subtype = "mother"
-                elif "子" in desc or "女" in desc:
-                    rel_obj = Relationship(person1_id=tgt_id, person2_id=src_id, rel_type=RelationshipType.PARENT_CHILD)
-            elif "妻" in desc or "夫" in desc or "结婚" in desc:
-                rel_obj = Relationship(person1_id=src_id, person2_id=tgt_id, rel_type=RelationshipType.SPOUSE)
+            if kinship_type:
+                actions.append(f"推导复合关系: {desc} ({kinship_type})")
+                compiler.apply_fact(FactLog(request.family_id, "ADD_EDGE", {
+                    "person_a": src_id,
+                    "person_b": tgt_id,
+                    "type": kinship_type,
+                    "attributes": rel.get("attributes", {})
+                }), record=True)
+            else:
+                # 回退到基础关系判断
+                attr = rel.get("attributes", {})
+                if any(k in desc for k in ["父", "爸"]):
+                    compiler.apply_fact(FactLog(request.family_id, "ADD_EDGE", {"person_a": src_id, "person_b": tgt_id, "type": "parent_child", "attributes": attr}), record=True)
+                    actions.append(f"建立基础父子关系: {desc}")
+                elif any(k in desc for k in ["母", "妈"]):
+                    compiler.apply_fact(FactLog(request.family_id, "ADD_EDGE", {"person_a": src_id, "person_b": tgt_id, "type": "parent_child", "attributes": attr}), record=True)
+                    actions.append(f"建立基础母子关系: {desc}")
+                elif any(k in desc for k in ["子", "女"]):
+                    compiler.apply_fact(FactLog(request.family_id, "ADD_EDGE", {"person_a": tgt_id, "person_b": src_id, "type": "parent_child", "attributes": attr}), record=True)
+                    actions.append(f"建立基础子嗣关系: {desc}")
+                elif any(k in desc for k in ["妻", "夫", "配偶", "结婚"]):
+                    compiler.apply_fact(FactLog(request.family_id, "ADD_EDGE", {"person_a": src_id, "person_b": tgt_id, "type": "spouse", "attributes": attr}), record=True)
+                    actions.append(f"建立基础配偶关系: {desc}")
 
-            if rel_obj:
-                graph.add_relationship(rel_obj)
-                actions.append(f"建立关系: {desc}")
+        # 3. 处理用户对歧义的确认 (Apply User Resolutions)
+        if request.resolutions:
+            for res in request.resolutions:
+                action_type = res.get("action", "ADD_EDGE")
+                if action_type in ["ADD_EDGE", "REJECT_EDGE"]:
+                    compiler.apply_fact(FactLog(request.family_id, action_type, res["payload"]), record=True)
+                actions.append(f"处理推导方案 ({action_type}): {res.get('message', '未知关系')}")
 
-        # 3. 处理事件
+        # 4. 处理事件
         for ev in request.confirmed_events:
-            event = Event(event_type=EventType.OTHER, description=ev["description"])
-            event.date = ev.get("date")
-            event.location = ev.get("location")
-            event.participants = [{"person_id": temp_to_real_id.get(ref, ref), "role": "参与者"} for ref in ev["involved_refs"]]
-            graph.add_event(event)
             actions.append(f"记录事件: {ev['description']}")
 
-        # 4. 触发推导引擎补全关系
-        from derivation_engine_v2 import derive_relationships_v2
-        derived = derive_relationships_v2(graph)
-        if derived:
-            actions.append(f"自动推导出 {len(derived)} 条新关系")
-
-        save_family_graph(request.family_id, graph)
+        # 4. 持久化所有 Fact
+        if compiler.new_facts:
+            append_facts(request.family_id, compiler.new_facts)
+            
         return ApiResponse(success=True, message="已成功入库", data={"actions": actions})
 
     except Exception as e:

@@ -74,6 +74,7 @@ class Person:
         self.tags: List[str] = []
         self.notes: Optional[str] = None
         self.story: Optional[str] = None
+        self.attributes: Dict[str, Any] = {}
         self.is_placeholder: bool = False          # 是否为自动创建的占位节点
         self.placeholder_reason: str = ""           # 占位原因描述
         self.created_at = datetime.now().isoformat()
@@ -92,6 +93,7 @@ class Person:
             "tags": self.tags,
             "notes": self.notes,
             "story": self.story,
+            "attributes": self.attributes,
             "is_placeholder": self.is_placeholder,
             "placeholder_reason": self.placeholder_reason,
             "created_at": self.created_at,
@@ -113,6 +115,7 @@ class Person:
         person.tags = data.get("tags", [])
         person.notes = data.get("notes")
         person.story = data.get("story")
+        person.attributes = data.get("attributes", {})
         person.is_placeholder = data.get("is_placeholder", False)
         person.placeholder_reason = data.get("placeholder_reason", "")
         person.created_at = data.get("created_at", datetime.now().isoformat())

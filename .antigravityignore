@@ -32,3 +32,10 @@ venv/
 # Optional: Large JSON files (e.g., package-lock.json or data dumps)
 # package-lock.json
 # *.json
+
+
+# Synology Specific
+.@__thumb/
+.DS_Store
+# 排除所有隐藏的同步元数据
+.*
