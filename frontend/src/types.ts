@@ -49,12 +49,12 @@ export interface Relationship {
   created_at: string;
 }
 
-// 家族图谱
 export interface FamilyGraph {
   people: Person[];
   events: Event[];
   relationships: Relationship[];
-  ambiguities?: any[];
+  ambiguities: Ambiguity[]; // 原有的原始歧义（可用于调试或向后兼容）
+  tasks?: InteractionTask[]; // 新增：统一的交互任务流
 }
 
 // 冲突检测结果
@@ -64,7 +64,15 @@ export interface ConflictItem {
   message: string;
   affected_entities: string[];
   suggestions: string[];
+  actions?: Action[];
   can_override: boolean;
+}
+
+export interface Action {
+  label: string;
+  action: string;
+  target_id?: string;
+  payload?: any;
 }
 
 export interface ConflictResult {
@@ -150,19 +158,61 @@ export interface AIExtractionEvent {
   involved_refs: string[]; // list of refs
 }
 
-export interface AmbiguousDerivation {
-  key: string;
-  person_a: string;
-  person_b: string;
-  rel_type: string;
-  step_index: number;
-  step_label: string;
-  current_node_id: string;
-  candidates: Array<{
-    id: string;
-    name: string;
-    is_placeholder: boolean;
+// 推导歧义类型
+export enum AmbiguityType {
+  COUPLED_PARENT_MISSING = "COUPLED_PARENT_MISSING",
+  COMPOSITE_PATH_AMBIGUITY = "COMPOSITE_PATH_AMBIGUITY"
+}
+
+export type Ambiguity = 
+  | {
+      type: 'COUPLED_PARENT_MISSING';
+      key: string;
+      nodes: [string, string];
+      message: string;
+      suggestion: {
+        person_a: string;
+        person_b: string;
+        type: string;
+        attributes: Record<string, any>;
+      };
+    }
+  | {
+      type: 'COMPOSITE_PATH_AMBIGUITY';
+      key: string;
+      nodes: [string, string];
+      message: string;
+      person_a: string;
+      person_b: string;
+      rel_type: string;
+      step_index: number;
+      step_label: string;
+      current_node_id: string;
+      questionType?: 'CHOICE' | 'YES_NO' | 'INPUT';
+      candidates: Array<{ id: string; name: string; is_placeholder: boolean }>;
+      actions?: Action[];
+    }
+  | {
+      type: 'LOGIC_CONFLICT';
+      key: string;
+      message: string;
+      conflicts: string[];
+      actions?: Action[];
+    };
+
+export interface InteractionTask {
+  id: string;
+  category: 'ambiguity' | 'conflict' | 'clarification' | 'suggestion';
+  message: string;
+  type: 'single_choice' | 'multi_choice' | 'yes_no' | 'input_text';
+  options: Array<{
+    label: string;
+    action: string;
+    payload?: any;
+    target_id?: string;
   }>;
+  metadata?: Record<string, any>;
+  created_at: string;
 }
 
 export interface AIExtractionResult {
@@ -171,19 +221,39 @@ export interface AIExtractionResult {
   events: AIExtractionEvent[];
   reply_message: string;
   clarification_questions: string[];
-  ambiguous_derivations?: AmbiguousDerivation[];
+  ambiguous_derivations?: Ambiguity[];
+  tasks?: InteractionTask[];
 }
 
 export interface ExtractionCommitRequest {
-  family_id: string; // 补上 family_id
+  family_id: string;
   confirmed_entities: Array<{
     temp_id: string;
     name: string;
     gender: 'M' | 'F' | 'UNKNOWN';
     action: 'CREATE' | 'LINK_EXISTING';
     matched_db_id?: string;
+    tags?: string[];
+    attributes?: Record<string, any>;
+    notes?: string;
   }>;
   confirmed_relationships: AIExtractionRelationship[];
   confirmed_events: AIExtractionEvent[];
-  resolutions?: Record<string, string>;
+  resolutions?: Record<string, string>; // key -> target_id
+  extra_actions?: Array<{
+    person_a: string;
+    person_b: string;
+    type: string;
+    action: 'ADD_EDGE' | 'REJECT_EDGE';
+    attributes?: Record<string, any>;
+  }>;
+}
+
+// 统一任务处理请求
+export interface TaskResolutionRequest {
+  family_id: string;
+  task_id: string;
+  action: string;
+  payload?: any;
+  target_id?: string;
 }

@@ -56,13 +56,13 @@
 │  └──┬──────┬──────┬──────┬──────┬──────┬──────┬─────┘  │
 │     │      │      │      │      │      │      │         │
 │  ┌──┴──┐┌──┴──┐┌──┴──┐┌──┴──┐┌──┴──┐┌──┴──┐┌──┴──┐    │
-│  │ AI  ││自动 ││合并 ││推导 ││校验 ││生平 ││历史 │    │
-│  │解析 ││导入 ││引擎 ││引擎 ││器   ││引擎 ││记录 │    │
+│  │ AI  ││Fact ││编译 ││校验 ││生平 ││历史 ││模型 │    │
+│  │Service│Service│Engine│Engine│Engine│Service│Schemas│    │
 │  └──┬──┘└──┬──┘└──┬──┘└──┬──┘└──┬──┘└──┬──┘└──┬──┘    │
 │     │      │      │      │      │      │      │         │
 │  ┌──┴──────┴──────┴──────┴──────┴──────┴──────┴─────┐  │
-│  │           JSON 文件存储 (data/*.json)              │  │
-│  │  {family_id}.json · {family_id}_edithistory.json  │  │
+│  │           事件溯源存储 (backend/data/*.json)         │  │
+│  │  {family_id}_facts.json (唯一真相/事件日志)          │  │
 │  └───────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -79,14 +79,14 @@
 | AI 服务 | 华为 DeepSeek 3.2 | OpenAI 兼容 API |
 | 人物头像 | DiceBear (avataaars) | 免费 SVG 头像生成 |
 
-### 2.3 数据存储
+### 2.3 数据存储 (Event Sourcing v3)
 
-所有数据以 JSON 文件存储在 `backend/data/` 目录下：
+项目采用**事件溯源**架构，不再直接存储图谱快照，而是存储原始事实日志：
 
 | 文件 | 说明 |
 |------|------|
-| `{family_id}.json` | 家族主数据（人物、关系、事件） |
-| `{family_id}_edithistory.json` | 编辑历史记录（最多 1000 条） |
+| `{family_id}_facts.json` | **唯一真相**：包含 ADD_NODE, ADD_EDGE 等原子事实日志 |
+| `{family_id}_edithistory.json` | 面向用户的操作历史摘要（审计日志） |
 
 ---
 
@@ -141,6 +141,47 @@ class Relationship:
 | `godparent_godchild` | 干亲 |
 | `in_law` | 姻亲 |
 | `other` | 其他 |
+
+### 3.2.1 语义规则设计原则
+
+为确保自然语言解析的一致性和准确性，系统采用以下三条核心语义规则：
+
+**规则一：语义层称谓标准**
+- 所有亲属关系必须使用语义层称谓（如 `father`, `mother`, `husband`, `wife`, `brother`, `sister`）
+- 禁止直接使用存储层抽象类型（如 `parent_child`, `spouse`）
+- 语义层称谓列表：
+  - 长辈：`father`, `mother`, `grandfather_paternal`, `grandmother_paternal`, `grandfather_maternal`, `grandmother_maternal`, `uncle_paternal`, `aunt_paternal`, `uncle_maternal`, `aunt_maternal`, `father_in_law_paternal`, `mother_in_law_paternal`, `father_in_law_maternal`, `mother_in_law_maternal`
+  - 晚辈：`son`, `daughter`, `grandson_paternal`, `granddaughter_paternal`, `grandson_maternal`, `granddaughter_maternal`, `nephew_paternal`, `niece_paternal`, `nephew_maternal`, `niece_maternal`, `son_in_law`, `daughter_in_law`
+  - 配偶：`husband`, `wife`
+  - 同胞：`brother`, `sister`, `brother_in_law`, `sister_in_law`, `husband_sister`, `husband_brother`, `wife_brother`, `wife_sister`
+  - 堂表亲：`paternal_cousin_male`, `paternal_cousin_female`, `maternal_cousin_male`, `maternal_cousin_female`
+
+**规则二：语义结构规范**
+- 所有称谓必须明确表述为 **"A 是 B 的某某某"** 结构
+- `source_ref` = A（主体，称谓的持有者）
+- `target_ref` = B（参照点/客体）
+- `kinship_type` = 某某某（称谓）
+- 示例：
+  - "王大锤的妻子是孙美玲" → source_ref: 孙美玲, target_ref: 王大锤, kinship_type: wife
+  - "孙美玲的丈夫是王大锤" → source_ref: 王大锤, target_ref: 孙美玲, kinship_type: husband
+
+**规则三：未知称谓处理**
+- 若自然语言提取的称谓不在语义层列表中，触发新一轮 Prompt 问答
+- 将库内所有已知语义层称谓提供给系统进行匹配判断
+- 若明确不匹配，则保留原始称谓，传递至后端代码继续执行与转换
+
+**存储层映射**
+语义层称谓通过编译器引擎转换为存储层的 `RelationshipType`：
+
+| 语义层称谓 | 存储层 RelationshipType |
+|-----------|----------------------|
+| `father`, `mother`, `son`, `daughter` 等 | `parent_child` |
+| `husband`, `wife` | `spouse` |
+| `brother`, `sister` | `sibling` |
+| `grandfather_*`, `grandmother_*`, `grandson_*`, `granddaughter_*` | `grandparent_grandchild` |
+| `uncle_*`, `aunt_*`, `nephew_*`, `niece_*` | `aunt_uncle_niece_nephew` |
+| `paternal_cousin_*`, `maternal_cousin_*` | `cousin` |
+| `brother_in_law`, `sister_in_law`, `*_in_law_*` | `in_law` |
 
 ### 3.3 Event（事件）
 
@@ -314,7 +355,7 @@ App.tsx (状态中枢)
 │   │   ├── 场景1: 人物匹配 (候选人列表 + 手动输入 + 取消)
 │   │   ├── 场景2: 逻辑矛盾 (以新/旧为准 + 手动输入 + 取消)
 │   │   ├── 场景3: AI低置信度 (确认/跳过 + 手动编辑 + 取消)
-│   │   └── 场景4: 关系方向 (选项按钮 + 取消)
+│   │   └── 场景4: 语义确认 (主宾语角色确认 + 取消)
 │   ├── ErrorCard (错误 + 重试)
 │   └── SuggestionCard (追问建议)
 ├── InputBar (底部固定输入条)
@@ -413,8 +454,8 @@ handleSend()
   ],
   "relationships": [
     {
-      "person1_temp_id": "temp_person_002",
-      "person2_temp_id": "temp_person_001",
+      "source_ref": "temp_person_001",
+      "target_ref": "temp_person_002",
       "type": "parent_child",
       "subtype": "father"
     }
@@ -524,20 +565,17 @@ proxy: {
 
 ## 9. 文件清单
 
-### 9.1 后端文件
+### 9.1 后端文件 (Modularized)
 
 | 文件 | 说明 |
 |------|------|
-| `main.py` | FastAPI 主应用（~1900 行） |
-| `models.py` | 数据模型定义 |
-| `config.py` | 配置管理 |
-| `prompt_engineering.py` | AI 提示词工程 |
-| `derivation_engine.py` | 关系推导引擎 |
-| `biography_engine.py` | 生平生成引擎 |
-| `relationship_validator.py` | 关系一致性校验器 |
-| `conflict_detector.py` | 冲突检测引擎 |
-| `relationship_engine.py` | 称谓查询引擎 |
-| `history.py` | 编辑历史模块 |
+| `main.py` | API 路由入口 (轻量级) |
+| `schemas.py` | 统一 Pydantic 数据模型定义 |
+| `ai_service.py` | AI 提取、确认与语义解析逻辑 |
+| `fact_service.py` | 家族图谱加载与 Fact 编译中枢 |
+| `compiler_engine.py` | 核心推导与约束校验引擎 |
+| `models.py` | 核心领域模型定义 (Person, Relationship, etc.) |
+| `fact_store.py` | 底层 Fact JSON 读写工具 |
 
 ### 9.2 前端文件
 

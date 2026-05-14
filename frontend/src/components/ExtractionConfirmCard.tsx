@@ -4,6 +4,7 @@ import { AIExtractionResult, Person, AIExtractionEntity, AIExtractionRelationshi
 interface ExtractionConfirmCardProps {
   data: AIExtractionResult;
   allPeople: Person[];
+  familyId: string;
   onConfirm: (commitData: ExtractionCommitRequest) => void;
   onCancel: () => void;
   debugInfo?: {
@@ -17,6 +18,7 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
   allPeople,
   onConfirm,
   onCancel,
+  familyId,
   debugInfo,
 }) => {
   const [entities, setEntities] = useState<AIExtractionEntity[]>(data?.entities || []);
@@ -25,6 +27,9 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [resolutions, setResolutions] = useState<Record<string, string>>({});
+  const [currentData, setCurrentData] = useState<AIExtractionResult>(data);
+  const [isValidating, setIsValidating] = useState(false);
+  const [taskInputs, setTaskInputs] = useState<Record<string, string>>({});
 
   // Sync state if data changes
   useEffect(() => {
@@ -32,6 +37,7 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
       setEntities(data.entities || []);
       setRelationships(data.relationships || []);
       setEvents(data.events || []);
+      setCurrentData(data);
     }
   }, [data]);
 
@@ -39,14 +45,11 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
     const newEntities = [...entities];
     newEntities[index] = { ...newEntities[index], [field]: value };
     
-    // If we link to an existing person, mark as not new
     if (field === 'matched_db_id') {
       if (value) {
         newEntities[index].is_new = false;
         const person = allPeople.find(p => p.id === value);
         if (person) {
-          // 不再强制覆盖姓名，保留提取到的更具体的姓名（如“林高德”而非“丈夫”）
-          // newEntities[index].name = person.name; 
           newEntities[index].gender = person.gender === 'male' ? 'M' : (person.gender === 'female' ? 'F' : 'UNKNOWN');
         }
       } else {
@@ -70,24 +73,125 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
   };
 
   const handleResolutionChange = (key: string, value: string) => {
-    setResolutions(prev => ({ ...prev, [key]: value }));
+    const updated = { ...resolutions, [key]: value };
+    setResolutions(updated);
+    // 触发扩散校验
+    triggerValidation(updated);
+  };
+
+  const triggerValidation = async (updatedResolutions: Record<string, string>) => {
+    setIsValidating(true);
+    try {
+      const response = await fetch('/api/chat/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          family_id: familyId,
+          confirmed_entities: entities.map(e => ({
+            temp_id: e.temp_id,
+            name: e.name,
+            gender: e.gender,
+            action: e.is_new ? 'CREATE' : 'LINK_EXISTING',
+            matched_db_id: e.matched_db_id || undefined,
+          })),
+          confirmed_relationships: relationships,
+          confirmed_events: events,
+          resolutions: updatedResolutions,
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setCurrentData(prev => ({
+          ...prev,
+          tasks: result.data.tasks,
+          reply_message: result.data.reply_message || prev.reply_message
+        }));
+      }
+    } catch (e) {
+      console.error("Validation failed", e);
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  const handleTaskAction = (task: any, option: any) => {
+    const { action, payload, target_id } = option;
+    const taskId = task.id;
+
+    if (action === 'RESOLVE_AMBIGUITY') {
+      handleResolutionChange(taskId, target_id);
+    } else if (action === 'CREATE_PLACEHOLDER') {
+      // 携带 payload 以便后端知道要创建什么的占位符
+      const resVal = `ACTION:CREATE_PLACEHOLDER:${JSON.stringify(payload || {})}`;
+      handleResolutionChange(taskId, resVal);
+    } else if (action === 'RESOLVE_GRANDPARENT') {
+      resolveGrandparent(taskId, payload.name, payload.target_name || "王芳", payload.base_type, payload.variant);
+    } else if (action === 'LINK_EXISTING') {
+      const entIdx = entities.findIndex(e => e.temp_id === payload.temp_id);
+      if (entIdx !== -1) {
+        handleEntityChange(entIdx, 'matched_db_id', payload.matched_db_id);
+        handleResolutionChange(taskId, payload.matched_db_id);
+      }
+    } else if (action === 'REJECT_EDGE' || action === 'IGNORE' || action === 'SWAP_DIRECTION' || action === 'MODIFY_GENDER') {
+      const resVal = `ACTION:${action}:${JSON.stringify(payload || {})}`;
+      handleResolutionChange(taskId, resVal);
+    } else if (action.startsWith('SUBMIT_')) {
+      const text = taskInputs[taskId] || "";
+      handleResolutionChange(taskId, `ACTION:SUBMIT_TEXT:${JSON.stringify({ text })}`);
+    }
+  };
+
+  const resolveGrandparent = (
+    taskId: string, 
+    sourceName: string, 
+    targetName: string, 
+    baseType: 'grandfather' | 'grandmother',
+    variant: 'PATERNAL' | 'MATERNAL'
+  ) => {
+    let relIdx = relationships.findIndex(r => {
+      const sName = getDisplayName(r.source_ref);
+      const tName = getDisplayName(r.target_ref);
+      return (sName.includes(sourceName) || tName.includes(sourceName)) && 
+             (sName.includes(targetName) || tName.includes(targetName));
+    });
+
+    const kinshipType = `${baseType}_${variant.toLowerCase()}` as any;
+
+    if (relIdx !== -1) {
+      const newRels = [...relationships];
+      newRels[relIdx] = { ...newRels[relIdx], kinship_type: kinshipType };
+      setRelationships(newRels);
+      handleResolutionChange(taskId, variant);
+    } else {
+      const sourceEnt = entities.find(e => e.name.includes(sourceName));
+      const targetEnt = entities.find(e => e.name.includes(targetName)) || 
+                        allPeople.find(p => p.name.includes(targetName));
+
+      if (sourceEnt && targetEnt) {
+        const newRel: AIExtractionRelationship = {
+          source_ref: sourceEnt.temp_id,
+          target_ref: (targetEnt as any).temp_id || (targetEnt as any).id,
+          kinship_type: kinshipType,
+          natural_language_desc: `${sourceName}是${targetName}的${baseType === 'grandfather' ? (variant === 'PATERNAL' ? '祖父' : '外祖父') : (variant === 'PATERNAL' ? '祖母' : '外祖母')}`
+        };
+        setRelationships([...relationships, newRel]);
+        handleResolutionChange(taskId, variant);
+      }
+    }
   };
 
   const getDisplayName = (ref: string) => {
-    // Check entities first
     const entity = entities.find(e => e.temp_id === ref);
     if (entity) return entity.name;
-    
-    // Then check database
     const person = allPeople.find(p => p.id === ref);
     if (person) return person.name;
-    
     return ref;
   };
 
   const handleCommit = () => {
     setIsSubmitting(true);
     const commitData: ExtractionCommitRequest = {
+      family_id: familyId,
       confirmed_entities: entities.map(e => ({
         temp_id: e.temp_id,
         name: e.name,
@@ -104,7 +208,6 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
 
   return (
     <div className="bg-white rounded-xl border border-blue-200 shadow-lg overflow-hidden flex flex-col max-h-[500px]">
-      {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 flex items-center justify-between">
         <h3 className="text-white font-medium flex items-center gap-2">
           <span>🧩</span> 确认提取结果
@@ -118,64 +221,93 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {/* Reply Message */}
-        {data.reply_message && (
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r-lg">
-            <p className="text-sm text-blue-800">{data.reply_message}</p>
-          </div>
-        )}
-
-        {/* Clarification Questions */}
-        {data.clarification_questions && data.clarification_questions.length > 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
-            <h4 className="text-xs font-bold text-amber-700 flex items-center gap-1">
-              <span>🤔</span> 发现潜在矛盾或需要澄清：
-            </h4>
-            <ul className="list-disc list-inside space-y-1">
-              {data.clarification_questions.map((q, i) => (
-                <li key={i} className="text-xs text-amber-800 italic">“{q}”</li>
-              ))}
-            </ul>
-            <p className="text-[10px] text-amber-600 mt-2">
-              提示：你可以根据这些疑问，在下方手动调整匹配的人员或描述。
+        {currentData.reply_message && (
+          <div className={`border-l-4 p-3 rounded-r-lg transition-colors ${isValidating ? "bg-gray-50 border-gray-300" : "bg-blue-50 border-blue-400"}`}>
+            <p className="text-sm text-blue-800 flex items-center gap-2">
+              {isValidating && <span className="animate-pulse">🔄</span>}
+              {currentData.reply_message}
             </p>
           </div>
         )}
 
-        {/* Ambiguous Derivations Section */}
-        {data.ambiguous_derivations && data.ambiguous_derivations.length > 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-3">
+        {currentData.tasks && currentData.tasks.length > 0 && (
+          <div className={`border rounded-lg p-3 space-y-3 transition-all ${isValidating ? "bg-gray-50 border-gray-200 opacity-60" : "bg-amber-50 border-amber-200"}`}>
             <h4 className="text-xs font-bold text-amber-700 flex items-center gap-1">
-              <span>⚖️</span> 发现推导歧义 ({data.ambiguous_derivations.length})
+              <span>🧠</span> 待确认的智能推导与补全任务 ({currentData.tasks.length}):
             </h4>
             <div className="space-y-4">
-              {data.ambiguous_derivations.map((amb) => (
-                <div key={amb.key} className="space-y-2">
-                  <p className="text-[11px] text-amber-900 font-medium">
-                    推导 <span className="text-blue-700">{getDisplayName(amb.person_a)}</span> 的{amb.step_label}时，发现多个可能的目标：
-                  </p>
-                  <select
-                    value={resolutions[amb.key] || ''}
-                    onChange={(e) => handleResolutionChange(amb.key, e.target.value)}
-                    className="w-full px-2 py-1.5 bg-white border border-amber-300 rounded text-xs outline-none focus:ring-1 focus:ring-amber-500"
-                  >
-                    <option value="">-- 保持歧义（将创建占位节点） --</option>
-                    {amb.candidates.map(cand => (
-                      <option key={cand.id} value={cand.id}>
-                        {cand.name} {cand.is_placeholder ? '(占位符)' : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
+              {currentData.tasks.map((task) => {
+                const currentRes = resolutions[task.id];
+                const isResolved = !!currentRes;
+                
+                const isConflict = task.category === 'conflict';
+                
+                return (
+                  <div key={task.id} className={`space-y-2 pb-3 border-b last:border-0 ${
+                    isConflict ? "bg-red-50/50 p-2 rounded -mx-2 border-red-100" : "border-amber-100"
+                  }`}>
+                    <div className="flex items-start gap-1.5">
+                      {isConflict ? (
+                        <span className="text-red-500 mt-0.5">⚠️</span>
+                      ) : (
+                        <span className="text-amber-500 mt-0.5">💡</span>
+                      )}
+                      <p className={`text-[11px] font-medium leading-relaxed ${
+                        isConflict ? "text-red-900" : "text-amber-900"
+                      }`}>
+                        {task.message}
+                      </p>
+                    </div>
+                    
+                    {task.type === 'input_text' && !isResolved && (
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={taskInputs[task.id] || ''}
+                          onChange={(e) => setTaskInputs({...taskInputs, [task.id]: e.target.value})}
+                          placeholder="请输入修正信息..."
+                          className="flex-1 px-2 py-1 bg-white border border-amber-200 rounded text-[10px] outline-none focus:ring-1 focus:ring-amber-400"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-2">
+                      {task.options.map((opt, i) => {
+                        const isSelected = currentRes === opt.target_id || 
+                                          (opt.action === 'RESOLVE_GRANDPARENT' && currentRes === opt.payload.variant) ||
+                                          (opt.action === 'CREATE_PLACEHOLDER' && typeof currentRes === 'string' && currentRes.startsWith('ACTION:CREATE_PLACEHOLDER')) ||
+                                          currentRes === opt.action;
+                        
+                        const isCorrection = opt.action === 'SWAP_DIRECTION' || opt.action === 'MODIFY_GENDER' || opt.action === 'REJECT_EDGE';
+
+                        return (
+                          <button
+                            key={i}
+                            disabled={isResolved && !isSelected}
+                            onClick={() => handleTaskAction(task, opt)}
+                            className={`px-3 py-1.5 rounded text-[10px] font-medium transition-all ${
+                              isSelected ? "bg-green-100 text-green-700 border border-green-300 shadow-sm" : 
+                              (isResolved ? "bg-gray-100 text-gray-400 opacity-50 cursor-not-allowed" : 
+                               (isCorrection ? "bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 shadow-sm" : 
+                                "bg-white border border-amber-300 text-amber-700 hover:bg-amber-50 shadow-sm")
+                              )
+                            }`}
+                          >
+                            {isSelected ? `✓ ${opt.label.replace('确认为', '已设为')}` : opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <p className="text-[10px] text-amber-600">
-              提示：选择特定的候选人可以避免产生多余的“未知”节点。
+            <p className="text-[10px] text-amber-600 border-t border-amber-100 pt-2">
+              提示：基于协议驱动的交互任务，确认后将自动触发推导算法扩散校验。
             </p>
           </div>
         )}
 
-        {/* Entities Section */}
         <div>
           <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
             <span>👤</span> 人物实体 ({entities.length})
@@ -232,7 +364,6 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
           </div>
         </div>
 
-        {/* Relationships Section */}
         {relationships.length > 0 && (
           <div>
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
@@ -263,7 +394,6 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
           </div>
         )}
 
-        {/* Events Section */}
         {events.length > 0 && (
           <div>
             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
@@ -309,7 +439,6 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
         )}
       </div>
 
-      {/* Footer */}
       <div className="p-4 bg-gray-50 border-t border-gray-200 flex gap-3">
         <button
           onClick={handleCommit}
@@ -327,7 +456,6 @@ const ExtractionConfirmCard: React.FC<ExtractionConfirmCardProps> = ({
         </button>
       </div>
 
-      {/* Debug Info Section */}
       {debugInfo && (
         <div className="border-t border-gray-100">
           <button 

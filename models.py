@@ -60,6 +60,64 @@ class DateAccuracy(Enum):
     UNKNOWN = "unknown"
 
 
+class InteractionTaskType(Enum):
+    SINGLE_CHOICE = "single_choice"
+    MULTI_CHOICE = "multi_choice"
+    YES_NO = "yes_no"
+    INPUT_TEXT = "input_text"
+
+
+class InteractionTaskCategory(Enum):
+    AMBIGUITY = "ambiguity"      # 语义歧义
+    CONFLICT = "conflict"        # 逻辑冲突
+    CLARIFICATION = "clarification"  # 补充澄清
+    SUGGESTION = "suggestion"    # 优化建议
+
+
+class InteractionTaskOption:
+    """交互任务的可选操作项"""
+    def __init__(self, label: str, action: str, payload: Dict[str, Any], target_id: Optional[str] = None):
+        self.label = label
+        self.action = action
+        self.payload = payload
+        self.target_id = target_id
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "label": self.label,
+            "action": self.action,
+            "payload": self.payload,
+            "target_id": self.target_id
+        }
+
+
+class InteractionTask:
+    """统一交互任务模型 (用于替代分散的 suggested_questions, ambiguous_derivations 等)"""
+    def __init__(self, task_id: str, category: InteractionTaskCategory, 
+                 message: str, task_type: InteractionTaskType = InteractionTaskType.SINGLE_CHOICE):
+        self.id = task_id
+        self.category = category
+        self.message = message
+        self.type = task_type
+        self.options: List[InteractionTaskOption] = []
+        self.metadata: Dict[str, Any] = {}
+        self.created_at = datetime.now().isoformat()
+
+    def add_option(self, label: str, action: str, payload: Dict[str, Any], target_id: Optional[str] = None):
+        self.options.append(InteractionTaskOption(label, action, payload, target_id))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "category": self.category.value,
+            "message": self.message,
+            "type": self.type.value,
+            "options": [opt.to_dict() for opt in self.options],
+            "metadata": self.metadata,
+            "created_at": self.created_at
+        }
+
+
 class Person:
     """家族成员实体"""
     
@@ -175,7 +233,9 @@ class Relationship:
     """家族关系实体"""
     
     def __init__(self, person1_id: str, person2_id: str, 
-                 rel_type: RelationshipType, rel_id: str = None, is_inferred: bool = False):
+                 rel_type: RelationshipType, rel_id: str = None, 
+                 is_inferred: bool = False, is_biological: bool = True, 
+                 is_confirmed: bool = False):
         self.id = rel_id or f"rel_{uuid.uuid4().hex[:8]}"
         self.person1_id = person1_id
         self.person2_id = person2_id
@@ -187,6 +247,8 @@ class Relationship:
         self.event_id: Optional[str] = None
         self.notes: Optional[str] = None
         self.is_inferred: bool = is_inferred
+        self.is_biological: bool = is_biological
+        self.is_confirmed: bool = is_confirmed
         self.created_at = datetime.now().isoformat()
     
     def to_dict(self) -> Dict[str, Any]:
@@ -203,6 +265,8 @@ class Relationship:
             "event_id": self.event_id,
             "notes": self.notes,
             "is_inferred": self.is_inferred,
+            "is_biological": self.is_biological,
+            "is_confirmed": self.is_confirmed,
             "created_at": self.created_at
         }
     
@@ -222,6 +286,8 @@ class Relationship:
         rel.event_id = data.get("event_id")
         rel.notes = data.get("notes")
         rel.is_inferred = data.get("is_inferred", False)
+        rel.is_biological = data.get("is_biological", True)
+        rel.is_confirmed = data.get("is_confirmed", False)
         rel.created_at = data.get("created_at", datetime.now().isoformat())
         return rel
 
@@ -233,6 +299,7 @@ class FamilyGraph:
         self.people: Dict[str, Person] = {}
         self.events: Dict[str, Event] = {}
         self.relationships: Dict[str, Relationship] = {}
+        self.ambiguities: List[Dict[str, Any]] = []  # 显式存储推导过程中的歧义记录
     
     def add_person(self, person: Person) -> str:
         """添加家族成员"""
@@ -380,7 +447,8 @@ class FamilyGraph:
         return {
             "people": [p.to_dict() for p in self.people.values()],
             "events": [e.to_dict() for e in self.events.values()],
-            "relationships": [r.to_dict() for r in self.relationships.values()]
+            "relationships": [r.to_dict() for r in self.relationships.values()],
+            "ambiguities": self.ambiguities
         }
     
     @classmethod
@@ -402,6 +470,8 @@ class FamilyGraph:
         for rel_data in data.get("relationships", []):
             rel = Relationship.from_dict(rel_data)
             graph.add_relationship(rel)
+        
+        graph.ambiguities = data.get("ambiguities", [])
         
         return graph
     

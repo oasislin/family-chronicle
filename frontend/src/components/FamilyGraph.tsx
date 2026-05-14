@@ -12,6 +12,7 @@ import ReactFlow, {
   Handle,
   useReactFlow,
   ReactFlowProvider,
+  MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Person, Relationship } from '../types';
@@ -175,25 +176,6 @@ const EDGE_STYLES: Record<string, { color: string; label: string; dashed?: boole
   other: { color: '#94a3b8', label: '其他' },
 };
 
-// 箭头标记 — 用于长辈→晚辈的方向指示
-const ArrowMarker = () => (
-  <svg style={{ position: 'absolute', top: 0, width: 0, height: 0 }}>
-    <defs>
-      <marker id="arrow-parent" viewBox="0 0 12 12" refX="10" refY="6"
-        markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-        <path d="M 0 0 L 12 6 L 0 12 z" fill="#0ea5e9" />
-      </marker>
-      <marker id="arrow-step" viewBox="0 0 12 12" refX="10" refY="6"
-        markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-        <path d="M 0 0 L 12 6 L 0 12 z" fill="#94a3b8" />
-      </marker>
-      <marker id="arrow-grandparent" viewBox="0 0 12 12" refX="10" refY="6"
-        markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-        <path d="M 0 0 L 12 6 L 0 12 z" fill="#8b5cf6" />
-      </marker>
-    </defs>
-  </svg>
-);
 
 interface FamilyGraphProps {
   people: Person[];
@@ -364,14 +346,16 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
         : (rel.is_inferred ? 0.3 : 0.7);
       const animated: boolean = rel.type === 'spouse' || (!!hasSelection && isConnected);
 
-      // 箭头标记 — 长辈→晚辈方向
-      const markerEnd = rel.type === 'parent_child'
-        ? 'url(#arrow-parent)'
-        : rel.type === 'step_parent_child'
-        ? 'url(#arrow-step)'
-        : rel.type === 'grandparent_grandchild'
-        ? 'url(#arrow-grandparent)'
-        : undefined;
+      // 箭头标记 — 长辈→晚辈方向 (使用 ReactFlow 原生 MarkerType 确保显示可靠)
+      const markerEnd = {
+        type: MarkerType.ArrowClosed,
+        width: 15,
+        height: 15,
+        color: style.color,
+      };
+
+      // 只有特定关系显示箭头
+      const hasArrow = ['parent_child', 'step_parent_child', 'grandparent_grandchild', 'adopted_parent_child'].includes(rel.type);
 
       return {
         id: rel.id,
@@ -381,7 +365,7 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
         targetHandle: 'top',
         label: style.label,
         type: 'smoothstep',
-        markerEnd,
+        markerEnd: hasArrow ? markerEnd : undefined,
         style: {
           stroke: style.color,
           strokeWidth,
@@ -562,7 +546,6 @@ const FamilyGraphView: React.FC<FamilyGraphProps> = ({
           defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
           attributionPosition="bottom-left"
         >
-          <ArrowMarker />
           <Controls />
           <MiniMap
             nodeStrokeColor={() => '#0ea5e9'}

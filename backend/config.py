@@ -34,8 +34,8 @@ class Settings(BaseSettings):
     
     # AI服务配置
     AI_PROVIDER: str = Field(default="deepseek", env="AI_PROVIDER")  # deepseek, zhipu, openai, claude
-    DEEPSEEK_API_KEY: str = Field(default="", env="DEEPSEEK_API_KEY")
-    DEEPSEEK_BASE_URL: str = Field(default="https://api.deepseek.com", env="DEEPSEEK_BASE_URL")
+    DEEPSEEK_API_KEY: str = Field(default="", env=["HUAWEI_API_KEY", "DEEPSEEK_API_KEY"])
+    DEEPSEEK_BASE_URL: str = Field(default="https://api.modelarts-maas.com/openai", env="DEEPSEEK_BASE_URL")
     ZHIPU_API_KEY: str = Field(default="", env="ZHIPU_API_KEY")
     OPENAI_API_KEY: str = Field(default="", env="OPENAI_API_KEY")
     ANTHROPIC_API_KEY: str = Field(default="", env="ANTHROPIC_API_KEY")
@@ -52,9 +52,35 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
     LOG_FILE: Optional[Path] = Field(default=None, env="LOG_FILE")
 
+    # 默认家族配置
+    DEFAULT_FAMILY_ID: str = "default_family"
+
     def post_init_logic(self):
         if self.LOG_FILE is None:
             self.LOG_FILE = self.BASE_DIR / "logs" / "app.log"
+        
+        # 读取本地 server_config.json
+        config_path = self.BASE_DIR / "backend" / "server_config.json"
+        if config_path.exists():
+            try:
+                import json
+                with open(config_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    if "default_family_id" in data:
+                        self.DEFAULT_FAMILY_ID = data["default_family_id"]
+            except Exception as e:
+                print(f"警告: 无法读取 server_config.json: {e}")
+        
+        # 手动检查环境变量，确保系统级变量优先
+        import os
+        if not self.DEEPSEEK_API_KEY:
+            # 优先检查 HUAWEI_API_KEY
+            huawei_key = os.environ.get("HUAWEI_API_KEY")
+            if huawei_key:
+                self.DEEPSEEK_API_KEY = huawei_key
+            # 其次检查 DEEPSEEK_API_KEY
+            elif os.environ.get("DEEPSEEK_API_KEY"):
+                self.DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY")
     
     # CORS配置
     CORS_ORIGINS: list = Field(default=["*"], env="CORS_ORIGINS")

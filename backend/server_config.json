@@ -1,0 +1,4 @@
+{
+  "default_family_id": "test_clean_scratch",
+  "notes": "此文件用于配置后端启动时默认加载的家族数据库 ID。"
+}

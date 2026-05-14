@@ -61,6 +61,7 @@ class ConflictItem:
     message: str
     affected_entities: List[str] = field(default_factory=list)  # 涉及的实体ID
     suggestions: List[str] = field(default_factory=list)         # 建议操作
+    actions: List[Dict[str, Any]] = field(default_factory=list)  # 可交互动作
     can_override: bool = False                                   # 是否可强制覆盖
     
     def to_dict(self) -> Dict[str, Any]:
@@ -70,6 +71,7 @@ class ConflictItem:
             "message": self.message,
             "affected_entities": self.affected_entities,
             "suggestions": self.suggestions,
+            "actions": self.actions,
             "can_override": self.can_override
         }
 
@@ -208,6 +210,17 @@ class ConflictDetector:
                     suggestions=[
                         f"合并到现有人物: {existing_person.id}",
                         "创建新人物（确认是不同的人）"
+                    ],
+                    actions=[
+                        {
+                            "label": f"合并到 {existing_person.name}",
+                            "action": "MERGE",
+                            "target_id": existing_person.id
+                        },
+                        {
+                            "label": "确认是不同的人",
+                            "action": "CREATE_NEW"
+                        }
                     ],
                     can_override=True
                 ))

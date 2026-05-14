@@ -39,6 +39,22 @@ export const familyApi = {
     const response = await api.post(`/families/${familyId}/import`, data);
     return response.data;
   },
+
+  // 处理交互任务
+  resolveTask: async (familyId: string, taskId: string, action: string, payload?: any): Promise<ApiResponse<any>> => {
+    const response = await api.post(`/families/${familyId}/resolve_task`, {
+      task_id: taskId,
+      action,
+      payload,
+    });
+    return response.data;
+  },
+
+  // 获取配置
+  getConfig: async (): Promise<ApiResponse<{ default_family_id: string; app_name: string; version: string }>> => {
+    const response = await api.get('/config');
+    return response.data;
+  },
 };
 
 // 人物管理

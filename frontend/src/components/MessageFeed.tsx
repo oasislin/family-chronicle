@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Person, AIExtractionResult, ExtractionCommitRequest } from '../types';
+import { Person, AIExtractionResult, ExtractionCommitRequest, InteractionTask } from '../types';
 import ExtractionConfirmCard from './ExtractionConfirmCard';
 
 export interface FeedMessage {
   id: string;
-  type: 'parsing' | 'success' | 'question' | 'error' | 'suggestion' | 'extraction';
+  type: 'parsing' | 'success' | 'question' | 'error' | 'suggestion' | 'extraction' | 'task';
   timestamp: number;
   content: {
     // success
@@ -34,13 +34,24 @@ export interface FeedMessage {
     extractionData?: AIExtractionResult;
     // common natural language result
     replyMessage?: string;
+    // ambiguities
+    isAmbiguity?: boolean;
+    ambiguitySuggestion?: {
+      person_a: string;
+      person_b: string;
+      type: string;
+      attributes: Record<string, any>;
+    };
     // debug info for extraction
     debugInfo?: {
       prompt_used: { system: string; user: string };
       raw_response: string;
     };
+    // task
+    task?: InteractionTask;
   };
   onAnswer?: (questionId: string, answer: string) => void;
+  onTaskAction?: (taskId: string, action: string, payload: any) => void;
   onConfirmExtraction?: (commitData: ExtractionCommitRequest) => void;
   onCancelExtraction?: () => void;
   onRetry?: () => void;
@@ -49,9 +60,10 @@ export interface FeedMessage {
 
 interface MessageFeedProps {
   messages: FeedMessage[];
+  familyId?: string;
 }
 
-const MessageFeed: React.FC<MessageFeedProps> = ({ messages }) => {
+const MessageFeed: React.FC<MessageFeedProps> = ({ messages, familyId }) => {
   if (messages.length === 0) {
     return (
       <div className="flex flex-col h-full bg-gray-50 border-l border-gray-200">
@@ -76,14 +88,14 @@ const MessageFeed: React.FC<MessageFeedProps> = ({ messages }) => {
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {messages.map((msg) => (
-          <MessageCard key={msg.id} message={msg} />
+          <MessageCard key={msg.id} message={msg} familyId={familyId} />
         ))}
       </div>
     </div>
   );
 };
 
-const MessageCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
+const MessageCard: React.FC<{ message: FeedMessage; familyId?: string }> = ({ message, familyId }) => {
   switch (message.type) {
     case 'parsing':
       return <ParsingCard message={message} />;
@@ -96,16 +108,152 @@ const MessageCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
     case 'suggestion':
       return <SuggestionCard message={message} />;
     case 'extraction':
-      return <ExtractionWrapper message={message} />;
+      return <ExtractionWrapper message={message} familyId={familyId} />;
+    case 'task':
+      return <InteractionTaskCard message={message} />;
     default:
       return null;
   }
 };
 
+/**
+ * 任务式交互组件：依据 InteractionTask 协议动态渲染 UI
+ */
+const InteractionTaskCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
+  const [answered, setAnswered] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const { task } = message.content;
+  const onTaskAction = message.onTaskAction;
+
+  if (!task) return null;
+
+  if (answered) {
+    return (
+      <div className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-2">
+        <span className="text-xs text-gray-500">✅ 已处理</span>
+      </div>
+    );
+  }
+
+  const handleAction = (action: string, payload: any) => {
+    if (onTaskAction) {
+      onTaskAction(task.id, action, payload);
+      setAnswered(true);
+    }
+  };
+
+  // 根据分类选择基础色调
+  const getCategoryStyles = () => {
+    switch (task.category) {
+      case 'ambiguity': return 'bg-indigo-50 border-indigo-200 text-indigo-800';
+      case 'conflict': return 'bg-orange-50 border-orange-200 text-orange-800';
+      case 'clarification': return 'bg-teal-50 border-teal-200 text-teal-800';
+      case 'suggestion': return 'bg-blue-50 border-blue-200 text-blue-800';
+      default: return 'bg-gray-50 border-gray-200 text-gray-800';
+    }
+  };
+
+  const getButtonStyles = () => {
+    switch (task.category) {
+      case 'ambiguity': return 'bg-indigo-600 hover:bg-indigo-700 text-white';
+      case 'conflict': return 'bg-orange-600 hover:bg-orange-700 text-white';
+      case 'clarification': return 'bg-teal-600 hover:bg-teal-700 text-white';
+      case 'suggestion': return 'bg-blue-600 hover:bg-blue-700 text-white';
+      default: return 'bg-gray-600 hover:bg-gray-700 text-white';
+    }
+  };
+
+  const styles = getCategoryStyles();
+  const btnStyles = getButtonStyles();
+
+  return (
+    <div className={`${styles.split(' ')[0]} ${styles.split(' ')[1]} border rounded-lg p-3 shadow-sm`}>
+      <p className={`text-sm font-medium mb-2 flex items-center gap-1.5`}>
+        {task.category === 'ambiguity' && '🤔'}
+        {task.category === 'conflict' && '⚠️'}
+        {task.category === 'clarification' && '❓'}
+        {task.category === 'suggestion' && '💡'}
+        {task.message}
+      </p>
+
+      {/* 单选 / 二元确认 */}
+      {(task.type === 'single_choice' || task.type === 'yes_no') && (
+        <div className="space-y-1.5">
+          {task.options.map((opt, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleAction(opt.action, opt.payload)}
+              className={`w-full flex justify-between items-center px-3 py-2 bg-white border border-opacity-50 rounded-lg 
+                         hover:bg-opacity-80 transition text-sm text-left group
+                         ${task.category === 'ambiguity' ? 'border-indigo-300 hover:bg-indigo-50' : 'border-gray-300'}`}
+            >
+              <span className="font-medium">{opt.label}</span>
+              <span className="text-[10px] opacity-0 group-hover:opacity-60 transition-opacity">
+                点击执行
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* 文本输入 */}
+      {task.type === 'input_text' && (
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && inputValue.trim()) {
+                handleAction(task.options[0]?.action || 'SUBMIT_TEXT', { text: inputValue.trim() });
+              }
+            }}
+            placeholder="请输入..."
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm
+                       focus:ring-2 focus:ring-opacity-50 focus:border-transparent outline-none"
+            autoFocus
+          />
+          <div className="flex gap-2">
+            {task.options.map((opt, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleAction(opt.action, idx === 0 ? { text: inputValue.trim() } : opt.payload)}
+                disabled={idx === 0 && !inputValue.trim()}
+                className={`flex-1 px-3 py-1.5 rounded-lg text-sm transition-colors shadow-sm
+                           ${idx === 0 ? btnStyles : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50'}
+                           disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 多选 (暂时简单实现为按钮列表) */}
+      {task.type === 'multi_choice' && (
+        <div className="flex flex-wrap gap-2">
+          {task.options.map((opt, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleAction(opt.action, opt.payload)}
+              className="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs
+                         hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // 交互式提取确认包装组件
-const ExtractionWrapper: React.FC<{ message: FeedMessage }> = ({ message }) => {
+const ExtractionWrapper: React.FC<{ message: FeedMessage; familyId?: string }> = ({ message, familyId }) => {
   const [confirmed, setConfirmed] = useState(false);
-  const { extractionData, allPeople = [] } = message.content;
+  const { extractionData } = message.content;
+  const allPeople = message.allPeople || [];
 
   if (confirmed) {
     return (
@@ -128,6 +276,7 @@ const ExtractionWrapper: React.FC<{ message: FeedMessage }> = ({ message }) => {
     <ExtractionConfirmCard
       data={extractionData}
       allPeople={allPeople}
+      familyId={familyId || ''}
       debugInfo={message.content.debugInfo}
       onConfirm={(commitData) => {
         setConfirmed(true);
@@ -274,12 +423,7 @@ const SuccessCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
 const QuestionCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
   const [answered, setAnswered] = useState(false);
   const [nameInput, setNameInput] = useState('');
-  // entity_confirm 的编辑状态（必须在顶层声明，不能放在 if 分支里）
-  const entity = message.content.entity;
-  const [editName, setEditName] = useState(entity?.name || '');
-  const [editGender, setEditGender] = useState(entity?.gender || 'unknown');
-  const [editBirth, setEditBirth] = useState(entity?.birth_year || '');
-  const { questionId, message: questionText, questionType, candidates, conflictInfo, directionOptions } = message.content;
+  const { questionId, message: questionText, isAmbiguity, ambiguitySuggestion: _unused_ambiguitySuggestion } = message.content;
   const onAnswer = message.onAnswer;
 
   // 防御：如果 onAnswer 被 App.tsx 清除（标记为已回答），自动标记本地状态
@@ -304,330 +448,21 @@ const QuestionCard: React.FC<{ message: FeedMessage }> = ({ message }) => {
     }
   };
 
-  // 场景0: 推导歧义确认 (Relationship Ambiguity)
-  if (message.content.isAmbiguity) {
+  // 场景X: 语义确认 / 歧义推导 (已废弃，迁往 InteractionTaskCard)
+  if (isAmbiguity) {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 shadow-sm">
-        <p className="text-sm text-blue-800 font-medium mb-2">🤔 发现潜在关联</p>
+      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 shadow-sm">
+        <p className="text-sm text-indigo-800 font-medium mb-2">🤔 发现潜在关联 (Legacy)</p>
         <p className="text-xs text-gray-700 mb-3 leading-relaxed">{questionText}</p>
         <div className="flex gap-2">
-          <button
-            onClick={() => handleAnswer('yes')}
-            className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium
-                       hover:bg-blue-700 transition shadow-sm"
-          >
-            ✅ 是的
-          </button>
-          <button
-            onClick={() => handleAnswer('no')}
-            className="flex-1 px-3 py-2 bg-white border border-blue-300 rounded-lg text-sm
-                       text-blue-700 hover:bg-blue-100 transition"
-          >
-            ❌ 不是
-          </button>
+          <button onClick={() => handleAnswer('yes')} className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium">✅ 是的</button>
+          <button onClick={() => handleAnswer('no')} className="flex-1 px-3 py-2 bg-white border border-indigo-300 rounded-lg text-sm text-indigo-700">❌ 不是</button>
         </div>
       </div>
     );
   }
 
-  // 场景1: 人物匹配歧义
-  if (questionType === 'person_match' || (!questionType && candidates && candidates.length > 0)) {
-    const allowNew = message.content.allowNew;
-    return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 shadow-sm">
-        <p className="text-sm text-yellow-800 font-medium mb-2">⚠️ {questionText}</p>
-        <div className="space-y-1.5">
-          {candidates?.map((c) => (
-            <div key={c.id} className="flex items-center gap-1.5">
-              <button
-                onClick={() => handleAnswer(c.id)}
-                className="flex-1 text-left px-3 py-2 bg-white border border-yellow-300 rounded-lg
-                           hover:bg-yellow-100 transition-colors text-sm flex items-center justify-between"
-              >
-                <span>👤 {c.name}</span>
-                <span className="flex items-center gap-2">
-                  {c.reason && <span className="text-xs text-gray-400">{c.reason}</span>}
-                  {c.score >= 0.9 && <span className="text-xs text-green-600">精确匹配</span>}
-                  {c.score >= 0.8 && c.score < 0.9 && <span className="text-xs text-blue-600">相似</span>}
-                </span>
-              </button>
-              {allowNew && (
-                <button
-                  onClick={() => handleAnswer(`__merge__:${c.id}`)}
-                  className="px-2 py-2 bg-blue-500 text-white rounded-lg text-xs
-                             hover:bg-blue-600 transition-colors whitespace-nowrap"
-                  title="合并此人（保留已有记录，关联新信息）"
-                >
-                  合并
-                </button>
-              )}
-            </div>
-          ))}
-          <button
-            onClick={() => handleAnswer('__new__')}
-            className="w-full text-left px-3 py-2 bg-white border border-yellow-300 rounded-lg
-                       hover:bg-yellow-100 transition-colors text-sm text-yellow-700"
-          >
-            ➕ {allowNew ? '确认是不同的人，创建新人物' : '是新人物'}
-          </button>
-        </div>
-        {/* 手动输入 */}
-        <div className="mt-2 pt-2 border-t border-yellow-200">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && nameInput.trim()) handleAnswer(nameInput.trim()); }}
-              placeholder="手动输入姓名..."
-              className="flex-1 px-2 py-1 bg-white border border-yellow-300 rounded text-xs
-                         focus:ring-1 focus:ring-yellow-400 focus:border-transparent"
-            />
-            <button
-              onClick={() => nameInput.trim() && handleAnswer(nameInput.trim())}
-              disabled={!nameInput.trim()}
-              className="px-2 py-1 bg-yellow-600 text-white rounded text-xs
-                         hover:bg-yellow-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              确定
-            </button>
-          </div>
-          <button
-            onClick={() => handleAnswer('__cancel__')}
-            className="mt-1.5 text-xs text-gray-400 hover:text-gray-600 underline"
-          >
-            取消 — 跳过此条输入
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 场景2: 逻辑矛盾
-  if (questionType === 'logic_conflict' && conflictInfo) {
-    return (
-      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 shadow-sm">
-        <p className="text-sm text-orange-800 font-medium mb-2">⚠️ {questionText}</p>
-        <div className="bg-white rounded-lg border border-orange-200 p-2 mb-2 text-xs space-y-1">
-          <div className="flex justify-between">
-            <span className="text-gray-500">数据库记录</span>
-            <span className="text-gray-800 font-medium">{conflictInfo.old_value}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">你刚才提到</span>
-            <span className="text-orange-700 font-medium">{conflictInfo.new_value}</span>
-          </div>
-        </div>
-        <div className="space-y-1.5">
-          <button
-            onClick={() => handleAnswer(conflictInfo.new_value)}
-            className="w-full px-3 py-2 bg-orange-600 text-white rounded-lg text-sm
-                       hover:bg-orange-700 transition"
-          >
-            以新信息为准
-          </button>
-          <button
-            onClick={() => handleAnswer(conflictInfo.old_value)}
-            className="w-full px-3 py-2 bg-white border border-orange-300 rounded-lg text-sm
-                       text-orange-700 hover:bg-orange-100 transition"
-          >
-            保留原记录
-          </button>
-        </div>
-        {/* 手动输入正确值 */}
-        <div className="mt-2 pt-2 border-t border-orange-200">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && nameInput.trim()) handleAnswer(nameInput.trim()); }}
-              placeholder="手动输入正确值..."
-              className="flex-1 px-2 py-1 bg-white border border-orange-300 rounded text-xs
-                         focus:ring-1 focus:ring-orange-400 focus:border-transparent"
-            />
-            <button
-              onClick={() => nameInput.trim() && handleAnswer(nameInput.trim())}
-              disabled={!nameInput.trim()}
-              className="px-2 py-1 bg-orange-600 text-white rounded text-xs
-                         hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              确定
-            </button>
-          </div>
-          <button
-            onClick={() => handleAnswer('__cancel__')}
-            className="mt-1.5 text-xs text-gray-400 hover:text-gray-600 underline"
-          >
-            取消 — 不处理此条信息
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 场景3: AI 置信度低
-  if (questionType === 'ai_low_confidence') {
-    return (
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 shadow-sm">
-        <p className="text-sm text-purple-800 font-medium mb-2">⚠️ {questionText}</p>
-        <div className="space-y-1.5">
-          <button
-            onClick={() => handleAnswer('__confirm__')}
-            className="w-full px-3 py-2 bg-purple-600 text-white rounded-lg text-sm
-                       hover:bg-purple-700 transition"
-          >
-            确认
-          </button>
-          <button
-            onClick={() => handleAnswer('__skip__')}
-            className="w-full px-3 py-2 bg-white border border-purple-300 rounded-lg text-sm
-                       text-purple-700 hover:bg-purple-100 transition"
-          >
-            跳过
-          </button>
-        </div>
-        {/* 手动编辑 */}
-        <div className="mt-2 pt-2 border-t border-purple-200">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && nameInput.trim()) handleAnswer(nameInput.trim()); }}
-              placeholder="手动编辑此信息..."
-              className="flex-1 px-2 py-1 bg-white border border-purple-300 rounded text-xs
-                         focus:ring-1 focus:ring-purple-400 focus:border-transparent"
-            />
-            <button
-              onClick={() => nameInput.trim() && handleAnswer(nameInput.trim())}
-              disabled={!nameInput.trim()}
-              className="px-2 py-1 bg-purple-600 text-white rounded text-xs
-                         hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              确定
-            </button>
-          </div>
-          <button
-            onClick={() => handleAnswer('__cancel__')}
-            className="mt-1.5 text-xs text-gray-400 hover:text-gray-600 underline"
-          >
-            取消 — 不处理此条信息
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 场景4: 关系方向不明
-  if (questionType === 'relationship_direction' && directionOptions) {
-    return (
-      <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-3 shadow-sm">
-        <p className="text-sm text-cyan-800 font-medium mb-2">⚠️ {questionText}</p>
-        <div className="space-y-1.5">
-          {directionOptions.map((opt) => (
-            <button
-              key={opt.id}
-              onClick={() => handleAnswer(opt.id)}
-              className="w-full text-left px-3 py-2 bg-white border border-cyan-300 rounded-lg
-                         hover:bg-cyan-100 transition-colors text-sm"
-            >
-              <div className="font-medium text-cyan-800">{opt.label}</div>
-              {opt.desc && <div className="text-xs text-gray-500 mt-0.5">{opt.desc}</div>}
-            </button>
-          ))}
-        </div>
-        <div className="mt-2 pt-2 border-t border-cyan-200 flex gap-2">
-          <button
-            onClick={() => handleAnswer('__cancel_rel__')}
-            className="text-xs text-gray-400 hover:text-gray-600 underline"
-          >
-            取消 — 不添加此关系
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 场景5: 新实体确认（用户必须确认才创建，防止 AI 误提取）
-  if (questionType === 'entity_confirm' && message.content.entity) {
-    return (
-      <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 shadow-sm">
-        <p className="text-sm text-teal-800 font-medium mb-2">🆕 {questionText}</p>
-        <div className="bg-white rounded-lg border border-teal-200 p-2.5 space-y-2 mb-2">
-          <div>
-            <label className="text-xs text-gray-500">姓名</label>
-            <input
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              className="w-full px-2 py-1 border border-gray-200 rounded text-sm mt-0.5
-                         focus:ring-1 focus:ring-teal-400 focus:border-transparent"
-            />
-          </div>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <label className="text-xs text-gray-500">性别</label>
-              <select
-                value={editGender}
-                onChange={(e) => setEditGender(e.target.value)}
-                className="w-full px-2 py-1 border border-gray-200 rounded text-sm mt-0.5"
-              >
-                <option value="male">男 ♂</option>
-                <option value="female">女 ♀</option>
-                <option value="unknown">未知</option>
-              </select>
-            </div>
-            <div className="flex-1">
-              <label className="text-xs text-gray-500">出生年</label>
-              <input
-                type="text"
-                value={editBirth}
-                onChange={(e) => setEditBirth(e.target.value)}
-                placeholder="如 1985"
-                className="w-full px-2 py-1 border border-gray-200 rounded text-sm mt-0.5
-                           focus:ring-1 focus:ring-teal-400 focus:border-transparent"
-              />
-            </div>
-          </div>
-          {entity.tags && entity.tags.length > 0 && (
-            <div className="flex gap-1 flex-wrap">
-              {entity.tags.map((t: string, i: number) => (
-                <span key={i} className="text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded">{t}</span>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              setAnswered(true);
-              const parts = [editName.trim() || entity.name, editGender, editBirth].join('|');
-              handleAnswer(`__create__:${parts}`);
-            }}
-            disabled={!editName.trim()}
-            className="flex-1 px-3 py-1.5 bg-teal-600 text-white rounded-lg text-sm
-                       hover:bg-teal-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            ✅ 确认创建
-          </button>
-          <button
-            onClick={() => { setAnswered(true); handleAnswer('__skip__'); }}
-            className="px-3 py-1.5 bg-white border border-teal-300 rounded-lg text-sm
-                       text-teal-700 hover:bg-teal-100"
-          >
-            占位
-          </button>
-          <button
-            onClick={() => { setAnswered(true); handleAnswer('__cancel__'); }}
-            className="px-3 py-1.5 text-gray-400 hover:text-gray-600 text-sm underline"
-          >
-            跳过
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // 场景 1-5 已统一由 InteractionTask 处理。此处保留极简逻辑作为过渡或通用提问。
 
   // Fallback: 通用文本输入（如「请输入真实姓名」）
   return (

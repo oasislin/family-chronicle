@@ -5,12 +5,12 @@ import MessageFeed, { FeedMessage } from './components/MessageFeed';
 import PersonDetail from './components/PersonDetail';
 import MergeConfirmDialog from './components/MergeConfirmDialog';
 import FloatingPersonCard from './components/FloatingPersonCard';
-import { Person, FamilyGraph, AIParseResult } from './types';
+import { Person, FamilyGraph, ExtractionCommitRequest, InteractionTask } from './types';
 import { familyApi, personApi, healthApi, aiApi, autoImportApi, mergeApi, intentApi, deriveApi, relationshipApi } from './services/api';
 
 function App() {
   const [familyId, setFamilyId] = useState<string>('');
-  const [familyData, setFamilyData] = useState<FamilyGraph>({ people: [], events: [], relationships: [] });
+  const [familyData, setFamilyData] = useState<FamilyGraph>({ people: [], events: [], relationships: [], ambiguities: [] });
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isHealthy, setIsHealthy] = useState<boolean | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,8 +28,6 @@ function App() {
 
   // 消息流
   const [messages, setMessages] = useState<FeedMessage[]>([]);
-  // 待处理数据（有提问时暂存）
-  const [pendingData, setPendingData] = useState<any>(null);
   const pendingDataRef = useRef<any>(null);
   // 累积所有已回答的答案（防止重复生成同一问题）
   const accumulatedAnswersRef = useRef<Record<string, string>>({});
@@ -45,7 +43,15 @@ function App() {
       const urlParams = new URLSearchParams(window.location.search);
       let fId = urlParams.get('family_id');
 
-      // 2. 如果 URL 没有，再从列表里取第一个
+      // 2. 如果 URL 没有，则获取后端配置的默认 ID
+      if (!fId) {
+        const configRes = await familyApi.getConfig();
+        if (configRes.success && configRes.data?.default_family_id) {
+          fId = configRes.data.default_family_id;
+        }
+      }
+
+      // 3. 如果还是没有（比如后端没配），再从列表里取第一个
       if (!fId) {
         const familiesResponse = await familyApi.list();
         if (familiesResponse.success && familiesResponse.data && familiesResponse.data.length > 0) {
@@ -77,62 +83,19 @@ function App() {
       if (exportResponse.success && exportResponse.data) {
         setFamilyData(exportResponse.data);
         
-        // --- 核心：自动扫描推导歧义并推送到消息流 ---
-        if (exportResponse.data.ambiguities && exportResponse.data.ambiguities.length > 0) {
-          const newQuestions = exportResponse.data.ambiguities.map((amb: any) => ({
-            id: `amb_${amb.type}_${amb.nodes.join('_')}`,
-            type: 'question' as const,
+        // --- 核心：处理来自后端的交互式任务流 (Task-based Protocol) ---
+        if (exportResponse.data.tasks && exportResponse.data.tasks.length > 0) {
+          const newTasks = exportResponse.data.tasks.map((task: InteractionTask) => ({
+            id: `task_${task.id}`,
+            type: 'task' as const,
             timestamp: Date.now(),
-            content: {
-              questionId: `amb_${amb.nodes.join('_')}`,
-              message: amb.message,
-              questionType: 'DIRECT_RELATIONSHIP',
-              suggestion: amb.suggestion,
-              isAmbiguity: true
-            },
-            onAnswer: async (qId: string, answer: string) => {
-              if (answer === 'yes') {
-                const res = await aiApi.commit(fId, {
-                  family_id: fId,
-                  confirmed_entities: [],
-                  confirmed_relationships: [],
-                  confirmed_events: [],
-                  resolutions: [{ ...amb.suggestion, action: 'ADD_EDGE' }]
-                });
-                if (res.success) {
-                  addMessage({
-                    id: `confirmed_${Date.now()}`,
-                    type: 'success',
-                    timestamp: Date.now(),
-                    content: { actions: [amb.message + " - 已确认"] }
-                  });
-                  await loadFamilyData(fId);
-                }
-              } else if (answer === 'no') {
-                // 提交拒绝方案
-                const res = await aiApi.commit(fId, {
-                  family_id: fId,
-                  confirmed_entities: [],
-                  confirmed_relationships: [],
-                  confirmed_events: [],
-                  resolutions: [{ ...amb.suggestion, action: 'REJECT_EDGE' }]
-                });
-                if (res.success) {
-                  addMessage({
-                    id: `rejected_${Date.now()}`,
-                    type: 'info',
-                    timestamp: Date.now(),
-                    content: { actions: [amb.message + " - 已忽略"] }
-                  });
-                  await loadFamilyData(fId);
-                }
-              }
-            }
+            content: { task },
+            onTaskAction: handleTaskAction
           }));
           
           setMessages((prev) => {
             const existingIds = new Set(prev.map(m => m.id));
-            const uniqueNew = newQuestions.filter(q => !existingIds.has(q.id));
+            const uniqueNew = newTasks.filter(t => !existingIds.has(t.id));
             return [...prev, ...uniqueNew];
           });
         }
@@ -145,6 +108,42 @@ function App() {
   const addMessage = useCallback((msg: FeedMessage) => {
     setMessages((prev) => [...prev, msg]);
   }, []);
+
+  // 统一任务处理回调
+  const handleTaskAction = useCallback(async (taskId: string, action: string, payload: any) => {
+    if (!familyId) return;
+    setIsLoading(true);
+    try {
+      const res = await familyApi.resolveTask(familyId, taskId, action, payload);
+      if (res.success) {
+        if (res.data?.actions && res.data.actions.length > 0) {
+          addMessage({
+            id: `task_res_${Date.now()}`,
+            type: 'success',
+            timestamp: Date.now(),
+            content: { actions: res.data.actions }
+          });
+        }
+        await loadFamilyData(familyId);
+      } else {
+        addMessage({
+          id: `task_err_${Date.now()}`,
+          type: 'error',
+          timestamp: Date.now(),
+          content: { error: res.message || '操作失败' }
+        });
+      }
+    } catch (error: any) {
+      addMessage({
+        id: `task_err_${Date.now()}`,
+        type: 'error',
+        timestamp: Date.now(),
+        content: { error: error.message || '执行操作时发生错误' }
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [familyId, addMessage]);
 
   // 确认合并
   const handleConfirmMerge = async (keepId: string, removeId: string, customName?: string) => {
@@ -207,7 +206,7 @@ function App() {
         
         // 刷新图谱
         const exportRes = await familyApi.export(familyId);
-        if (exportRes.success) {
+        if (exportRes.success && exportRes.data) {
           setFamilyData(exportRes.data);
         }
       } else {
@@ -289,9 +288,9 @@ function App() {
             debugInfo: {
               prompt_used: extractResponse.data.prompt_used || { system: 'N/A', user: 'N/A' },
               raw_response: extractResponse.data.raw_response || 'N/A'
-            },
-            allPeople: familyData.people
+            }
           },
+          allPeople: familyData.people, // 注入全量人员列表用于匹配
           onConfirmExtraction: (data) => handleConfirmExtraction(data, parsedData.reply_message),
           onCancelExtraction: handleCancelExtraction
         });
@@ -348,7 +347,6 @@ function App() {
           await loadFamilyData(familyId);
         }
 
-        setPendingData(pending_data || parsedData);
         pendingDataRef.current = pending_data || parsedData;
 
         // 为每个问题创建提问消息（跳过已有相同 ID 的，防止重复 key）
@@ -586,7 +584,7 @@ function App() {
 
         {/* 消息流 */}
         <div className="w-72 flex-shrink-0">
-          <MessageFeed messages={messages} />
+          <MessageFeed messages={messages} familyId={familyId} />
         </div>
       </div>
 

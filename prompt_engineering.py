@@ -33,7 +33,12 @@ class FamilyParsingPrompt:
 2. **使用临时ID**：为每个识别的人物和事件分配临时ID（格式：temp_person_001, temp_event_001）
 3. **置信度标注**：为每个提取结果标注置信度（高/中/低）
 4. **模糊处理**：对于不确定的信息，使用null值并添加到ambiguous_references
-5. **引导性问题**：对于需要用户澄清的信息，生成具体的澄清问题
+5. **结构化澄清问题**：clarification_questions 字段必须是对象数组，每个对象包含：
+   - question: 自然语言问题描述
+   - person1_temp_id: 关系主体的临时ID（如外婆）
+   - person2_temp_id: 关系客体的临时ID（如外孙）
+   - relationship_type: 关系类型（如：grandmother_maternal, husband, wife, father, mother 等）
+   - confidence: 置信度（高/中/低）
 
 ## 特殊处理规则
 1. **称呼解析**：理解中文家族称呼系统（如：大伯、二舅、三姑、小姨等）
@@ -226,10 +231,36 @@ class FamilyParsingPrompt:
                             "items": {"type": "string"},
                             "description": "模糊引用列表，如：['大伯 - 需要确认具体人物']"
                         },
-                        "suggested_questions": {
+                        "clarification_questions": {
                             "type": "array",
-                            "items": {"type": "string"},
-                            "description": "建议的澄清问题列表"
+                            "description": "需要用户确认的澄清问题列表",
+                            "items": {
+                                "type": "object",
+                                "required": ["question", "person1_temp_id", "person2_temp_id", "relationship_type"],
+                                "properties": {
+                                    "question": {
+                                        "type": "string",
+                                        "description": "自然语言问题描述"
+                                    },
+                                    "person1_temp_id": {
+                                        "type": "string",
+                                        "description": "第一个人物的临时ID（关系主体，如外婆）"
+                                    },
+                                    "person2_temp_id": {
+                                        "type": "string",
+                                        "description": "第二个人物的临时ID（关系客体，如外孙）"
+                                    },
+                                    "relationship_type": {
+                                        "type": "string",
+                                        "description": "询问的关系类型，如：grandmother_maternal, husband, wife 等"
+                                    },
+                                    "confidence": {
+                                        "type": "string",
+                                        "enum": ["high", "medium", "low"],
+                                        "description": "问题的置信度"
+                                    }
+                                }
+                            }
                         },
                         "extracted_time_references": {
                             "type": "array",
@@ -552,13 +583,13 @@ class InteractiveExtractionPrompt:
         return """你是一个家谱信息提取助手。请根据自然语言提取实体及【字面关系描述】。
 
 ## 核心原则:
-1. **ID 匹配优先 (Priority)**: 只要背景中有人名，必须使用其 `id` (matched_db_id)。
-2. **双亲提取 (Crucial)**: 当描述“某夫妇有孩子”时，必须提取【两条】关系（父子+母子）。
-   - 例: "林大明和赵春花生了林绿洲" -> 必须提取 [大明->绿洲] 和 [赵春花->绿洲]。
-3. **方向性**: 必须遵循“A 是 B 的 X”（A=source_ref, B=target_ref）。
-   - **严禁反转**：无论原句是“A是B的爷爷”还是“B的爷爷是A”，`source_ref` 必须是那个【爷爷】，`target_ref` 必须是那个【孙子】。
-   - 规则：`source_ref` 是关系的发出者（长辈/配偶），`target_ref` 是关系的参照点。
-4. **隐含血缘确认**: 针对配偶，在 `clarification_questions` 询问其是否为子女的生母/生父。
+1. **ID 匹配优先 (Priority)**: 只有当文本中出现的姓名与背景信息中的姓名匹配时，才使用其 `matched_db_id`。
+2. **严禁幻觉 (No Hallucination)**: 绝对禁止引入文本中未提及的人物。如果背景信息中有“赵春花”，但文本中只有“朱雪兰”，则不应在关系中引用“赵春花”。
+3. **双亲提取 (Crucial)**: 当描述“某夫妇有孩子”时，必须提取【两条】关系（父子+母子）。
+4. **语义对齐 (Semantic Alignment)**: 遵循“主语 -> 谓语 -> 宾语”的自然语义。
+   - **绝对准则**：`source_ref` 必须是陈述句中的【主体】，`target_ref` 必须是【参照点/宾语】。
+   - **直述原则**：AI 不应在提取阶段尝试反转关系来适配存储逻辑，只需忠实还原语义。
+5. **隐含血缘确认**: 针对配偶，在 `clarification_questions` 询问其是否为子女的生母/生父。
 
 ## 输出规范:
 - 严格 JSON 格式。
@@ -594,12 +625,12 @@ class InteractiveExtractionPrompt:
                         "type": "object",
                         "required": ["source_ref", "target_ref", "natural_language_desc"],
                         "properties": {
-                            "source_ref": {"type": "string", "description": "关系主体 (A)，必须使用该人物的 temp_id 或 matched_db_id，绝对不能使用姓名"},
-                            "target_ref": {"type": "string", "description": "关系对象 (B)，必须使用该人物的 temp_id 或 matched_db_id，绝对不能使用姓名"},
-                            "natural_language_desc": {"type": "string", "description": "字面上的关系描述，如：'王建国是王大壮的儿子'"},
+                            "source_ref": {"type": "string", "description": "关系中的主体 (Subject)，即 'A 是 B 的...' 中的 A"},
+                            "target_ref": {"type": "string", "description": "关系中的参照点 (Object)，即 'A 是 B 的...' 中的 B"},
+                            "natural_language_desc": {"type": "string", "description": "字面上的关系描述，如：'林大明是林绿洲的父亲'"},
                             "kinship_type": {
                                 "type": ["string", "null"], 
-                                "description": "匹配字典中的关系键名（如 father, son, grandson_paternal, husbands_of_sisters 等）"
+                                "description": "匹配字典中的关系键名（遵循语义 A 是 B 的 Type，如 son 表示 A 是 B 的儿子）"
                             },
                             "attributes": {
                                 "type": "object", 
@@ -640,23 +671,47 @@ class InteractiveExtractionPrompt:
 {user_input}
 
 ## 任务
-1. 从用户输入中提取实体、关系和事件。如果输入中的人物与上述“背景上下文”中的人物匹配，请在 matched_db_id 中填入其 ID。
-2. 对于关系，请尝试将其映射到以下【标准关系键】之一（填入 kinship_type 字段）。如果无法精准映射，请保持为 null。
-3. **特别强调方向**：`source_ref` 是“关系的主体”，`target_ref` 是“对象”。
-   - “林大明的儿子是林绿洲” -> source: 林绿洲, target: 林大明, type: son
-   - “林大明生了林绿洲” -> source: 林绿洲, target: 林大明, type: son (或者 source: 林大明, target: 林绿洲, type: father)
-   - 建议优先使用“A 是 B 的 [关系]”这种直观映射。
+1. 从用户输入中提取实体、关系和事件。
+2. **关系语义对齐 (Semantic Alignment)**：在 `relationships` 中，确保 `source_ref` 是主语，`target_ref` 是参照点。
+   - “林绿洲是林大明的儿子” -> source: 林绿洲, target: 林大明, type: son
+   - “林大明的儿子是林绿洲” -> source: 林绿洲, target: 林大明, type: son (以林绿洲为主体)
+   - “林大明生了林绿洲” -> source: 林大明, target: 林绿洲, type: father
+   - “林大明和赵春花生了林绿洲” -> [林大明(father)->林绿洲], [赵春花(mother)->林绿洲]
 
-### 标准关系键 (用于 kinship_type):
-- 基础: father, mother, son, daughter, brother, sister, husband, wife
-- 祖辈: grandfather_paternal, grandmother_paternal, grandfather_maternal, grandmother_maternal
-- 长辈: uncle_paternal, aunt_paternal, uncle_maternal, aunt_maternal
-- 孙辈: grandson_paternal, granddaughter_paternal, grandson_maternal, granddaughter_maternal
-- 晚辈: nephew_paternal, niece_paternal, nephew_maternal, niece_maternal
-- 姻亲: son_in_law, daughter_in_law, brother_in_law, sister_in_law, husbands_of_sisters(连襟), wives_of_brothers(妯娌)
-- 亲家: father_in_law_paternal(公公), mother_in_law_paternal(婆婆), father_in_law_maternal(岳父), mother_in_law_maternal(岳母)
-- 姻亲手足: husband_sister(姑子), husband_brother(伯/叔子), wife_brother(舅子), wife_sister(姨子)
-- 其他: paternal_cousin_male(堂兄弟), paternal_cousin_female(堂姐妹)
+### 标准关系键及方向规范 (Kinship Keys & Direction Standards):
+为了确保逻辑推导准确，必须严格遵守以下方向规则（Source 为 A，Target 为 B）：
+
+1. **长辈/祖辈 (规则: source 为长辈, target 为晚辈)**: 
+   - `father`, `mother` (基础父母)
+   - `grandfather_paternal`, `grandmother_paternal` (祖父母)
+   - `grandfather_maternal`, `grandmother_maternal` (外祖父母)
+   - `uncle_paternal`, `aunt_paternal`, `uncle_maternal`, `aunt_maternal` (伯叔姑舅姨)
+   - `father_in_law_paternal`, `mother_in_law_paternal` (公婆)
+   - `father_in_law_maternal`, `mother_in_law_maternal` (岳父母)
+   - **例**：“王芳的爷爷是王富贵” -> source: 王富贵, target: 王芳, type: grandfather_paternal
+
+2. **晚辈/孙辈 (规则: source 为晚辈, target 为长辈)**: 
+   - `son`, `daughter` (子女)
+   - `grandson_paternal`, `granddaughter_paternal` (孙子女)
+   - `grandson_maternal`, `granddaughter_maternal` (外孙子女)
+   - `nephew_paternal`, `niece_paternal`, `nephew_maternal`, `niece_maternal` (侄甥)
+   - `son_in_law`, `daughter_in_law` (女婿/儿媳)
+
+3. **配偶关系 (统一格式: "A 是 B 的丈夫/妻子", source 为配偶本人)**:
+   - `wife`: A 是 B 的妻子 → source: A(妻子), target: B(丈夫) → source 性别必须为女性
+   - `husband`: A 是 B 的丈夫 → source: A(丈夫), target: B(妻子) → source 性别必须为男性
+   - **示例**：
+     - "王大锤的妻子是孙美玲" → source: 孙美玲, target: 王大锤, type: wife
+     - "孙美玲的丈夫是王大锤" → source: 王大锤, target: 孙美玲, type: husband
+
+4. **同胞关系 (规则: source 性别必须符合角色)**:
+   - `brother`, `sister` (同胞)
+   - `brother_in_law`, `sister_in_law` (姻亲同胞)
+   - `husband_sister`, `husband_brother`, `wife_brother`, `wife_sister` (大姑子/小叔子等)
+
+5. **对称/其他关系**:
+   - `spouse`: 如果性别明确，请优先使用 `husband/wife`；若不明确，source 为主语。
+   - `paternal_cousin_male`, `paternal_cousin_female` (堂兄弟姐妹)
 
 ## 输出格式
 请输出以下 JSON 格式：
@@ -668,6 +723,53 @@ class InteractiveExtractionPrompt:
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": prompt}
         ]
+
+
+
+class KinshipDecompositionPrompt:
+    """亲属称谓逻辑拆解提示词管理器"""
+    
+    def __init__(self, kinship_dictionary: List[str]):
+        self.kinship_dictionary = kinship_dictionary
+    
+    def get_system_prompt(self) -> str:
+        """创建系统指令"""
+        return f"""你是一个家族图谱逻辑专家。你的任务是将非标准的中文亲属称谓（如“舅老爷”）拆解为标准的逻辑路径。
+
+## 核心原子关系
+在描述路径时，请优先使用以下标准原子关系：
+1. **parent_child**: 父母与子女之间的生物学连接
+2. **spouse**: 配偶关系
+3. **sibling**: 亲兄弟姐妹关系
+
+## 逻辑对齐规则
+1. **优先对齐词典**：如果该称谓可以对应到词典中的标准 Key，请明确指出。
+2. **路径递归拆解**：如果词典中没有，请将其拆解为从“本人”或“某人”出发的原子步骤。例如：“舅老爷” -> [父亲/母亲, 母亲, 兄弟]。
+3. **性别推断**：明确该称谓对应的性别。
+
+## 当前词典中的标准 Key 列表
+{json.dumps(self.kinship_dictionary, ensure_ascii=False)}
+
+## 输出要求
+严格以 JSON 格式输出，不要包含任何额外解释：
+{{
+  "term": "原始称谓",
+  "gender": "male/female/unknown",
+  "is_standard": true/false, // 是否直接匹配词典中的某个 Key
+  "standard_key": "如果是标准关系，对应的词典 Key",
+  "explanation": "通俗易懂的自然语言解释（如：妈妈的妈妈的兄弟）",
+  "logical_path": [
+     {{ "step": 1, "target": "mother", "type": "parent_child" }},
+     {{ "step": 2, "target": "maternal_grandmother", "type": "parent_child" }},
+     {{ "step": 3, "target": "target_person", "type": "sibling" }}
+  ],
+  "confirmation_question": "向用户确认的自然语言（如：这是妈妈的妈妈的兄弟吗？也就是姥姥的兄弟？）"
+}}
+"""
+
+    def get_user_prompt(self, term: str) -> str:
+        """生成用户输入提示词"""
+        return f"请对以下亲属称谓进行逻辑拆解：'{term}'"
 
 
 if __name__ == "__main__":

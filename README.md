@@ -4,7 +4,7 @@
 
 ## 核心特性
 
-- **🚀 交互式自然语言提取**: 采用“解析-确认-入库”三段式流程，基于 Phase 3 架构，强制 source_ref 方向一致性。
+- **🚀 交互式自然语言提取**: 采用“解析-确认-入库”三段式流程，基于 Phase 3 架构，实现语义高度一致的族谱数据录入。
 - **🧠 逻辑主权编译引擎 (CompilerEngine)**: 采用“事件溯源 (Event Sourcing)”架构。所有操作均记录为事实，动态编译成图。
 - **🛡️ 铁律级冲突检测**: 实时检测血缘环路、代际跳跃及父母唯一性冲突。严禁任何逻辑违规数据进入数据库。
 - **📊 动态可视化聚焦**: 基于 React Flow，支持选中人物自动居中、非关联节点交互式淡化，突出核心血缘脉络。
@@ -48,20 +48,21 @@ npm run dev                   # 启动前端 (默认端口: 3000)
 ```
 family-chronicle/
 ├── backend/
-│   ├── main.py               # API 路由与逻辑熔断层
-│   ├── compiler_engine.py    # 逻辑主权引擎 (核心：负责事实编译与约束校验)
+│   ├── main.py               # API 路由层 (轻量级，负责请求分发)
+│   ├── schemas.py            # 统一 Pydantic 数据模型 (输入校验与输出规范)
+│   ├── fact_service.py       # 图谱生命周期管理 (加载、保存与 Fact 编译)
+│   ├── ai_service.py         # AI 核心业务层 (提取、确认与语义转换)
+│   ├── compiler_engine.py    # 逻辑主权引擎 (负责事实编译与约束校验)
 │   ├── fact_store.py         # 基于 JSON 的事件溯源事实存储库
-│   ├── ai_service.py         # AI 核心抽象层
 │   └── data/                 # 家族 Fact Log JSON 数据存储
 ├── frontend/
 │   └── src/
 │       ├── components/
-│       │   ├── FamilyGraph.tsx        # 族谱可视化画布 (支持居中聚焦/高亮淡化)
+│       │   ├── FamilyGraph.tsx        # 族谱可视化画布
 │       │   ├── ExtractionConfirmCard.tsx # AI 提取结果确认卡片
-│       │   └── PersonNode.tsx         # 深度自定义人物节点
-│       └── App.tsx                    # 前端逻辑入口与状态分发
-├── prompt_engineering.py      # AI 提取指令集 (含方向性约束铁律)
-├── models.py                  # 统一的数据模型定义
+│       └── App.tsx                    # 前端逻辑入口
+├── prompt_engineering.py      # AI 提取指令集 (含语义对齐协议)
+├── models.py                  # 核心领域模型定义
 └── README.md
 ```
 

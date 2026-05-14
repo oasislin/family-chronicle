@@ -1,5 +1,5 @@
---- START OF FILE DERIVATION_ENGINE_REDESIGN_V2.md ---
-关系推导引擎重构与数据架构设计 (Relationship Derivation Engine Redesign V2)
+--- START OF FILE DERIVATION_ENGINE_REDESIGN_V3.md ---
+关系推导引擎重构与数据架构设计 (Relationship Derivation Engine Redesign V3 - Modular Edition)
 基于对图论逻辑、算力开销及产品体验的深度推演，本设计文档对底层数据架构和关系推导引擎进行了彻底升级。
 核心变化：抛弃传统的直接图库操作，全面拥抱“事件溯源 (Event Sourcing) + 内存计算 (In-Memory Computing)”架构。以支持秒级的全量图谱重跑、无痛的称谓定义修改以及极致的本地化隐私体验。
 ⚠️ [Anti Gravity 行动指南] - 整体架构切换
